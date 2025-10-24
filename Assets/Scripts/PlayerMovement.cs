@@ -25,9 +25,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Sprawdzamy, czy obiekt ma tag "Ground"
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = true;
+            // Jeśli gracz dotyka powierzchni od dołu
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                // Normalna kolizji pokazuje kierunek siły kontaktu.
+                // Dla podłoża "od dołu" normalna Y ≈ 1 (czyli wskazuje w górę)
+                if (contact.normal.y > 0.5f)
+                {
+                    isGrounded = true;
+                    break;
+                }
+            }
         }
     }
 
