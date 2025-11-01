@@ -2,51 +2,52 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 5f;
-    public float jumpForce = 7f;
-    private Rigidbody2D rb;
-    private bool isGrounded;
+    [Header("Movement Settings")]
+    public float speed = 5f;          // Horizontal movement speed
+    public float jumpForce = 7f;      // Jump strength
+
+    [Header("Ground Detection")]
+    public Transform groundCheck;     // Empty GameObject placed below the player
+    public float groundCheckRadius = 0.15f; // Radius of the ground detection circle
+    public LayerMask groundLayer;     // Layer assigned to ground objects
+
+    private Rigidbody2D rb;           // Reference to Rigidbody2D
+    private bool isGrounded;          // True if player is on the ground
+    private float moveInput;          // Horizontal input value
 
     void Start()
     {
+        // Get the Rigidbody2D component from the player object
         rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        float moveInput = Input.GetAxis("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        // Read horizontal movement input (-1 for left, 1 for right)
+        moveInput = Input.GetAxisRaw("Horizontal");
 
+        // Jump only if the player is currently grounded
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
+            // Set the upward velocity to jumpForce
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void FixedUpdate()
     {
-        // Sprawdzamy, czy obiekt ma tag "Ground"
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            // Jeśli gracz dotyka powierzchni od dołu
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                // Normalna kolizji pokazuje kierunek siły kontaktu.
-                // Dla podłoża "od dołu" normalna Y ≈ 1 (czyli wskazuje w górę)
-                if (contact.normal.y > 0.5f)
-                {
-                    isGrounded = true;
-                    break;
-                }
-            }
-        }
+        // Move horizontally (keep existing vertical velocity)
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+
+        // Check if the player is standing on the ground
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    // Optional: visualize the ground check circle in the Scene view
+    private void OnDrawGizmosSelected()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        if (groundCheck == null) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }
