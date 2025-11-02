@@ -5,11 +5,13 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Obstacle
+  - DeathZone
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - 
