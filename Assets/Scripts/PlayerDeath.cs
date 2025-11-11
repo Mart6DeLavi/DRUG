@@ -17,6 +17,6 @@ public class PlayerDeath : MonoBehaviour
     {
         Debug.Log("Player has died!");
         Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name); // Restart scene
+        SceneManager.LoadScene("GameOverScene"); // Restart scene, zmiana sceny na GameOverScene aby po œmierci odpala³o siê menu koñcowe
     }
 }
