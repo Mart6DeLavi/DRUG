@@ -3,17 +3,17 @@ using System; // for Action
 
 public class PlayerMovement : MonoBehaviour
 {
-    // >>> ADD THIS EVENT <<<
     public event Action OnJump; // Fired right after a successful jump
 
     [Header("Movement Settings")]
-    public float speed = 5f;
-    public float jumpForce = 7f;
+    public float speed = 5f;          // Horizontal movement speed
+    public float jumpForce = 7f;      // Jump strength
 
-    [Header("Ground Detection")]
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.15f;
-    public LayerMask groundLayer;
+    [Header("Ground Detection (multi-point)")]
+    [Tooltip("Points under the player used to detect ground. E.g. Left, Center, Right.")]
+    public Transform[] groundChecks;  // Multiple ground check points
+    public float groundCheckRadius = 0.18f; // Radius for each check circle
+    public LayerMask groundLayer;     // Layer of platforms (e.g. Ground)
 
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -26,28 +26,63 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Read horizontal input (-1, 0, 1)
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Jump only if grounded
+        // Jump only when grounded
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
+            // Apply vertical velocity
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
-            // >>> FIRE THE EVENT HERE <<<
+            // Notify listeners (e.g. sound system)
             OnJump?.Invoke();
         }
     }
 
     void FixedUpdate()
     {
+        // Horizontal movement (keep current vertical velocity)
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        // Update grounded state using multiple check points
+        isGrounded = IsGroundedMultiPoint();
     }
 
-    private void OnDrawGizmosSelected()
+    /// <summary>
+    /// Returns true if ANY of the groundCheck points touches the ground layer.
+    /// </summary>
+    private bool IsGroundedMultiPoint()
     {
-        if (groundCheck == null) return;
+        if (groundChecks != null && groundChecks.Length > 0)
+        {
+            foreach (Transform point in groundChecks)
+            {
+                if (point == null) continue;
+
+                // Check small circle at this point
+                bool hit = Physics2D.OverlapCircle(point.position, groundCheckRadius, groundLayer);
+                if (hit)
+                    return true;
+            }
+        }
+
+        // Fallback: if no points are assigned, check from player's position (optional safety)
+        Vector2 fallbackPos = transform.position;
+        return Physics2D.OverlapCircle(fallbackPos, groundCheckRadius * 0.75f, groundLayer);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (groundChecks == null) return;
+
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+
+        // Draw circles in Scene view so you see where checks are
+        foreach (Transform point in groundChecks)
+        {
+            if (point == null) continue;
+            Gizmos.DrawWireSphere(point.position, groundCheckRadius);
+        }
     }
 }
