@@ -6,14 +6,18 @@ public class GameOverMenu : MonoBehaviour
     // Przycisk "Zagraj ponownie"
     public void RetryGame()
     {
-        // Za³aduj scenê z gr¹
-        SceneManager.LoadScene("SampleScene");
+        // Zaï¿½aduj scenï¿½ z grï¿½
+        SceneManager.LoadScene("GameScene");
     }
 
-    // Przycisk "WyjdŸ"
+    // Przycisk "Wyjdï¿½"
     public void QuitGame()
     {
         Debug.Log("Zamykanie gry...");
         Application.Quit();
+
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }
