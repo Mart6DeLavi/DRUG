@@ -1,0 +1,154 @@
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance;
+
+    public int score = 0;
+    private float scoreMultiplier = 1f;
+
+    // Double Jump bonus
+    public bool doubleJumpActive = false;
+    private float doubleJumpBonusTime = 0f;
+
+    private float bonusTime = 0f;
+
+    // Multiplication factor for enemy speed
+    public float enemySpeedMultiplier = 1f;
+
+    // Player speed multiplier
+    public float playerSpeedMultiplier = 1f;
+
+    // Debuffs
+    public bool controlsReversed = false;
+    public bool randomImpulsActive = false;
+
+    // Low visibility
+    public GameObject lowVisibilityPanel;
+
+    private float reverseDuration = 0f, impulsDuration = 0f, slowDuration = 0f, lowVisibilityDuration = 0f;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
+    private void Update()
+    {
+        if (bonusTime > 0)
+        {
+            bonusTime -= Time.deltaTime;
+            if (bonusTime <= 0)
+                ResetBonuses();
+        }
+
+        if (doubleJumpActive && doubleJumpBonusTime > 0)
+        {
+            doubleJumpBonusTime -= Time.deltaTime;
+            if (doubleJumpBonusTime <= 0)
+                doubleJumpActive = false;
+        }
+
+        // Debuffs
+        if (controlsReversed)
+        {
+            reverseDuration -= Time.deltaTime;
+            if (reverseDuration <= 0)
+                controlsReversed = false;
+        }
+
+        if (randomImpulsActive)
+        {
+            impulsDuration -= Time.deltaTime;
+            if (impulsDuration <= 0)
+                randomImpulsActive = false;
+        }
+
+        // Slow player
+        if ( playerSpeedMultiplier < 1f)
+        {
+            slowDuration -= Time.deltaTime;
+            if (slowDuration <= 0)
+                playerSpeedMultiplier = 1f;
+        }
+
+        // Low visibility
+        if (lowVisibilityPanel != null && lowVisibilityPanel.activeSelf)
+        {
+            lowVisibilityDuration -= Time.deltaTime;
+            if (lowVisibilityDuration <= 0)
+                lowVisibilityPanel.SetActive(false);
+        }
+    }
+
+    #region Buffes
+    public void AddPoints(int basePoints)
+    {
+        score += Mathf.RoundToInt(basePoints * scoreMultiplier);
+    }
+
+    public void ActivateDoublePoints(float duration)
+    {
+        scoreMultiplier = 2f;
+        bonusTime = duration;
+    }
+
+    public void ActivateSlowEnemies(float duration, float slowMultiplier)
+    {
+        enemySpeedMultiplier = slowMultiplier;
+        bonusTime = duration;
+    }
+
+    public void ActivateSpeedBoost(float duration, float speedMultiplier)
+    {
+        playerSpeedMultiplier = speedMultiplier;
+        bonusTime = duration;
+    }
+
+    private void ResetBonuses()
+    {
+        scoreMultiplier = 1f;
+        enemySpeedMultiplier = 1f;
+        playerSpeedMultiplier = 1f;
+    }
+
+    public void ActivateDoubleJump(float duration)
+    {
+        doubleJumpActive = true;
+        doubleJumpBonusTime = duration;
+    }
+    #endregion
+
+    // Debuff methods
+    #region Debuffs
+    public void ActivateReverseControls(float duration)
+    {
+        controlsReversed = true;
+        reverseDuration = duration;
+    }
+
+    public void ActivateRandomImpulse(float duration)
+    {
+        randomImpulsActive = true;
+        impulsDuration = duration;
+    }
+
+
+    public void ActivateSlowPlayer(float duration, float slowMultiplier)
+    {
+        playerSpeedMultiplier = slowMultiplier;
+        slowDuration = duration;
+    }
+
+    public void ActivateLimitedVisibility(float duration)
+    {
+        if (lowVisibilityPanel != null)
+        {
+            lowVisibilityPanel.SetActive(true);
+            lowVisibilityDuration = duration;
+        }
+    }
+
+    #endregion
+}

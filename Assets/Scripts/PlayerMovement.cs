@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float speed = 5f;          // Horizontal movement speed
     public float jumpForce = 7f;      // Jump strength
+    public bool extraJumpAvailable = true; // For double jump tracking
 
     [Header("Ground Detection (multi-point)")]
     [Tooltip("Points under the player used to detect ground. E.g. Left, Center, Right.")]
@@ -29,21 +30,56 @@ public class PlayerMovement : MonoBehaviour
         // Read horizontal input (-1, 0, 1)
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Jump only when grounded
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // reverse movment
+        if (GameManager.Instance != null && GameManager.Instance.controlsReversed)
         {
-            // Apply vertical velocity
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            moveInput *= -1f;
+        }
 
-            // Notify listeners (e.g. sound system)
+        bool canJump =
+                isGrounded || // normal jump
+                (GameManager.Instance != null && GameManager.Instance.doubleJumpActive && extraJumpAvailable);
+
+        if (Input.GetButtonDown("Jump") && canJump)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             OnJump?.Invoke();
+
+            if (!isGrounded && GameManager.Instance != null && GameManager.Instance.doubleJumpActive)
+            {
+                extraJumpAvailable = false; // using double jump
+            }
         }
     }
 
     void FixedUpdate()
     {
+        float multiplier = 1f;
+
+        // USING GAME MANAGER TO ADJUST PLAYER SPEED FROM BONUSES
+        if (GameManager.Instance != null)
+        {
+            multiplier = GameManager.Instance.playerSpeedMultiplier;
+        }
+
+        // Reset extra jump when grounded
+        if (isGrounded)
+        {
+            extraJumpAvailable = true;
+        }
+
+        // Random impulse debuff
+        if (GameManager.Instance != null && GameManager.Instance.randomImpulsActive)
+        {
+            if (UnityEngine.Random.value < 0.7f) // chance each FixedUpdate
+            {
+                float force = UnityEngine.Random.Range(-4f, 4f);
+                rb.AddForce(new Vector2(force, 0), ForceMode2D.Impulse);
+            }
+        }
+
         // Horizontal movement (keep current vertical velocity)
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveInput * speed * multiplier, rb.linearVelocity.y);
 
         // Update grounded state using multiple check points
         isGrounded = IsGroundedMultiPoint();

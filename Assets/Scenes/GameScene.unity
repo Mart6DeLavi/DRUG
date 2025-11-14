@@ -437,8 +437,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe010c21cd11aa40a0ad991deb7d082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  speed: 5
+  speed: 10
   jumpForce: 10
+  extraJumpAvailable: 1
   groundChecks:
   - {fileID: 1856760063}
   - {fileID: 471596965}
@@ -524,9 +525,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlatformGenerator
   player: {fileID: 572256351}
   tilePrefab: {fileID: 8895893844456603769, guid: ef0e4cc80b4f8334aac4734e459b347c, type: 3}
-  leftSprite: {fileID: -4927323586961783517, guid: 7823ed51f963f4416902eb545c4f3084, type: 3}
-  middleSprite: {fileID: 5219712795112171601, guid: 16bc6cabb74c94a0daf31e7bc69c34fa, type: 3}
-  rightSprite: {fileID: 2518712791209076779, guid: ab5a076bb57634498b6cb6c118cbfe3c, type: 3}
+  grassLeftSprite: {fileID: -4927323586961783517, guid: 7823ed51f963f4416902eb545c4f3084, type: 3}
+  grassMiddleSprite: {fileID: 5219712795112171601, guid: 16bc6cabb74c94a0daf31e7bc69c34fa, type: 3}
+  grassRightSprite: {fileID: 2518712791209076779, guid: ab5a076bb57634498b6cb6c118cbfe3c, type: 3}
+  lavaLeftSprite: {fileID: -8923424012815641827, guid: 98f5f953162554ac7b9e9506e0c00e95, type: 3}
+  lavaMiddleSprite: {fileID: -4963990852637313801, guid: cc1f2327a2a784b78ab866fce5d9e898, type: 3}
+  lavaRightSprite: {fileID: 5291201120803184431, guid: de83bc1ecfaab4592bf1b7061c9bb54d, type: 3}
+  lavaGrassLeftSprite: {fileID: 9208592867984134532, guid: 8f4bc0a0d035848d69beca6fe75042ea, type: 3}
+  lavaGrassRightSprite: {fileID: -667338457882566871, guid: 962d4f3a02fc8456486cf4ad1a37f523, type: 3}
+  lavaGroundLeftSprite: {fileID: -4576631363291807033, guid: d23ea119425d447788a3cd3e8d16cf74, type: 3}
+  lavaGroundRightSprite: {fileID: -4836710515755216852, guid: 27199936f50d54271bdef6e0fc0c3a0e, type: 3}
   tileWidth: 1
   minTiles: 2
   maxTiles: 8
@@ -538,7 +546,12 @@ MonoBehaviour:
   maxY: 5
   aheadDistance: 25
   behindDistance: 20
+  lavaChancePerPlatform: 1
+  minLavaRun: 1
+  maxLavaRun: 3
   groundLayerName: Ground
+  grassTag: Ground
+  lavaTag: DeathZone
   useFixedSeed: 0
   seed: 12345
 --- !u!4 &1102387337
