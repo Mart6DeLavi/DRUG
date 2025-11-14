@@ -57,11 +57,9 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private int maxLavaRun = 3;
 
     [Header("Physics / Layers & Tags")]
-    [Tooltip("Layer used for both grass and lava colliders (should be in PlayerMovement.groundLayer).")]
+    [Tooltip("Layer used for all tile colliders (should be in PlayerMovement.groundLayer).")]
     [SerializeField] private string groundLayerName = "Ground";
-    [Tooltip("Tag for grass collider object (optional).")]
-    [SerializeField] private string grassTag = "Ground";
-    [Tooltip("Tag for lava collider object (MUST match PlayerDeath Obstacle).")]
+    [Tooltip("Tag for lava tiles (MUST match PlayerDeath Obstacle).")]
     [SerializeField] private string lavaTag = "Obstacle";
 
     [Header("Debug / Seed")]
@@ -158,7 +156,7 @@ public class PlatformGenerator : MonoBehaviour
         // Core platform length (bez krawędzi)
         int coreCount = Random.Range(minTiles, maxTiles + 1);
 
-        // Decide materials for core tiles (Grass / Lava)
+        // Core materials G/L
         TileMaterial[] coreMaterials = GenerateCoreMaterials(coreCount);
 
         // Dodajemy 2 kafelki krawędziowe: lewy + prawy
@@ -179,54 +177,18 @@ public class PlatformGenerator : MonoBehaviour
 
         float totalWidth = visualCount * tileWidth;
 
-        // Parent for the whole segment (keep at origin, tiles at world positions)
+        // Parent for the whole segment (no colliders here)
         GameObject segmentGO = new GameObject("PlatformSegment");
         segmentGO.transform.parent = transform;
         segmentGO.transform.position = Vector3.zero;
         segmentGO.layer = groundLayer;
-
-        // Static body
-        Rigidbody2D rb2d = segmentGO.AddComponent<Rigidbody2D>();
-        rb2d.bodyType = RigidbodyType2D.Static;
-        rb2d.simulated = true;
-        rb2d.gravityScale = 0f;
 
         // Marker for cleanup
         PlatformSegmentMarker marker = segmentGO.AddComponent<PlatformSegmentMarker>();
         marker.startX = startX;
         marker.endX = startX + totalWidth;
 
-        // Collider holders
-        GameObject grassColliderGO = new GameObject("GrassCollider");
-        grassColliderGO.transform.parent = segmentGO.transform;
-        grassColliderGO.transform.localPosition = Vector3.zero;
-        grassColliderGO.transform.localRotation = Quaternion.identity;
-        grassColliderGO.transform.localScale = Vector3.one;
-        grassColliderGO.layer = groundLayer;
-        if (!string.IsNullOrEmpty(grassTag))
-            grassColliderGO.tag = grassTag;
-
-        PolygonCollider2D grassPoly = grassColliderGO.AddComponent<PolygonCollider2D>();
-        grassPoly.pathCount = 0;
-        grassPoly.isTrigger = false;
-
-        GameObject lavaColliderGO = new GameObject("LavaCollider");
-        lavaColliderGO.transform.parent = segmentGO.transform;
-        lavaColliderGO.transform.localPosition = Vector3.zero;
-        lavaColliderGO.transform.localRotation = Quaternion.identity;
-        lavaColliderGO.transform.localScale = Vector3.one;
-        lavaColliderGO.layer = groundLayer;
-        if (!string.IsNullOrEmpty(lavaTag))
-            lavaColliderGO.tag = lavaTag;
-
-        PolygonCollider2D lavaPoly = lavaColliderGO.AddComponent<PolygonCollider2D>();
-        lavaPoly.pathCount = 0;
-        lavaPoly.isTrigger = false;
-
-        int grassPathIndex = 0;
-        int lavaPathIndex = 0;
-
-        // Create tiles and add shapes
+        // Create tiles (each tile has OWN collider)
         for (int i = 0; i < visualCount; i++)
         {
             float worldX = startX + i * tileWidth;
@@ -236,23 +198,27 @@ public class PlatformGenerator : MonoBehaviour
             tile.transform.position = new Vector2(worldX, worldY);
             tile.layer = groundLayer;
 
-            // Remove any collider from tile instance – colliders only on Grass/LavaCollider objects
-            var tileCol = tile.GetComponent<Collider2D>();
-            if (tileCol != null)
-                Destroy(tileCol);
+            // Remove any existing collider from tile instance
+            var oldCol = tile.GetComponent<Collider2D>();
+            if (oldCol != null)
+                Destroy(oldCol);
 
             SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
             if (sr == null)
                 sr = tile.AddComponent<SpriteRenderer>();
 
-            // Pick sprite based on visual materials and neighbors
+            // Sprite based on visual materials + sąsiedzi
             sr.sprite = ChooseSpriteForTile(visualMaterials, i, visualCount);
-
             Sprite sprite = sr.sprite;
             if (sprite == null)
                 continue;
 
-            bool isGrassTile = (visualMaterials[i] == TileMaterial.Grass);
+            // Collider per tile, shape from sprite physics outline
+            PolygonCollider2D poly = tile.AddComponent<PolygonCollider2D>();
+
+            // USTAWIENIE isTrigger ZALEŻNIE OD MATERIAŁU
+            bool isLava = (visualMaterials[i] == TileMaterial.Lava);
+            poly.isTrigger = isLava;          // lava => trigger (śmierć), grass => solid
 
             int shapeCount = sprite.GetPhysicsShapeCount();
             if (shapeCount == 0)
@@ -265,23 +231,26 @@ public class PlatformGenerator : MonoBehaviour
                 shapeBuffer.Add(new Vector2(b.max.x, b.max.y));
                 shapeBuffer.Add(new Vector2(b.min.x, b.max.y));
 
-                if (isGrassTile)
-                    AddPhysicsPath(grassPoly, ref grassPathIndex, grassColliderGO.transform, tile.transform, shapeBuffer);
-                else
-                    AddPhysicsPath(lavaPoly, ref lavaPathIndex, lavaColliderGO.transform, tile.transform, shapeBuffer);
+                poly.pathCount = 1;
+                poly.SetPath(0, shapeBuffer.ToArray());
             }
             else
             {
+                poly.pathCount = shapeCount;
                 for (int s = 0; s < shapeCount; s++)
                 {
                     shapeBuffer.Clear();
                     sprite.GetPhysicsShape(s, shapeBuffer);
-
-                    if (isGrassTile)
-                        AddPhysicsPath(grassPoly, ref grassPathIndex, grassColliderGO.transform, tile.transform, shapeBuffer);
-                    else
-                        AddPhysicsPath(lavaPoly, ref lavaPathIndex, lavaColliderGO.transform, tile.transform, shapeBuffer);
+                    poly.SetPath(s, shapeBuffer.ToArray());
                 }
+            }
+
+            // TAGI:
+            // Lava = Obstacle (śmierć)
+            // Grass = zostawiamy default (Untagged / co tam masz ustawione na prefabie)
+            if (isLava && !string.IsNullOrEmpty(lavaTag))
+            {
+                tile.tag = lavaTag;
             }
         }
 
@@ -292,23 +261,23 @@ public class PlatformGenerator : MonoBehaviour
 
     /// <summary>
     /// Generates core tile materials for a single platform, ensuring:
-    /// - at least one Grass overall
-    /// - any Lava run is at least 2 tiles long
+    /// - co najmniej jedna Grass
+    /// - każdy run lawy ma min 2 kafle
     /// </summary>
     private TileMaterial[] GenerateCoreMaterials(int coreCount)
     {
         var materials = new TileMaterial[coreCount];
 
-        // Everything starts as grass
+        // Wszystko startuje jako Grass
         for (int i = 0; i < coreCount; i++)
             materials[i] = TileMaterial.Grass;
 
-        // Jeśli platforma jest za krótka albo wylosujemy brak lawy -> sama trawa
+        // Jeśli platforma za krótka albo nie wypadła lawa -> sama trawa
         int minRun = Mathf.Max(minLavaRun, 2); // wymuś min 2
         if (coreCount < minRun + 1 || Random.value > lavaChancePerPlatform)
             return materials;
 
-        int maxRun = Mathf.Clamp(maxLavaRun, minRun, coreCount - 1); // zostaw przynajmniej 1 grass
+        int maxRun = Mathf.Clamp(maxLavaRun, minRun, coreCount - 1); // zostaw przynajmniej 1 Grass
         if (maxRun < minRun)
             return materials;
 
@@ -323,7 +292,7 @@ public class PlatformGenerator : MonoBehaviour
             materials[i] = TileMaterial.Lava;
         }
 
-        // mamy gwarancję, że coreCount - lavaRunLength >= 1 -> przynajmniej jeden Grass
+        // coreCount - lavaRunLength >= 1 -> jest minimum jeden Grass
         return materials;
     }
 
@@ -396,14 +365,14 @@ public class PlatformGenerator : MonoBehaviour
             if (leftOther && left == TileMaterial.Grass)
             {
                 // Pair: lava_grass_right | lava_ground_left
-                // We are Lava on the RIGHT => lava_ground_left
+                // We are Lava on the RIGHT => lava_groundLeft
                 return lavaGroundLeftSprite != null ? lavaGroundLeftSprite : lavaMiddleSprite;
             }
             // TRANSITION: Lava -> Grass (we are last Lava)
             if (rightOther && right == TileMaterial.Grass)
             {
                 // Pair: lava_ground_right | lava_grass_left
-                // We are Lava on the LEFT => lava_ground_right
+                // We are Lava on the LEFT => lava_groundRight
                 return lavaGroundRightSprite != null ? lavaGroundRightSprite : lavaMiddleSprite;
             }
 
@@ -417,32 +386,6 @@ public class PlatformGenerator : MonoBehaviour
 
             return lavaMiddleSprite;
         }
-    }
-
-    private void AddPhysicsPath(
-        PolygonCollider2D poly,
-        ref int pathIndex,
-        Transform colliderTransform,
-        Transform tileTransform,
-        List<Vector2> spriteLocalPoints)
-    {
-        if (spriteLocalPoints.Count < 2)
-            return;
-
-        Vector2[] path = new Vector2[spriteLocalPoints.Count];
-
-        for (int i = 0; i < spriteLocalPoints.Count; i++)
-        {
-            // sprite-local -> world
-            Vector3 world = tileTransform.TransformPoint(spriteLocalPoints[i]);
-            // world -> collider-local
-            Vector3 local = colliderTransform.InverseTransformPoint(world);
-            path[i] = new Vector2(local.x, local.y);
-        }
-
-        poly.pathCount = pathIndex + 1;
-        poly.SetPath(pathIndex, path);
-        pathIndex++;
     }
 
     private void OnDrawGizmosSelected()
