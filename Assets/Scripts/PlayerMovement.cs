@@ -30,6 +30,12 @@ public class PlayerMovement : MonoBehaviour
         // Read horizontal input (-1, 0, 1)
         moveInput = Input.GetAxisRaw("Horizontal");
 
+        // reverse movment
+        if (GameManager.Instance != null && GameManager.Instance.controlsReversed)
+        {
+            moveInput *= -1f;
+        }
+
         bool canJump =
                 isGrounded || // normal jump
                 (GameManager.Instance != null && GameManager.Instance.doubleJumpActive && extraJumpAvailable);
@@ -60,6 +66,16 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             extraJumpAvailable = true;
+        }
+
+        // Random impulse debuff
+        if (GameManager.Instance != null && GameManager.Instance.randomImpulsActive)
+        {
+            if (UnityEngine.Random.value < 0.7f) // chance each FixedUpdate
+            {
+                float force = UnityEngine.Random.Range(-4f, 4f);
+                rb.AddForce(new Vector2(force, 0), ForceMode2D.Impulse);
+            }
         }
 
         // Horizontal movement (keep current vertical velocity)

@@ -439,6 +439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
   jumpForce: 10
+  extraJumpAvailable: 1
   groundChecks:
   - {fileID: 1856760063}
   - {fileID: 471596965}
@@ -550,7 +551,7 @@ MonoBehaviour:
   maxLavaRun: 3
   groundLayerName: Ground
   grassTag: Ground
-  lavaTag: Obstacle
+  lavaTag: DeathZone
   useFixedSeed: 0
   seed: 12345
 --- !u!4 &1102387337

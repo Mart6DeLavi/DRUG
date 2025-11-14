@@ -19,6 +19,15 @@ public class GameManager : MonoBehaviour
     // Player speed multiplier
     public float playerSpeedMultiplier = 1f;
 
+    // Debuffs
+    public bool controlsReversed = false;
+    public bool randomImpulsActive = false;
+
+    // Low visibility
+    public GameObject lowVisibilityPanel;
+
+    private float reverseDuration = 0f, impulsDuration = 0f, slowDuration = 0f, lowVisibilityDuration = 0f;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -40,8 +49,40 @@ public class GameManager : MonoBehaviour
             if (doubleJumpBonusTime <= 0)
                 doubleJumpActive = false;
         }
+
+        // Debuffs
+        if (controlsReversed)
+        {
+            reverseDuration -= Time.deltaTime;
+            if (reverseDuration <= 0)
+                controlsReversed = false;
+        }
+
+        if (randomImpulsActive)
+        {
+            impulsDuration -= Time.deltaTime;
+            if (impulsDuration <= 0)
+                randomImpulsActive = false;
+        }
+
+        // Slow player
+        if ( playerSpeedMultiplier < 1f)
+        {
+            slowDuration -= Time.deltaTime;
+            if (slowDuration <= 0)
+                playerSpeedMultiplier = 1f;
+        }
+
+        // Low visibility
+        if (lowVisibilityPanel != null && lowVisibilityPanel.activeSelf)
+        {
+            lowVisibilityDuration -= Time.deltaTime;
+            if (lowVisibilityDuration <= 0)
+                lowVisibilityPanel.SetActive(false);
+        }
     }
 
+    #region Buffes
     public void AddPoints(int basePoints)
     {
         score += Mathf.RoundToInt(basePoints * scoreMultiplier);
@@ -77,4 +118,37 @@ public class GameManager : MonoBehaviour
         doubleJumpActive = true;
         doubleJumpBonusTime = duration;
     }
+    #endregion
+
+    // Debuff methods
+    #region Debuffs
+    public void ActivateReverseControls(float duration)
+    {
+        controlsReversed = true;
+        reverseDuration = duration;
+    }
+
+    public void ActivateRandomImpulse(float duration)
+    {
+        randomImpulsActive = true;
+        impulsDuration = duration;
+    }
+
+
+    public void ActivateSlowPlayer(float duration, float slowMultiplier)
+    {
+        playerSpeedMultiplier = slowMultiplier;
+        slowDuration = duration;
+    }
+
+    public void ActivateLimitedVisibility(float duration)
+    {
+        if (lowVisibilityPanel != null)
+        {
+            lowVisibilityPanel.SetActive(true);
+            lowVisibilityDuration = duration;
+        }
+    }
+
+    #endregion
 }
