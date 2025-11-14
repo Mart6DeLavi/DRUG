@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerDeath : MonoBehaviour
 {
@@ -16,7 +17,11 @@ public class PlayerDeath : MonoBehaviour
     void Die()
     {
         Debug.Log("Player has died!");
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene("GameOverScene"); // Restart scene, zmiana sceny na GameOverScene aby po œmierci odpala³o siê menu koñcowe
+        // Zapisz wynik czasu przetrwania zanim przeÅ‚Ä…czymy scenÄ™
+        if (SurvivalScore.Instance != null)
+        {
+            SurvivalScore.Instance.SealFinalScore();
+        }
+        SceneManager.LoadScene("GameOverScene");
     }
 }
