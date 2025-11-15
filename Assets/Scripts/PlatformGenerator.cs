@@ -1,6 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class SpawnableObjectRule
+{
+    [Header("Prefab & basic settings")]
+    public string name;                  // Optional label for convenience
+    public GameObject prefab;            // Prefab to spawn
+    [Range(0f, 1f)]
+    public float spawnChance = 0.1f;     // Probability per tile (0..1)
+
+    [Header("Where can it spawn?")]
+    public bool allowOnGrass = true;     // Allow spawning on grass tiles
+    public bool allowOnLava = false;     // Allow spawning on lava tiles
+
+    [Header("When can it spawn?")]
+    public bool allowOnStartPlatform = false; // Can appear on the very first platform
+    public float minDistanceFromStart = 0f;   // Min world X distance from generator start
+
+    [Header("Per-platform limit")]
+    public int maxPerPlatform = 1;       // 0 = unlimited on one platform
+
+    [Header("Visual offset")]
+    public float heightOffset = 0.5f;    // Vertical offset above tile
+}
+
 public class PlatformGenerator : MonoBehaviour
 {
     private enum TileMaterial
@@ -57,7 +81,7 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Lava Settings")]
     [Tooltip("Chance that a platform will contain a lava section.")]
     [SerializeField] private float lavaChancePerPlatform = 0.4f;
-    [SerializeField] private int minLavaRun = 1;   // będzie wymuszone min 2 w kodzie
+    [SerializeField] private int minLavaRun = 1;   // will be forced to min 2 in code
     [SerializeField] private int maxLavaRun = 3;
 
     [Header("Physics / Layers & Tags")]
@@ -65,6 +89,15 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private string groundLayerName = "Ground";
     [Tooltip("Tag for lava tiles (MUST match PlayerDeath Obstacle).")]
     [SerializeField] private string lavaTag = "Obstacle";
+
+    [Header("Spawn rules - TRAPS")]
+    public List<SpawnableObjectRule> trapRules = new List<SpawnableObjectRule>();
+
+    [Header("Spawn rules - BONUSES")]
+    public List<SpawnableObjectRule> bonusRules = new List<SpawnableObjectRule>();
+
+    [Header("Spawn rules - DEBUFFS")]
+    public List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
 
     [Header("Debug / Seed")]
     [SerializeField] private bool useFixedSeed = false;
@@ -75,6 +108,7 @@ public class PlatformGenerator : MonoBehaviour
     private float lastEndX;
     private float lastY;
     private int groundLayer;
+    private float worldStartX; // X position where generator started
 
     // Reusable buffer for physics shape points
     private readonly List<Vector2> shapeBuffer = new List<Vector2>(32);
@@ -108,9 +142,10 @@ public class PlatformGenerator : MonoBehaviour
             return;
         }
 
-        // Start at this object's position (ustaw pod graczem w scenie)
+        // Start position = this object position (place under player in the scene)
         lastEndX = transform.position.x;
         lastY = transform.position.y;
+        worldStartX = transform.position.x;
 
         // Initial generation
         while (lastEndX < player.position.x + aheadDistance)
@@ -163,7 +198,7 @@ public class PlatformGenerator : MonoBehaviour
 
         if (isFirstPlatform)
         {
-            // Pierwsza platforma: same trawy
+            // First platform: only grass
             coreCount = Mathf.Max(1, startPlatformGrassTiles);
             coreMaterials = new TileMaterial[coreCount];
             for (int i = 0; i < coreCount; i++)
@@ -171,25 +206,25 @@ public class PlatformGenerator : MonoBehaviour
         }
         else
         {
-            // Losowa platforma jak wcześniej
+            // Random platform with possible lava
             coreCount = Random.Range(minTiles, maxTiles + 1);
             coreMaterials = GenerateCoreMaterials(coreCount);
         }
 
-        // Dodajemy 2 kafelki krawędziowe: lewy + prawy
+        // Add 2 boundary tiles: left + right
         int visualCount = coreCount + 2;
         TileMaterial[] visualMaterials = new TileMaterial[visualCount];
 
-        // Left boundary (index 0) - ten sam materiał co pierwszy kafel rdzenia
+        // Left boundary (index 0) - same material as first core tile
         visualMaterials[0] = coreMaterials[0];
 
-        // Środek (1..visualCount-2) odpowiada core[0..coreCount-1]
+        // Middle (1..visualCount-2) corresponds to core[0..coreCount-1]
         for (int ci = 0; ci < coreCount; ci++)
         {
             visualMaterials[ci + 1] = coreMaterials[ci];
         }
 
-        // Right boundary (index last) - ten sam materiał co ostatni kafel rdzenia
+        // Right boundary (index last) - same material as last core tile
         visualMaterials[visualCount - 1] = coreMaterials[coreCount - 1];
 
         float totalWidth = visualCount * tileWidth;
@@ -205,7 +240,12 @@ public class PlatformGenerator : MonoBehaviour
         marker.startX = startX;
         marker.endX = startX + totalWidth;
 
-        // Create tiles (each tile has OWN collider)
+        // Per-platform counters for spawn rules
+        int[] trapCounts = trapRules != null && trapRules.Count > 0 ? new int[trapRules.Count] : null;
+        int[] bonusCounts = bonusRules != null && bonusRules.Count > 0 ? new int[bonusRules.Count] : null;
+        int[] debuffCounts = debuffRules != null && debuffRules.Count > 0 ? new int[debuffRules.Count] : null;
+
+        // Create tiles (each tile has its own collider)
         for (int i = 0; i < visualCount; i++)
         {
             float worldX = startX + i * tileWidth;
@@ -224,7 +264,7 @@ public class PlatformGenerator : MonoBehaviour
             if (sr == null)
                 sr = tile.AddComponent<SpriteRenderer>();
 
-            // Sprite based on visual materials + sąsiedzi
+            // Sprite based on visual materials + neighbors
             sr.sprite = ChooseSpriteForTile(visualMaterials, i, visualCount);
             Sprite sprite = sr.sprite;
             if (sprite == null)
@@ -234,12 +274,12 @@ public class PlatformGenerator : MonoBehaviour
             PolygonCollider2D poly = tile.AddComponent<PolygonCollider2D>();
 
             bool isLava = (visualMaterials[i] == TileMaterial.Lava);
-            poly.isTrigger = isLava;          // lava => trigger (śmierć), grass => solid
+            poly.isTrigger = isLava;          // lava => trigger (death), grass => solid
 
             int shapeCount = sprite.GetPhysicsShapeCount();
             if (shapeCount == 0)
             {
-                // fallback: full rect from bounds
+                // Fallback: full rect from bounds
                 shapeBuffer.Clear();
                 Bounds b = sprite.bounds;
                 shapeBuffer.Add(new Vector2(b.min.x, b.min.y));
@@ -261,11 +301,26 @@ public class PlatformGenerator : MonoBehaviour
                 }
             }
 
-            // TAGI:
+            // Tags:
             if (isLava && !string.IsNullOrEmpty(lavaTag))
             {
-                tile.tag = lavaTag;
+                tile.tag = lavaTag; // PlayerDeath checks this
             }
+
+            // Try to spawn traps / bonuses / debuffs on this tile
+            TrySpawnObjectsOnTile(
+                visualMaterials[i],
+                worldX,
+                worldY,
+                isFirstPlatform,
+                segmentGO.transform,
+                trapRules,
+                trapCounts,
+                bonusRules,
+                bonusCounts,
+                debuffRules,
+                debuffCounts
+            );
         }
 
         lastEndX = marker.endX;
@@ -274,30 +329,107 @@ public class PlatformGenerator : MonoBehaviour
     }
 
     /// <summary>
+    /// Tries to spawn traps, bonuses and debuffs on a single tile.
+    /// IMPORTANT: at most ONE object can spawn on a tile.
+    /// Priority: traps -> bonuses -> debuffs.
+    /// </summary>
+    private void TrySpawnObjectsOnTile(
+        TileMaterial tileMaterial,
+        float worldX,
+        float worldY,
+        bool isFirstPlatform,
+        Transform parent,
+        List<SpawnableObjectRule> trapRules,
+        int[] trapCounts,
+        List<SpawnableObjectRule> bonusRules,
+        int[] bonusCounts,
+        List<SpawnableObjectRule> debuffRules,
+        int[] debuffCounts)
+    {
+        float distanceFromStart = worldX - worldStartX;
+        bool tileOccupied = false; // once something is spawned, we stop
+
+        // Local function returns true if it spawned something
+        bool ProcessRules(List<SpawnableObjectRule> rules, int[] counts)
+        {
+            if (rules == null || rules.Count == 0 || counts == null)
+                return false;
+
+            for (int i = 0; i < rules.Count; i++)
+            {
+                var rule = rules[i];
+                if (rule.prefab == null)
+                    continue;
+
+                // Start platform allowed?
+                if (isFirstPlatform && !rule.allowOnStartPlatform)
+                    continue;
+
+                // Distance constraint
+                if (distanceFromStart < rule.minDistanceFromStart)
+                    continue;
+
+                // Surface compatibility
+                bool canOnGrass = (tileMaterial == TileMaterial.Grass && rule.allowOnGrass);
+                bool canOnLava = (tileMaterial == TileMaterial.Lava && rule.allowOnLava);
+                if (!canOnGrass && !canOnLava)
+                    continue;
+
+                // Per-platform limit
+                if (rule.maxPerPlatform > 0 && counts[i] >= rule.maxPerPlatform)
+                    continue;
+
+                // Chance roll
+                if (Random.value > rule.spawnChance)
+                    continue;
+
+                // Spawn object
+                Vector2 spawnPos = new Vector2(worldX, worldY + rule.heightOffset);
+                Instantiate(rule.prefab, spawnPos, Quaternion.identity, parent);
+                counts[i]++;
+
+                return true; // we spawned something on this tile
+            }
+
+            return false;
+        }
+
+        // Priority order: traps -> bonuses -> debuffs
+        if (!tileOccupied && ProcessRules(trapRules, trapCounts))
+            tileOccupied = true;
+
+        if (!tileOccupied && ProcessRules(bonusRules, bonusCounts))
+            tileOccupied = true;
+
+        if (!tileOccupied && ProcessRules(debuffRules, debuffCounts))
+            tileOccupied = true;
+    }
+
+    /// <summary>
     /// Generates core tile materials for a single random platform, ensuring:
-    /// - co najmniej jedna Grass
-    /// - każdy run lawy ma min 2 kafle
+    /// - at least one Grass
+    /// - every lava run has min length 2
     /// </summary>
     private TileMaterial[] GenerateCoreMaterials(int coreCount)
     {
         var materials = new TileMaterial[coreCount];
 
-        // Wszystko startuje jako Grass
+        // Everything starts as Grass
         for (int i = 0; i < coreCount; i++)
             materials[i] = TileMaterial.Grass;
 
-        // Jeśli platforma za krótka albo nie wypadła lawa -> sama trawa
-        int minRun = Mathf.Max(minLavaRun, 2); // wymuś min 2
+        // If platform is too short or lava not chosen -> all grass
+        int minRun = Mathf.Max(minLavaRun, 2); // force min 2
         if (coreCount < minRun + 1 || Random.value > lavaChancePerPlatform)
             return materials;
 
-        int maxRun = Mathf.Clamp(maxLavaRun, minRun, coreCount - 1); // zostaw przynajmniej 1 Grass
+        int maxRun = Mathf.Clamp(maxLavaRun, minRun, coreCount - 1); // leave at least 1 grass
         if (maxRun < minRun)
             return materials;
 
         int lavaRunLength = Random.Range(minRun, maxRun + 1);
 
-        int startMax = coreCount - lavaRunLength; // żeby cały run się zmieścił
+        int startMax = coreCount - lavaRunLength; // ensure full run fits
         int lavaStart = Random.Range(0, startMax + 1);
         int lavaEnd = lavaStart + lavaRunLength; // exclusive
 
@@ -306,12 +438,11 @@ public class PlatformGenerator : MonoBehaviour
             materials[i] = TileMaterial.Lava;
         }
 
-        // coreCount - lavaRunLength >= 1 -> jest minimum jeden Grass
         return materials;
     }
 
     /// <summary>
-    /// Choose appropriate sprite based on visualMaterials (z boundary na indexach 0 i last).
+    /// Choose appropriate sprite based on visualMaterials (with boundaries at index 0 and last).
     /// </summary>
     private Sprite ChooseSpriteForTile(TileMaterial[] materials, int i, int tilesCount)
     {
@@ -328,7 +459,7 @@ public class PlatformGenerator : MonoBehaviour
         bool leftOther = hasLeft && left != current;
         bool rightOther = hasRight && right != current;
 
-        // KRAWĘDZIE PLATFORMY – zawsze jedna z: grass_left / grass_right / lava_left / lava_right
+        // PLATFORM BOUNDARIES – always one of: grass_left / grass_right / lava_left / lava_right
         if (i == 0)
         {
             if (current == TileMaterial.Grass)
@@ -345,7 +476,7 @@ public class PlatformGenerator : MonoBehaviour
                 return lavaRightSprite != null ? lavaRightSprite : lavaMiddleSprite;
         }
 
-        // ŚRODEK
+        // MIDDLE
         if (current == TileMaterial.Grass)
         {
             // TRANSITION: Lava -> Grass (we are first Grass)
@@ -363,7 +494,7 @@ public class PlatformGenerator : MonoBehaviour
                 return lavaGrassRightSprite != null ? lavaGrassRightSprite : grassMiddleSprite;
             }
 
-            // czysty odcinek trawy
+            // Pure grass segment
             if (!leftSame && rightSame)
                 return grassLeftSprite != null ? grassLeftSprite : grassMiddleSprite;
             if (leftSame && rightSame)
@@ -379,18 +510,18 @@ public class PlatformGenerator : MonoBehaviour
             if (leftOther && left == TileMaterial.Grass)
             {
                 // Pair: lava_grass_right | lava_ground_left
-                // We are Lava on the RIGHT => lavaGroundLeft
+                // We are Lava on the RIGHT => lava_ground_left
                 return lavaGroundLeftSprite != null ? lavaGroundLeftSprite : lavaMiddleSprite;
             }
             // TRANSITION: Lava -> Grass (we are last Lava)
             if (rightOther && right == TileMaterial.Grass)
             {
                 // Pair: lava_ground_right | lava_grass_left
-                // We are Lava on the LEFT => lavaGroundRight
+                // We are Lava on the LEFT => lava_ground_right
                 return lavaGroundRightSprite != null ? lavaGroundRightSprite : lavaMiddleSprite;
             }
 
-            // czysty odcinek lawy
+            // Pure lava segment
             if (!leftSame && rightSame)
                 return lavaLeftSprite != null ? lavaLeftSprite : lavaMiddleSprite;
             if (leftSame && rightSame)
