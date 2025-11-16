@@ -55,11 +55,25 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         float multiplier = 1f;
+        float globalSpeedMultiplier = 1f;
+        float tempoMultiplier = 1f;
 
         // USING GAME MANAGER TO ADJUST PLAYER SPEED FROM BONUSES
         if (GameManager.Instance != null)
         {
             multiplier = GameManager.Instance.playerSpeedMultiplier;
+        }
+
+        // Global ramping speed (scroll) over time
+        if (GameSpeedController.Instance != null)
+        {
+            globalSpeedMultiplier = GameSpeedController.Instance.CurrentMultiplier;
+        }
+
+        // Smooth tempo effect overlay
+        if (TempoEffectController.Instance != null)
+        {
+            tempoMultiplier = TempoEffectController.Instance.CurrentTempoMultiplier;
         }
 
         // Reset extra jump when grounded
@@ -79,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Horizontal movement (keep current vertical velocity)
-        rb.linearVelocity = new Vector2(moveInput * speed * multiplier, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveInput * speed * multiplier * globalSpeedMultiplier * tempoMultiplier, rb.linearVelocity.y);
 
         // Update grounded state using multiple check points
         isGrounded = IsGroundedMultiPoint();
