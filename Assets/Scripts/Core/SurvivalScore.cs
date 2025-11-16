@@ -49,6 +49,30 @@ public class SurvivalScore : MonoBehaviour
         PlayerPrefs.SetFloat("LastSurvivalTime", TimeSurvived);
     }
 
+    // Resetuje stan bieżącej rundy (dla nowej gry w tej samej sesji)
+    public void ResetState()
+    {
+        isActive = true;
+        TimeSurvived = 0f;
+        CurrentScore = 0;
+        FinalScore = 0;
+        if (scoreText != null)
+        {
+            scoreText.text = "Wynik: 0";
+        }
+    }
+
+    // Czyści zapamiętany wynik z PlayerPrefs i ewentualny stan instancji
+    public static void ClearLastResults()
+    {
+        PlayerPrefs.DeleteKey("LastSurvivalScore");
+        PlayerPrefs.DeleteKey("LastSurvivalTime");
+        if (Instance != null)
+        {
+            Instance.ResetState();
+        }
+    }
+
     public static int GetLastScore()
     {
         if (Instance != null && Instance.FinalScore > 0) return Instance.FinalScore;
