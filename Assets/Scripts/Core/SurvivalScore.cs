@@ -3,6 +3,9 @@ using TMPro;
 
 public class SurvivalScore : MonoBehaviour
 {
+    // Adding a points multiplier feature for buff effects
+    private float pointsMultiplier = 1f;
+    private float multiplierTimer = 0f;
     public static SurvivalScore Instance { get; private set; }
 
     [Header("Konfiguracja punktacji czasu przetrwania")]
@@ -18,6 +21,13 @@ public class SurvivalScore : MonoBehaviour
     public int FinalScore { get; private set; }
 
     bool isActive = true;
+
+    // Adding Update method to handle multiplier timing
+    public void ActivatePointsMultiplier(float multiplier, float duration)
+    {
+        pointsMultiplier = multiplier;
+        multiplierTimer = duration;
+    }
 
     void Awake()
     {
@@ -37,6 +47,19 @@ public class SurvivalScore : MonoBehaviour
         if (scoreText != null)
         {
             scoreText.text = $"Wynik: {CurrentScore}";
+        }
+
+        // Apply multiplier for BUFF
+        CurrentScore = Mathf.FloorToInt(TimeSurvived * pointsPerSecond * pointsMultiplier);
+
+        // Update multiplier timer for BUFF
+        if (multiplierTimer > 0f)
+        {
+            multiplierTimer -= Time.deltaTime;
+            if (multiplierTimer <= 0f)
+            {
+                pointsMultiplier = 1f;
+            }
         }
     }
 
