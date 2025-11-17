@@ -5,21 +5,28 @@ public class MainMenuController : MonoBehaviour
 {
     [Header("Nazwy scen")]
     public string gameSceneName = "GameScene";
-    public string scoreboardSceneName = "ScoreboardScene"; // na razie może nie istnieć
+    public string scoreboardSceneName = "ScoreboardScene"; 
+
+    private void Start()
+    {
+        // Uruchamiamy muzykę menu po wejściu na scenę
+        AudioManager.Instance?.PlayMenuMusic();
+    }
 
     // Start gry
     public void OnStartClicked()
     {
+        // ======== NOWE ========
+        // Uruchamiamy muzykę gry przed przejściem do sceny
+        AudioManager.Instance?.PlayGameMusic();
+
         SceneManager.LoadScene(gameSceneName);
     }
 
     // Scoreboard
     public void OnScoreboardClicked()
     {
-        // Jeśli jeszcze nie masz sceny Scoreboard, na razie tylko log:
         Debug.Log("Scoreboard jeszcze niezaimplementowany.");
-        // Jak zrobimy scenę:
-        // SceneManager.LoadScene(scoreboardSceneName);
     }
 
     // Wyjście z gry
