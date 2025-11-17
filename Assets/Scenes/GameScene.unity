@@ -1519,11 +1519,38 @@ MonoBehaviour:
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 0.8
-  bonusRules: []
+  bonusRules:
+  - name: DoubleJump
+    prefab: {fileID: 5732392334418272061, guid: 1b1f550d53d86f046b424c243c6967eb, type: 3}
+    spawnChance: 0.033
+    allowOnGrass: 1
+    allowOnLava: 0
+    allowOnStartPlatform: 0
+    minDistanceFromStart: 0
+    maxPerPlatform: 1
+    heightOffset: 1
+  - name: DoublePoints
+    prefab: {fileID: 4706985436941084970, guid: 9b4af03de047c2a41b662deb2bbb37de, type: 3}
+    spawnChance: 0.008
+    allowOnGrass: 1
+    allowOnLava: 0
+    allowOnStartPlatform: 0
+    minDistanceFromStart: 0
+    maxPerPlatform: 1
+    heightOffset: 1
+  - name: Speed
+    prefab: {fileID: 3546687662670032636, guid: 9e5e39b413555824f878116a7d22d18c, type: 3}
+    spawnChance: 0.033
+    allowOnGrass: 1
+    allowOnLava: 0
+    allowOnStartPlatform: 0
+    minDistanceFromStart: 0
+    maxPerPlatform: 1
+    heightOffset: 1
   debuffRules:
   - name: LowVisibility
-    prefab: {fileID: 1200133986915432033, guid: 833daea6510fdbf41924d8619015ecda, type: 3}
-    spawnChance: 0.1
+    prefab: {fileID: 475693982422669622, guid: 57c8a1b889bb39e419709fe712cc4c31, type: 3}
+    spawnChance: 0.004
     allowOnGrass: 1
     allowOnLava: 1
     allowOnStartPlatform: 0
@@ -1531,8 +1558,8 @@ MonoBehaviour:
     maxPerPlatform: 1
     heightOffset: 1
   - name: RandomImpulse
-    prefab: {fileID: 4532285517455201705, guid: a6d458df895719c40a56fff2a23ac5a8, type: 3}
-    spawnChance: 0.1
+    prefab: {fileID: 2389332160333216610, guid: fb504fd5262601e42a00405855560458, type: 3}
+    spawnChance: 0.029
     allowOnGrass: 1
     allowOnLava: 1
     allowOnStartPlatform: 0
@@ -1540,8 +1567,8 @@ MonoBehaviour:
     maxPerPlatform: 1
     heightOffset: 2
   - name: ReverseControls
-    prefab: {fileID: 5871286327747359271, guid: cad8d430195000b4f8553b4c51844aa1, type: 3}
-    spawnChance: 0.1
+    prefab: {fileID: 8982998009498194069, guid: 615f66cee2619264f916d192d68b841f, type: 3}
+    spawnChance: 0.024
     allowOnGrass: 1
     allowOnLava: 1
     allowOnStartPlatform: 0
@@ -1549,8 +1576,8 @@ MonoBehaviour:
     maxPerPlatform: 1
     heightOffset: 1
   - name: Slowness
-    prefab: {fileID: 4880033153788846178, guid: 3c317412d24965346833bc91c1bb3206, type: 3}
-    spawnChance: 0.1
+    prefab: {fileID: 5356081422868282260, guid: da5892107f3627a4bbc18e19f89b99f5, type: 3}
+    spawnChance: 0.037
     allowOnGrass: 0
     allowOnLava: 0
     allowOnStartPlatform: 0
