@@ -492,6 +492,7 @@ GameObject:
   - component: {fileID: 400481359}
   - component: {fileID: 400481361}
   - component: {fileID: 400481360}
+  - component: {fileID: 400481362}
   m_Layer: 5
   m_Name: Scoreboard
   m_TagString: Untagged
@@ -558,6 +559,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 400481358}
   m_CullTransparentMesh: 0
+--- !u!114 &400481362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400481358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5deb54d24e4c4cf4688192c5e4a3ee57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverScoreDisplay
+  finalScoreText: {fileID: 1951609697}
+  timeText: {fileID: 0}
 --- !u!1 &562080666
 GameObject:
   m_ObjectHideFlags: 0
