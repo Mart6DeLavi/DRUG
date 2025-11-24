@@ -99,6 +99,23 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Spawn rules - DEBUFFS")]
     public List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
 
+    [Header("Disappearing Tiles")]
+    [SerializeField] private bool enableDisappearingTiles = true;
+    [Tooltip("Chance that a single GRASS tile will become disappearing.")]
+    [SerializeField, Range(0f, 1f)] private float disappearingChance = 0.15f;
+    [Tooltip("Delay (seconds) from stepping on tile to disappearing.")]
+    [SerializeField] private float disappearDelay = 0.3f;
+    [Tooltip("How long fade from visible to invisible lasts.")]
+    [SerializeField] private float fadeDuration = 0.25f;
+    [Tooltip("Delay before reappearing. Set <= 0 for one-time disappearing.")]
+    [SerializeField] private float reappearDelay = 0f;
+    [Tooltip("Allow disappearing tiles also on very first safe platform.")]
+    [SerializeField] private bool disappearingOnStartPlatform = false;
+    [Tooltip("If true, disappearing affects whole platform segment.")]
+    [SerializeField] private bool disappearWholeSegment = true;
+    [Tooltip("If true, tiles with isTrigger (lava) are ignored when fading/disabling.")]
+    [SerializeField] private bool ignoreTriggerTilesOnDisappear = true;
+
     [Header("Debug / Seed")]
     [SerializeField] private bool useFixedSeed = false;
     [SerializeField] private int seed = 12345;
@@ -305,6 +322,21 @@ public class PlatformGenerator : MonoBehaviour
             if (isLava && !string.IsNullOrEmpty(lavaTag))
             {
                 tile.tag = lavaTag; // PlayerDeath checks this
+            }
+
+            // === ZNIKAJĄCE KAFELKI (tylko trawa) ===
+            if (enableDisappearingTiles && !isLava)
+            {
+                bool allowHere = !isFirstPlatform || disappearingOnStartPlatform;
+                if (allowHere && Random.value < disappearingChance)
+                {
+                    DisappearingTile dt = tile.AddComponent<DisappearingTile>();
+                    dt.delayBeforeDisappear = disappearDelay;
+                    dt.fadeDuration = fadeDuration;
+                    dt.delayBeforeReappear = reappearDelay;
+                    dt.affectWholeSegment = disappearWholeSegment;
+                    dt.ignoreTriggerTiles = ignoreTriggerTilesOnDisappear;
+                }
             }
 
             // Try to spawn traps / bonuses / debuffs on this tile

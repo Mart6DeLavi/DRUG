@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   score: 0
-  doubleJumpActive: 1
+  doubleJumpActive: 0
   enemySpeedMultiplier: 1
   playerSpeedMultiplier: 1
   controlsReversed: 0
@@ -1584,6 +1584,14 @@ MonoBehaviour:
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 1
+  enableDisappearingTiles: 1
+  disappearingChance: 0.3
+  disappearDelay: 2
+  fadeDuration: 0.5
+  reappearDelay: 0
+  disappearingOnStartPlatform: 0
+  disappearWholeSegment: 1
+  ignoreTriggerTilesOnDisappear: 0
   useFixedSeed: 0
   seed: 11111
 --- !u!4 &1102387337
@@ -1920,7 +1928,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
