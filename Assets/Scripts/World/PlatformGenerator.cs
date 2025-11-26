@@ -15,7 +15,7 @@ public class SpawnableObjectRule
     public bool allowOnLava = false;     // Allow spawning on lava tiles
 
     [Header("When can it spawn?")]
-    public bool allowOnStartPlatform = false; // Can appear on the very first platform
+    public bool allowOnStartPlatform = false; // Can appear on the very first platform (only on start level)
     public float minDistanceFromStart = 0f;   // Min world X distance from generator start
 
     [Header("Per-platform limit")]
@@ -25,14 +25,44 @@ public class SpawnableObjectRule
     public float heightOffset = 0.5f;    // Vertical offset above tile
 }
 
+[System.Serializable]
+public class LevelConfig
+{
+    [Tooltip("Dodatkowy offset Y dla tego poziomu (na bazie: transform.y + levelSpacing * index).")]
+    public float extraYOffset = 0f;
+
+    [Tooltip("Mnożnik przerw między platformami (>1 = rzadziej, <1 = gęściej).")]
+    public float gapMultiplier = 1f;
+}
+
 public class PlatformGenerator : MonoBehaviour
 {
+    // -------------------------------------
+    // INTERNAL TYPES
+    // -------------------------------------
     private enum TileMaterial
     {
         Grass,
         Lava
     }
 
+    /// <summary>
+    /// Stan generacji dla jednego poziomu (linii).
+    /// </summary>
+    private class LaneState
+    {
+        public int laneIndex;
+        public float lastEndX;
+        public float lastY;
+        public float baseY;
+        public List<PlatformSegmentMarker> segments = new List<PlatformSegmentMarker>();
+
+        public bool IsFirstPlatform => segments.Count == 0;
+    }
+
+    // -------------------------------------
+    // REFERENCES
+    // -------------------------------------
     [Header("References")]
     [SerializeField] private Transform player;        // Player to follow
     [SerializeField] private GameObject tilePrefab;   // Prefab with SpriteRenderer
@@ -53,6 +83,9 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private Sprite lavaGroundLeftSprite;  // Lava tile on RIGHT in G->L
     [SerializeField] private Sprite lavaGroundRightSprite; // Lava tile on LEFT in L->G
 
+    // -------------------------------------
+    // PLATFORM SHAPE SETTINGS
+    // -------------------------------------
     [Header("Tile Settings")]
     [SerializeField] private float tileWidth = 1f;    // Width of one tile in world units
 
@@ -61,15 +94,15 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private int maxTiles = 10;
 
     [Header("Start Platform")]
-    [Tooltip("Number of core grass tiles on the first (safe) platform.")]
+    [Tooltip("Number of core grass tiles on the first (safe) platform (only on start level).")]
     [SerializeField] private int startPlatformGrassTiles = 5;
 
     [Header("Horizontal Gaps (world units)")]
     [SerializeField] private float minGap = 1.5f;
     [SerializeField] private float maxGap = 3.5f;
 
-    [Header("Vertical Constraints")]
-    [SerializeField] private float maxStepUp = 1.5f;  // Max allowed up step
+    [Header("Vertical Constraints (dla skoków w ramach jednego levelu)")]
+    [SerializeField] private float maxStepUp = 1.5f;  // Max allowed up step (dodawane do lastY)
     [SerializeField] private float maxStepDown = 3f;  // Max allowed down step
     [SerializeField] private float minY = -3f;
     [SerializeField] private float maxY = 5f;
@@ -90,6 +123,9 @@ public class PlatformGenerator : MonoBehaviour
     [Tooltip("Tag for lava tiles (MUST match PlayerDeath Obstacle).")]
     [SerializeField] private string lavaTag = "Obstacle";
 
+    // -------------------------------------
+    // SPAWN RULES
+    // -------------------------------------
     [Header("Spawn rules - TRAPS")]
     public List<SpawnableObjectRule> trapRules = new List<SpawnableObjectRule>();
 
@@ -99,37 +135,138 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Spawn rules - DEBUFFS")]
     public List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
 
+    // -------------------------------------
+    // DISAPPEARING TILES
+    // -------------------------------------
     [Header("Disappearing Tiles")]
     [SerializeField] private bool enableDisappearingTiles = true;
     [Tooltip("Chance that a single GRASS tile will become disappearing.")]
     [SerializeField, Range(0f, 1f)] private float disappearingChance = 0.15f;
-    [Tooltip("Delay (seconds) from stepping on tile to disappearing.")]
+    [Tooltip("Delay (seconds) from stepping on tile to starting fade/disappear.")]
     [SerializeField] private float disappearDelay = 0.3f;
     [Tooltip("How long fade from visible to invisible lasts.")]
     [SerializeField] private float fadeDuration = 0.25f;
     [Tooltip("Delay before reappearing. Set <= 0 for one-time disappearing.")]
     [SerializeField] private float reappearDelay = 0f;
-    [Tooltip("Allow disappearing tiles also on very first safe platform.")]
+    [Tooltip("Allow disappearing tiles also on very first safe start platform.")]
     [SerializeField] private bool disappearingOnStartPlatform = false;
     [Tooltip("If true, disappearing affects whole platform segment.")]
     [SerializeField] private bool disappearWholeSegment = true;
     [Tooltip("If true, tiles with isTrigger (lava) are ignored when fading/disabling.")]
     [SerializeField] private bool ignoreTriggerTilesOnDisappear = true;
 
+    // -------------------------------------
+    // MULTI-LEVEL SETTINGS
+    // -------------------------------------
+    [Header("Multi-level")]
+    [Tooltip("How many vertical lanes of platforms to generate (1 = old behavior).")]
+    [SerializeField] private int levels = 1;
+
+    [Tooltip("Vertical spacing between lanes in world units.")]
+    [SerializeField] private float levelSpacing = 3f;
+
+    [Tooltip("Index of lane that is treated as 'start level' (with safe start platform). 0 = lowest.")]
+    [SerializeField] private int startLevelIndex = 0;
+
+    [Tooltip("Opcjonalna konfiguracja per poziom (rozmiar <= levels). Brak wpisu = domyślnie gapMultiplier=1, extraYOffset=0.")]
+    [SerializeField] private List<LevelConfig> levelConfigs = new List<LevelConfig>();
+
+    // -------------------------------------
+    // AVOIDING OVERLAP
+    // -------------------------------------
+    [Header("Platform Overlap Avoidance")]
+    [Tooltip("Jeśli true, generator będzie próbował przesuwać platformy w pionie tak, by nie były zbyt blisko innych.")]
+    [SerializeField] private bool avoidPlatformOverlap = true;
+
+    [Tooltip("Minimalny pionowy dystans między środkami segmentów, jeśli zachodzą na siebie w osi X.")]
+    [SerializeField] private float minPlatformVerticalDistance = 1.5f;
+
+    [Tooltip("Maksymalna liczba prób przesunięcia platformy w górę/dół, żeby znaleźć wolne miejsce.")]
+    [SerializeField] private int maxRelocateAttempts = 6;
+
+    // -------------------------------------
+    // DEBUG / SEED
+    // -------------------------------------
     [Header("Debug / Seed")]
     [SerializeField] private bool useFixedSeed = false;
     [SerializeField] private int seed = 12345;
 
-    // Internal
-    private readonly List<PlatformSegmentMarker> segments = new List<PlatformSegmentMarker>();
-    private float lastEndX;
-    private float lastY;
+    // -------------------------------------
+    // INTERNAL STATE
+    // -------------------------------------
+    private LaneState[] lanes;
     private int groundLayer;
     private float worldStartX; // X position where generator started
 
     // Reusable buffer for physics shape points
     private readonly List<Vector2> shapeBuffer = new List<Vector2>(32);
 
+    // -------------------------------------
+    // HELPERS
+    // -------------------------------------
+    private LevelConfig GetLevelConfig(int laneIndex)
+    {
+        if (levelConfigs == null || levelConfigs.Count == 0)
+            return new LevelConfig(); // default
+
+        if (laneIndex < 0 || laneIndex >= levelConfigs.Count)
+            return new LevelConfig(); // default
+
+        return levelConfigs[laneIndex];
+    }
+
+    private bool IsTooCloseToExisting(float startX, float endX, float yCandidate)
+    {
+        if (lanes == null) return false;
+        if (minPlatformVerticalDistance <= 0f) return false;
+
+        foreach (var lane in lanes)
+        {
+            foreach (var seg in lane.segments)
+            {
+                if (seg == null) continue;
+
+                // brak overlapu w osi X => można olać
+                if (seg.endX <= startX || seg.startX >= endX)
+                    continue;
+
+                float dy = Mathf.Abs(seg.yCenter - yCandidate);
+                if (dy < minPlatformVerticalDistance)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private float FindNonOverlappingY(float startX, float endX, float initialY)
+    {
+        if (!avoidPlatformOverlap)
+            return initialY;
+
+        float baseY = Mathf.Clamp(initialY, minY, maxY);
+        float candidate = baseY;
+
+        for (int attempt = 0; attempt < maxRelocateAttempts; attempt++)
+        {
+            if (!IsTooCloseToExisting(startX, endX, candidate))
+                return candidate;
+
+            // Skaczemy do góry / w dół coraz dalej od pozycji bazowej
+            int stepIndex = attempt / 2 + 1;
+            float dir = (attempt % 2 == 0) ? 1f : -1f;
+            float offset = dir * stepIndex * minPlatformVerticalDistance;
+
+            candidate = Mathf.Clamp(baseY + offset, minY, maxY);
+        }
+
+        // Jeśli po tylu próbach nadal ciasno – trudno, bierzemy ostatni wariant.
+        return candidate;
+    }
+
+    // -------------------------------------
+    // UNITY LIFECYCLE
+    // -------------------------------------
     private void Awake()
     {
         if (useFixedSeed)
@@ -159,63 +296,121 @@ public class PlatformGenerator : MonoBehaviour
             return;
         }
 
-        // Start position = this object position (place under player in the scene)
-        lastEndX = transform.position.x;
-        lastY = transform.position.y;
+        // Clamp multi-level settings
+        if (levels < 1) levels = 1;
+        if (startLevelIndex < 0) startLevelIndex = 0;
+        if (startLevelIndex >= levels) startLevelIndex = levels - 1;
+
+        // Global start X
         worldStartX = transform.position.x;
 
-        // Initial generation
-        while (lastEndX < player.position.x + aheadDistance)
+        // Initialize lane states
+        lanes = new LaneState[levels];
+        for (int i = 0; i < levels; i++)
         {
-            SpawnNextPlatform();
+            LaneState lane = new LaneState();
+            lane.laneIndex = i;
+
+            LevelConfig cfg = GetLevelConfig(i);
+
+            float baseY = transform.position.y + i * levelSpacing + cfg.extraYOffset;
+            baseY = Mathf.Clamp(baseY, minY, maxY);
+
+            lane.baseY = baseY;
+            lane.lastY = baseY;
+            lane.lastEndX = transform.position.x;
+
+            lanes[i] = lane;
+        }
+
+        // Initial generation for all lanes
+        for (int i = 0; i < lanes.Length; i++)
+        {
+            bool isStartLevel = (i == startLevelIndex);
+            LaneState lane = lanes[i];
+
+            while (lane.lastEndX < player.position.x + aheadDistance)
+            {
+                SpawnNextPlatform(lane, lane.laneIndex, isStartLevel);
+            }
         }
     }
 
     private void Update()
     {
-        if (player == null) return;
+        if (player == null || lanes == null) return;
 
-        // Generate ahead
-        while (lastEndX < player.position.x + aheadDistance)
+        float playerX = player.position.x;
+
+        // Generate ahead for each lane
+        for (int i = 0; i < lanes.Length; i++)
         {
-            SpawnNextPlatform();
+            LaneState lane = lanes[i];
+            bool isStartLevel = (i == startLevelIndex);
+
+            while (lane.lastEndX < playerX + aheadDistance)
+            {
+                SpawnNextPlatform(lane, lane.laneIndex, isStartLevel);
+            }
         }
 
-        // Cleanup behind
-        for (int i = segments.Count - 1; i >= 0; i--)
+        // Cleanup behind for each lane
+        foreach (var lane in lanes)
         {
-            var seg = segments[i];
-            if (seg == null)
+            for (int i = lane.segments.Count - 1; i >= 0; i--)
             {
-                segments.RemoveAt(i);
-                continue;
-            }
+                var seg = lane.segments[i];
+                if (seg == null)
+                {
+                    lane.segments.RemoveAt(i);
+                    continue;
+                }
 
-            if (seg.endX < player.position.x - behindDistance)
-            {
-                Destroy(seg.gameObject);
-                segments.RemoveAt(i);
+                if (seg.endX < playerX - behindDistance)
+                {
+                    Destroy(seg.gameObject);
+                    lane.segments.RemoveAt(i);
+                }
             }
         }
     }
 
-    private void SpawnNextPlatform()
+    // -------------------------------------
+    // PLATFORM GENERATION PER LANE
+    // -------------------------------------
+    private void SpawnNextPlatform(LaneState lane, int laneIndex, bool isStartLevel)
     {
-        bool isFirstPlatform = (segments.Count == 0);
+        LevelConfig cfg = GetLevelConfig(laneIndex);
 
-        // FIRST PLATFORM: no gap, no vertical offset, only grass
-        float gap = isFirstPlatform ? 0f : Random.Range(minGap, maxGap);
-        float startX = lastEndX + gap;
+        // Czy to zupełnie pierwsza platforma na tym torze?
+        bool isLaneFirstPlatform = lane.IsFirstPlatform;
+        // Czy to jednocześnie „główny” startowy level?
+        bool isStartPlatform = isLaneFirstPlatform && isStartLevel;
 
-        float offsetY = isFirstPlatform ? 0f : Random.Range(-maxStepDown, maxStepUp);
-        float newY = Mathf.Clamp(lastY + offsetY, minY, maxY);
+        // Gap
+        float baseGap = Random.Range(minGap, maxGap);
+        float gapMultiplier = (cfg.gapMultiplier <= 0f) ? 1f : cfg.gapMultiplier;
+        float gap = isStartPlatform ? 0f : baseGap * gapMultiplier;
+        float startX = lane.lastEndX + gap;
+
+        // Pierwsza platforma na levelu ma bazowe Y, kolejne skaczą w górę/dół
+        float newY;
+        if (isStartPlatform)
+        {
+            newY = lane.baseY;
+        }
+        else
+        {
+            float offsetY = Random.Range(-maxStepDown, maxStepUp);
+            newY = Mathf.Clamp(lane.lastY + offsetY, minY, maxY);
+        }
 
         int coreCount;
         TileMaterial[] coreMaterials;
 
-        if (isFirstPlatform)
+        if (isStartPlatform)
         {
-            // First platform: only grass
+            // First platform on start level: only grass, safe for player
             coreCount = Mathf.Max(1, startPlatformGrassTiles);
             coreMaterials = new TileMaterial[coreCount];
             for (int i = 0; i < coreCount; i++)
@@ -245,28 +440,33 @@ public class PlatformGenerator : MonoBehaviour
         visualMaterials[visualCount - 1] = coreMaterials[coreCount - 1];
 
         float totalWidth = visualCount * tileWidth;
+        float endX = startX + totalWidth;
+
+        // *** TU UNIKAMY NACHODZENIA SIĘ SEGMENTÓW ***
+        float adjustedY = FindNonOverlappingY(startX, endX, newY);
 
         // Parent for the whole segment (no colliders here)
-        GameObject segmentGO = new GameObject("PlatformSegment");
+        GameObject segmentGO = new GameObject($"PlatformSegment_L{laneIndex}");
         segmentGO.transform.parent = transform;
         segmentGO.transform.position = Vector3.zero;
         segmentGO.layer = groundLayer;
 
-        // Marker for cleanup
+        // Marker for cleanup i testów odległości
         PlatformSegmentMarker marker = segmentGO.AddComponent<PlatformSegmentMarker>();
         marker.startX = startX;
-        marker.endX = startX + totalWidth;
+        marker.endX = endX;
+        marker.yCenter = adjustedY;
 
         // Per-platform counters for spawn rules
-        int[] trapCounts = trapRules != null && trapRules.Count > 0 ? new int[trapRules.Count] : null;
-        int[] bonusCounts = bonusRules != null && bonusRules.Count > 0 ? new int[bonusRules.Count] : null;
-        int[] debuffCounts = debuffRules != null && debuffRules.Count > 0 ? new int[debuffRules.Count] : null;
+        int[] trapCounts = (trapRules != null && trapRules.Count > 0) ? new int[trapRules.Count] : null;
+        int[] bonusCounts = (bonusRules != null && bonusRules.Count > 0) ? new int[bonusRules.Count] : null;
+        int[] debuffCounts = (debuffRules != null && debuffRules.Count > 0) ? new int[debuffRules.Count] : null;
 
         // Create tiles (each tile has its own collider)
         for (int i = 0; i < visualCount; i++)
         {
             float worldX = startX + i * tileWidth;
-            float worldY = newY;
+            float worldY = adjustedY;
 
             GameObject tile = Instantiate(tilePrefab, segmentGO.transform);
             tile.transform.position = new Vector2(worldX, worldY);
@@ -291,7 +491,7 @@ public class PlatformGenerator : MonoBehaviour
             PolygonCollider2D poly = tile.AddComponent<PolygonCollider2D>();
 
             bool isLava = (visualMaterials[i] == TileMaterial.Lava);
-            poly.isTrigger = isLava;          // lava => trigger (death), grass => solid
+            poly.isTrigger = isLava; // lava => trigger (death), grass => solid
 
             int shapeCount = sprite.GetPhysicsShapeCount();
             if (shapeCount == 0)
@@ -318,16 +518,16 @@ public class PlatformGenerator : MonoBehaviour
                 }
             }
 
-            // Tags:
+            // Tags for lava
             if (isLava && !string.IsNullOrEmpty(lavaTag))
             {
                 tile.tag = lavaTag; // PlayerDeath checks this
             }
 
-            // === ZNIKAJĄCE KAFELKI (tylko trawa) ===
+            // === DISAPPEARING TILES (only grass) ===
             if (enableDisappearingTiles && !isLava)
             {
-                bool allowHere = !isFirstPlatform || disappearingOnStartPlatform;
+                bool allowHere = !isStartPlatform || disappearingOnStartPlatform;
                 if (allowHere && Random.value < disappearingChance)
                 {
                     DisappearingTile dt = tile.AddComponent<DisappearingTile>();
@@ -344,7 +544,7 @@ public class PlatformGenerator : MonoBehaviour
                 visualMaterials[i],
                 worldX,
                 worldY,
-                isFirstPlatform,
+                isStartPlatform,
                 segmentGO.transform,
                 trapRules,
                 trapCounts,
@@ -355,21 +555,19 @@ public class PlatformGenerator : MonoBehaviour
             );
         }
 
-        lastEndX = marker.endX;
-        lastY = newY;
-        segments.Add(marker);
+        lane.lastEndX = endX;
+        lane.lastY = adjustedY;
+        lane.segments.Add(marker);
     }
 
-    /// <summary>
-    /// Tries to spawn traps, bonuses and debuffs on a single tile.
-    /// IMPORTANT: at most ONE object can spawn on a tile.
-    /// Priority: traps -> bonuses -> debuffs.
-    /// </summary>
+    // -------------------------------------
+    // SPAWN OBJECTS (TRAPS / BONUSES / DEBUFFS)
+    // -------------------------------------
     private void TrySpawnObjectsOnTile(
         TileMaterial tileMaterial,
         float worldX,
         float worldY,
-        bool isFirstPlatform,
+        bool isStartPlatform,
         Transform parent,
         List<SpawnableObjectRule> trapRules,
         int[] trapCounts,
@@ -381,7 +579,6 @@ public class PlatformGenerator : MonoBehaviour
         float distanceFromStart = worldX - worldStartX;
         bool tileOccupied = false; // once something is spawned, we stop
 
-        // Local function returns true if it spawned something
         bool ProcessRules(List<SpawnableObjectRule> rules, int[] counts)
         {
             if (rules == null || rules.Count == 0 || counts == null)
@@ -393,40 +590,33 @@ public class PlatformGenerator : MonoBehaviour
                 if (rule.prefab == null)
                     continue;
 
-                // Start platform allowed?
-                if (isFirstPlatform && !rule.allowOnStartPlatform)
+                if (isStartPlatform && !rule.allowOnStartPlatform)
                     continue;
 
-                // Distance constraint
                 if (distanceFromStart < rule.minDistanceFromStart)
                     continue;
 
-                // Surface compatibility
                 bool canOnGrass = (tileMaterial == TileMaterial.Grass && rule.allowOnGrass);
                 bool canOnLava = (tileMaterial == TileMaterial.Lava && rule.allowOnLava);
                 if (!canOnGrass && !canOnLava)
                     continue;
 
-                // Per-platform limit
                 if (rule.maxPerPlatform > 0 && counts[i] >= rule.maxPerPlatform)
                     continue;
 
-                // Chance roll
                 if (Random.value > rule.spawnChance)
                     continue;
 
-                // Spawn object
                 Vector2 spawnPos = new Vector2(worldX, worldY + rule.heightOffset);
                 Instantiate(rule.prefab, spawnPos, Quaternion.identity, parent);
                 counts[i]++;
 
-                return true; // we spawned something on this tile
+                return true;
             }
 
             return false;
         }
 
-        // Priority order: traps -> bonuses -> debuffs
         if (!tileOccupied && ProcessRules(trapRules, trapCounts))
             tileOccupied = true;
 
@@ -437,20 +627,16 @@ public class PlatformGenerator : MonoBehaviour
             tileOccupied = true;
     }
 
-    /// <summary>
-    /// Generates core tile materials for a single random platform, ensuring:
-    /// - at least one Grass
-    /// - every lava run has min length 2
-    /// </summary>
+    // -------------------------------------
+    // CORE MATERIALS (GRASS / LAVA)
+    // -------------------------------------
     private TileMaterial[] GenerateCoreMaterials(int coreCount)
     {
         var materials = new TileMaterial[coreCount];
 
-        // Everything starts as Grass
         for (int i = 0; i < coreCount; i++)
             materials[i] = TileMaterial.Grass;
 
-        // If platform is too short or lava not chosen -> all grass
         int minRun = Mathf.Max(minLavaRun, 2); // force min 2
         if (coreCount < minRun + 1 || Random.value > lavaChancePerPlatform)
             return materials;
@@ -473,9 +659,9 @@ public class PlatformGenerator : MonoBehaviour
         return materials;
     }
 
-    /// <summary>
-    /// Choose appropriate sprite based on visualMaterials (with boundaries at index 0 and last).
-    /// </summary>
+    // -------------------------------------
+    // SPRITE CHOICE
+    // -------------------------------------
     private Sprite ChooseSpriteForTile(TileMaterial[] materials, int i, int tilesCount)
     {
         TileMaterial current = materials[i];
@@ -511,22 +697,17 @@ public class PlatformGenerator : MonoBehaviour
         // MIDDLE
         if (current == TileMaterial.Grass)
         {
-            // TRANSITION: Lava -> Grass (we are first Grass)
             if (leftOther && left == TileMaterial.Lava)
             {
                 // Pair: lava_ground_right | lava_grass_left
-                // We are Grass on the RIGHT => lava_grass_left
                 return lavaGrassLeftSprite != null ? lavaGrassLeftSprite : grassMiddleSprite;
             }
-            // TRANSITION: Grass -> Lava (we are last Grass)
             if (rightOther && right == TileMaterial.Lava)
             {
                 // Pair: lava_grass_right | lava_ground_left
-                // We are Grass on the LEFT => lava_grass_right
                 return lavaGrassRightSprite != null ? lavaGrassRightSprite : grassMiddleSprite;
             }
 
-            // Pure grass segment
             if (!leftSame && rightSame)
                 return grassLeftSprite != null ? grassLeftSprite : grassMiddleSprite;
             if (leftSame && rightSame)
@@ -538,22 +719,17 @@ public class PlatformGenerator : MonoBehaviour
         }
         else // Lava
         {
-            // TRANSITION: Grass -> Lava (we are first Lava)
             if (leftOther && left == TileMaterial.Grass)
             {
                 // Pair: lava_grass_right | lava_ground_left
-                // We are Lava on the RIGHT => lava_ground_left
                 return lavaGroundLeftSprite != null ? lavaGroundLeftSprite : lavaMiddleSprite;
             }
-            // TRANSITION: Lava -> Grass (we are last Lava)
             if (rightOther && right == TileMaterial.Grass)
             {
                 // Pair: lava_ground_right | lava_grass_left
-                // We are Lava on the LEFT => lava_ground_right
                 return lavaGroundRightSprite != null ? lavaGroundRightSprite : lavaMiddleSprite;
             }
 
-            // Pure lava segment
             if (!leftSame && rightSame)
                 return lavaLeftSprite != null ? lavaLeftSprite : lavaMiddleSprite;
             if (leftSame && rightSame)
@@ -565,6 +741,9 @@ public class PlatformGenerator : MonoBehaviour
         }
     }
 
+    // -------------------------------------
+    // GIZMOS
+    // -------------------------------------
     private void OnDrawGizmosSelected()
     {
         if (player == null) return;
