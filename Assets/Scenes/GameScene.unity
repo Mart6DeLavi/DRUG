@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   score: 0
-  doubleJumpActive: 0
+  doubleJumpActive: 1
   enemySpeedMultiplier: 1
   playerSpeedMultiplier: 1
   controlsReversed: 0
@@ -1052,7 +1052,7 @@ Transform:
   m_GameObject: {fileID: 572256348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.88, y: 3.42, z: 0}
+  m_LocalPosition: {x: 2.88, y: 10.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1104,7 +1104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
-  jumpForce: 10
+  jumpForce: 11
   extraJumpAvailable: 1
   groundChecks:
   - {fileID: 1856760063}
@@ -1205,8 +1205,8 @@ Transform:
   m_GameObject: {fileID: 585302952}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.00000037406, z: 0}
+  m_LocalScale: {x: 1, y: 5.0304, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 510762333}
@@ -1484,17 +1484,17 @@ MonoBehaviour:
   lavaGroundLeftSprite: {fileID: -4576631363291807033, guid: d23ea119425d447788a3cd3e8d16cf74, type: 3}
   lavaGroundRightSprite: {fileID: -4836710515755216852, guid: 27199936f50d54271bdef6e0fc0c3a0e, type: 3}
   tileWidth: 1
-  minTiles: 8
+  minTiles: 5
   maxTiles: 15
   startPlatformGrassTiles: 5
   minGap: 1.5
-  maxGap: 3.5
-  maxStepUp: 1.5
+  maxGap: 4
+  maxStepUp: 3
   maxStepDown: 3
-  minY: -3
-  maxY: 5
-  aheadDistance: 25
-  behindDistance: 20
+  minY: -5
+  maxY: 20
+  aheadDistance: 100
+  behindDistance: 50
   lavaChancePerPlatform: 1
   minLavaRun: 2
   maxLavaRun: 4
@@ -1592,6 +1592,13 @@ MonoBehaviour:
   disappearingOnStartPlatform: 0
   disappearWholeSegment: 1
   ignoreTriggerTilesOnDisappear: 0
+  levels: 3
+  levelSpacing: 7
+  startLevelIndex: 0
+  levelConfigs: []
+  avoidPlatformOverlap: 1
+  minPlatformVerticalDistance: 4
+  maxRelocateAttempts: 6
   useFixedSeed: 0
   seed: 11111
 --- !u!4 &1102387337
@@ -1603,7 +1610,7 @@ Transform:
   m_GameObject: {fileID: 1102387335}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -12.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1682,7 +1689,7 @@ Transform:
   m_GameObject: {fileID: 1182232993}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -19.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1928,7 +1935,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
