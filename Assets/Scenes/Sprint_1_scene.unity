@@ -2055,7 +2055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   score: 0
-  doubleJumpActive: 0
+  doubleJumpActive: 1
   enemySpeedMultiplier: 1
   playerSpeedMultiplier: 1
   controlsReversed: 0
@@ -2826,13 +2826,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
-  jumpForce: 10
+  jumpForce: 20
   extraJumpAvailable: 1
+  moveAcceleration: 50
+  maxHorizontalSpeed: 10
+  minUpwardY: 0.2
   groundChecks:
   - {fileID: 77070004}
   - {fileID: 341094924}
   - {fileID: 242810538}
-  groundCheckRadius: 0.15
+  groundCheckRadius: 0.18
   groundLayer:
     serializedVersion: 2
     m_Bits: 8

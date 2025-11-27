@@ -6,15 +6,35 @@ public class PlayerMovement : MonoBehaviour
     public event Action OnJump; // Fired right after a successful jump
 
     [Header("Movement Settings")]
-    public float speed = 5f;          // Horizontal movement speed
-    public float jumpForce = 7f;      // Jump strength
-    public bool extraJumpAvailable = true; // For double jump tracking
+    [Tooltip("Base horizontal movement speed (used to compute max run speed).")]
+    public float speed = 5f;
+
+    [Tooltip("Strength of jump in direction of the mouse.")]
+    public float jumpForce = 7f;
+
+    [Tooltip("For double jump tracking (used with GameManager.doubleJumpActive).")]
+    public bool extraJumpAvailable = true;
+
+    [Header("Movement Physics")]
+    [Tooltip("How strongly input (A/D or arrows) accelerates the player.")]
+    public float moveAcceleration = 25f;
+
+    [Tooltip("Maximum horizontal speed (before multipliers).")]
+    public float maxHorizontalSpeed = 8f;
+
+    [Header("Jump Direction Settings")]
+    [Tooltip("Minimal upward component for jump direction (so you never jump strictly down).")]
+    public float minUpwardY = 0.2f;
 
     [Header("Ground Detection (multi-point)")]
     [Tooltip("Points under the player used to detect ground. E.g. Left, Center, Right.")]
     public Transform[] groundChecks;  // Multiple ground check points
-    public float groundCheckRadius = 0.18f; // Radius for each check circle
-    public LayerMask groundLayer;     // Layer of platforms (e.g. Ground)
+
+    [Tooltip("Radius of each ground-check circle.")]
+    public float groundCheckRadius = 0.18f;
+
+    [Tooltip("Layer of platforms (e.g. Ground).")]
+    public LayerMask groundLayer;
 
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -30,24 +50,53 @@ public class PlayerMovement : MonoBehaviour
         // Read horizontal input (-1, 0, 1)
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // reverse movment
+        // Reverse movement if debuff is active
         if (GameManager.Instance != null && GameManager.Instance.controlsReversed)
         {
             moveInput *= -1f;
         }
 
+        // Can we jump? (normal jump from ground OR double jump in the air if active)
         bool canJump =
-                isGrounded || // normal jump
-                (GameManager.Instance != null && GameManager.Instance.doubleJumpActive && extraJumpAvailable);
+            isGrounded || // normal jump
+            (GameManager.Instance != null && GameManager.Instance.doubleJumpActive && extraJumpAvailable);
 
         if (Input.GetButtonDown("Jump") && canJump)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            Vector2 dir;
+
+            if (Camera.main != null)
+            {
+                // Mouse position in world space
+                Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 rawDir = (Vector2)(mouseWorld - transform.position);
+
+                // If mouse is exactly on player -> jump straight up
+                if (rawDir.sqrMagnitude < 0.0001f)
+                    rawDir = Vector2.up;
+
+                // Force some upward component
+                if (rawDir.y < minUpwardY)
+                    rawDir.y = minUpwardY;
+
+                dir = rawDir.normalized;
+            }
+            else
+            {
+                // Fallback if no camera
+                dir = Vector2.up;
+            }
+
+            // Nadajemy nową prędkość w kierunku myszy (x i y)
+            rb.linearVelocity = dir * jumpForce;
+
+            // Event do dźwięku skoku
             OnJump?.Invoke();
 
+            // Jeśli skaczemy w powietrzu i double jump jest aktywny -> wykorzystaj dodatkowy skok
             if (!isGrounded && GameManager.Instance != null && GameManager.Instance.doubleJumpActive)
             {
-                extraJumpAvailable = false; // using double jump
+                extraJumpAvailable = false;
             }
         }
     }
@@ -82,18 +131,36 @@ public class PlayerMovement : MonoBehaviour
             extraJumpAvailable = true;
         }
 
-        // Random impulse debuff
+        // --- RUCH LEWO/PRAWO NA SIŁACH ---
+
+        // Docelowa „efektywna” max prędkość pozioma (z buffami/debuffami)
+        float effectiveMaxSpeed = maxHorizontalSpeed * multiplier * globalSpeedMultiplier * tempoMultiplier;
+
+        // Siła przyspieszająca (proporcjonalna do wejścia i multiplikatorów)
+        float effectiveAcceleration = moveAcceleration * multiplier * globalSpeedMultiplier * tempoMultiplier;
+
+        // AddForce na osi X – działa jak „gaz”, a nie natychmiastowe ustawienie prędkości
+        Vector2 force = Vector2.right * (moveInput * effectiveAcceleration);
+        rb.AddForce(force, ForceMode2D.Force);
+
+        // Ograniczamy prędkość poziomą do effectiveMaxSpeed
+        Vector2 vel = rb.linearVelocity;
+        if (Mathf.Abs(vel.x) > effectiveMaxSpeed)
+        {
+            vel.x = Mathf.Sign(vel.x) * effectiveMaxSpeed;
+        }
+
+        rb.linearVelocity = new Vector2(vel.x, rb.linearVelocity.y);
+
+        // Random impulse debuff – dodatkowe losowe „kopnięcia”
         if (GameManager.Instance != null && GameManager.Instance.randomImpulsActive)
         {
             if (UnityEngine.Random.value < 0.7f) // chance each FixedUpdate
             {
-                float force = UnityEngine.Random.Range(-4f, 4f);
-                rb.AddForce(new Vector2(force, 0), ForceMode2D.Impulse);
+                float forceImpulse = UnityEngine.Random.Range(-4f, 4f);
+                rb.AddForce(new Vector2(forceImpulse, 0), ForceMode2D.Impulse);
             }
         }
-
-        // Horizontal movement (keep current vertical velocity)
-        rb.linearVelocity = new Vector2(moveInput * speed * multiplier * globalSpeedMultiplier * tempoMultiplier, rb.linearVelocity.y);
 
         // Update grounded state using multiple check points
         isGrounded = IsGroundedMultiPoint();

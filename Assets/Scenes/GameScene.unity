@@ -1104,8 +1104,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
-  jumpForce: 11
+  jumpForce: 15
   extraJumpAvailable: 1
+  moveAcceleration: 50
+  maxHorizontalSpeed: 10
+  minUpwardY: 0.1
   groundChecks:
   - {fileID: 1856760063}
   - {fileID: 471596965}
@@ -1487,8 +1490,8 @@ MonoBehaviour:
   minTiles: 5
   maxTiles: 15
   startPlatformGrassTiles: 5
-  minGap: 1.5
-  maxGap: 4
+  minGap: 0
+  maxGap: 7
   maxStepUp: 3
   maxStepDown: 3
   minY: -5
@@ -1593,7 +1596,7 @@ MonoBehaviour:
   disappearWholeSegment: 1
   ignoreTriggerTilesOnDisappear: 0
   levels: 3
-  levelSpacing: 7
+  levelSpacing: 12
   startLevelIndex: 0
   levelConfigs: []
   avoidPlatformOverlap: 1
