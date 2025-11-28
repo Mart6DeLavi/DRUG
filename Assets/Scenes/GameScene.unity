@@ -222,8 +222,8 @@ Transform:
   m_GameObject: {fileID: 345630089}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 40, y: -6, z: 2}
-  m_LocalScale: {x: 40, y: 38, z: 1}
+  m_LocalPosition: {x: 30, y: 2, z: 2}
+  m_LocalScale: {x: 50, y: 48, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -329,8 +329,8 @@ Transform:
   m_GameObject: {fileID: 363887158}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80, y: -6, z: 2}
-  m_LocalScale: {x: 40, y: 38, z: 1}
+  m_LocalPosition: {x: 80, y: 2, z: 2}
+  m_LocalScale: {x: 50, y: 48, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -822,7 +822,7 @@ Transform:
   m_GameObject: {fileID: 510762329}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.37, y: -0.0416, z: 0}
+  m_LocalPosition: {x: -24, y: -0.0416, z: 0}
   m_LocalScale: {x: 1, y: 1.7428534, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -930,8 +930,8 @@ Transform:
   m_GameObject: {fileID: 542295482}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -6, z: 2}
-  m_LocalScale: {x: 40, y: 38, z: 1}
+  m_LocalPosition: {x: -20, y: 2, z: 2}
+  m_LocalScale: {x: 50, y: 48, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1912,8 +1912,8 @@ Camera:
   m_GameObject: {fileID: 1725238940}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.09019608, g: 0.2627451, b: 0.29411766, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1934,11 +1934,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.5
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 14
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
