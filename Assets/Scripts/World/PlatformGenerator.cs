@@ -135,6 +135,18 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Spawn rules - DEBUFFS")]
     public List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
 
+    [Header("Dynamic Obstacle Settings")]
+    [Tooltip("If true, every spawned obstacle on grass becomes dynamic.")]
+    [SerializeField] private bool enableDynamicObstacleMovement = true;
+    [Tooltip("Fraction of the safe grass span that dynamic obstacles are allowed to use for movement.")]
+    [SerializeField, Range(0.1f, 1f)] private float dynamicTravelFraction = 0.5f;
+    [Tooltip("Absolute cap for horizontal travel regardless of grass span.")]
+    [SerializeField] private float maxDynamicHorizontalTravel = 2f;
+    [Tooltip("Minimal useful travel distance. If the safe span is smaller the obstacle stays static.")]
+    [SerializeField] private float minDynamicHorizontalTravel = 0.25f;
+    [Tooltip("Padding kept from the lava boundary when computing available travel.")]
+    [SerializeField] private float dynamicObstacleEdgePadding = 0.1f;
+
     // -------------------------------------
     // DISAPPEARING TILES
     // -------------------------------------
@@ -546,6 +558,8 @@ public class PlatformGenerator : MonoBehaviour
                 worldY,
                 isStartPlatform,
                 segmentGO.transform,
+                visualMaterials,
+                i,
                 trapRules,
                 trapCounts,
                 bonusRules,
@@ -569,6 +583,8 @@ public class PlatformGenerator : MonoBehaviour
         float worldY,
         bool isStartPlatform,
         Transform parent,
+        TileMaterial[] platformMaterials,
+        int tileIndex,
         List<SpawnableObjectRule> trapRules,
         int[] trapCounts,
         List<SpawnableObjectRule> bonusRules,
@@ -577,54 +593,163 @@ public class PlatformGenerator : MonoBehaviour
         int[] debuffCounts)
     {
         float distanceFromStart = worldX - worldStartX;
-        bool tileOccupied = false; // once something is spawned, we stop
 
-        bool ProcessRules(List<SpawnableObjectRule> rules, int[] counts)
+        if (TrySpawnFromRules(
+                trapRules,
+                trapCounts,
+                tileMaterial,
+                worldX,
+                worldY,
+                isStartPlatform,
+                distanceFromStart,
+                parent,
+                out GameObject trapInstance))
         {
-            if (rules == null || rules.Count == 0 || counts == null)
-                return false;
-
-            for (int i = 0; i < rules.Count; i++)
-            {
-                var rule = rules[i];
-                if (rule.prefab == null)
-                    continue;
-
-                if (isStartPlatform && !rule.allowOnStartPlatform)
-                    continue;
-
-                if (distanceFromStart < rule.minDistanceFromStart)
-                    continue;
-
-                bool canOnGrass = (tileMaterial == TileMaterial.Grass && rule.allowOnGrass);
-                bool canOnLava = (tileMaterial == TileMaterial.Lava && rule.allowOnLava);
-                if (!canOnGrass && !canOnLava)
-                    continue;
-
-                if (rule.maxPerPlatform > 0 && counts[i] >= rule.maxPerPlatform)
-                    continue;
-
-                if (Random.value > rule.spawnChance)
-                    continue;
-
-                Vector2 spawnPos = new Vector2(worldX, worldY + rule.heightOffset);
-                Instantiate(rule.prefab, spawnPos, Quaternion.identity, parent);
-                counts[i]++;
-
-                return true;
-            }
-
-            return false;
+            TryEnableDynamicObstacle(trapInstance, tileMaterial, platformMaterials, tileIndex);
+            return;
         }
 
-        if (!tileOccupied && ProcessRules(trapRules, trapCounts))
-            tileOccupied = true;
+        if (TrySpawnFromRules(
+                bonusRules,
+                bonusCounts,
+                tileMaterial,
+                worldX,
+                worldY,
+                isStartPlatform,
+                distanceFromStart,
+                parent,
+                out _))
+        {
+            return;
+        }
 
-        if (!tileOccupied && ProcessRules(bonusRules, bonusCounts))
-            tileOccupied = true;
+        TrySpawnFromRules(
+            debuffRules,
+            debuffCounts,
+            tileMaterial,
+            worldX,
+            worldY,
+            isStartPlatform,
+            distanceFromStart,
+            parent,
+            out _);
+    }
 
-        if (!tileOccupied && ProcessRules(debuffRules, debuffCounts))
-            tileOccupied = true;
+    private bool TrySpawnFromRules(
+        List<SpawnableObjectRule> rules,
+        int[] counts,
+        TileMaterial tileMaterial,
+        float worldX,
+        float worldY,
+        bool isStartPlatform,
+        float distanceFromStart,
+        Transform parent,
+        out GameObject spawnedInstance)
+    {
+        spawnedInstance = null;
+
+        if (rules == null || rules.Count == 0)
+            return false;
+
+        for (int i = 0; i < rules.Count; i++)
+        {
+            SpawnableObjectRule rule = rules[i];
+            if (rule == null || rule.prefab == null)
+                continue;
+
+            if (isStartPlatform && !rule.allowOnStartPlatform)
+                continue;
+
+            if (distanceFromStart < rule.minDistanceFromStart)
+                continue;
+
+            bool canOnGrass = tileMaterial == TileMaterial.Grass && rule.allowOnGrass;
+            bool canOnLava = tileMaterial == TileMaterial.Lava && rule.allowOnLava;
+            if (!canOnGrass && !canOnLava)
+                continue;
+
+            int alreadySpawned = (counts != null && i < counts.Length) ? counts[i] : 0;
+            if (rule.maxPerPlatform > 0 && alreadySpawned >= rule.maxPerPlatform)
+                continue;
+
+            if (Random.value > rule.spawnChance)
+                continue;
+
+            Vector2 spawnPos = new Vector2(worldX, worldY + rule.heightOffset);
+            spawnedInstance = Instantiate(rule.prefab, spawnPos, Quaternion.identity, parent);
+
+            if (counts != null && i < counts.Length)
+                counts[i]++;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void TryEnableDynamicObstacle(
+        GameObject obstacleInstance,
+        TileMaterial tileMaterial,
+        TileMaterial[] platformMaterials,
+        int tileIndex)
+    {
+        if (!enableDynamicObstacleMovement || obstacleInstance == null)
+            return;
+
+        if (tileMaterial != TileMaterial.Grass)
+            return;
+
+        float safeTravel = CalculateDynamicTravelWithinGrass(platformMaterials, tileIndex);
+        if (safeTravel <= 0f)
+            return;
+
+        float cappedTravel = Mathf.Min(maxDynamicHorizontalTravel, safeTravel);
+        cappedTravel *= Mathf.Clamp01(dynamicTravelFraction);
+        cappedTravel = Mathf.Min(cappedTravel, safeTravel);
+
+        if (cappedTravel < minDynamicHorizontalTravel)
+        {
+            if (safeTravel >= minDynamicHorizontalTravel)
+                cappedTravel = minDynamicHorizontalTravel;
+            else
+                cappedTravel = safeTravel;
+        }
+
+        if (cappedTravel <= 0f)
+            return;
+
+        DynamicObstacle dynamicObstacle = obstacleInstance.GetComponent<DynamicObstacle>();
+        if (dynamicObstacle == null)
+            dynamicObstacle = obstacleInstance.AddComponent<DynamicObstacle>();
+
+        dynamicObstacle.SetLocalTravel(new Vector2(cappedTravel, 0f));
+    }
+
+    private float CalculateDynamicTravelWithinGrass(TileMaterial[] platformMaterials, int tileIndex)
+    {
+        if (platformMaterials == null || tileIndex < 0 || tileIndex >= platformMaterials.Length)
+            return 0f;
+
+        if (platformMaterials[tileIndex] != TileMaterial.Grass)
+            return 0f;
+
+        int left = tileIndex;
+        while (left > 0 && platformMaterials[left - 1] == TileMaterial.Grass)
+            left--;
+
+        int right = tileIndex;
+        while (right < platformMaterials.Length - 1 && platformMaterials[right + 1] == TileMaterial.Grass)
+            right++;
+
+        float tilesToLeftEdge = (tileIndex - left + 0.5f) * tileWidth;
+        float tilesToRightEdge = (right - tileIndex + 0.5f) * tileWidth;
+        float padding = Mathf.Max(0f, dynamicObstacleEdgePadding);
+
+        float leftDistance = Mathf.Max(0f, tilesToLeftEdge - padding);
+        float rightDistance = Mathf.Max(0f, tilesToRightEdge - padding);
+
+        float safeTravel = 2f * Mathf.Min(leftDistance, rightDistance);
+        return Mathf.Max(0f, safeTravel);
     }
 
     // -------------------------------------
