@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fa2109c1fc96147e2936ca9ca3a41467
+guid: e376ba9359104ad4bb387c6bc9a727ba
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3710620770191243748
-    second: Maciek - left_0
+      213: 2319804339520371302
+    second: Student_right_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Maciek - left_0
+      name: Student_right_0
       rect:
         serializedVersion: 2
         x: 2
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c168098b11a318cc0800000000000000
-      internalID: -3710620770191243748
+      spriteID: 66a758581c9913020800000000000000
+      internalID: 2319804339520371302
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Maciek - left_0: -3710620770191243748
+      Student_right_0: 2319804339520371302
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
