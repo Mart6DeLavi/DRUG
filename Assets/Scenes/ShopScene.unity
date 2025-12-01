@@ -876,7 +876,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -100, y: -380}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &775902186
 GameObject:
@@ -1120,24 +1120,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
   skins: []
   leftPreview: {fileID: 0}
-  centerPreview: {fileID: 0}
+  centerPreview: {fileID: 1100887433}
   rightPreview: {fileID: 0}
-  skinNameLabel: {fileID: 0}
-  priceLabel: {fileID: 0}
-  currencyLabel: {fileID: 0}
-  previousButton: {fileID: 0}
-  nextButton: {fileID: 0}
-  buyButton: {fileID: 0}
+  skinNameLabel: {fileID: 1737254496}
+  priceLabel: {fileID: 764690462}
+  currencyLabel: {fileID: 412612122}
+  previousButton: {fileID: 1816363290}
+  nextButton: {fileID: 2067041265}
+  buyButton: {fileID: 733498690}
   buyButtonLabel: {fileID: 0}
   previewButton: {fileID: 0}
-  refundButton: {fileID: 0}
+  refundButton: {fileID: 1221179766}
   refundButtonLabel: {fileID: 0}
   onSkinPreview:
     m_PersistentCalls:
       m_Calls: []
   onSkinRefunded:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 912557990}
+        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
+        m_MethodName: RefundCurrentSkin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &912557991
 Transform:
   m_ObjectHideFlags: 0
@@ -2291,11 +2303,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248cbb05cd7164dedace15fdcd714577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
-  skins: []
+  skins:
+  - id: 1
+    displayName: Kozak
+    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
+    price: 200
+    unlockedByDefault: 0
+  - id: 2
+    displayName: Kozak 2_0
+    previewSprite: {fileID: -3694931860255928667, guid: 0a6a63b34d0dd447691b4504fdb74adc, type: 3}
+    price: 300
+    unlockedByDefault: 1
+  - id: 3
+    displayName: Juzus 2_0
+    previewSprite: {fileID: 7808068400895915289, guid: b68d7577f62fa4d5eab4d11df9a79748, type: 3}
+    price: 300
+    unlockedByDefault: 0
   leftPreview: {fileID: 0}
-  centerPreview: {fileID: 807872700}
+  centerPreview: {fileID: 1100887433}
   rightPreview: {fileID: 0}
-  skinNameLabel: {fileID: 0}
+  skinNameLabel: {fileID: 1737254496}
   priceLabel: {fileID: 764690462}
   currencyLabel: {fileID: 412612122}
   previousButton: {fileID: 1816363290}
@@ -2417,7 +2444,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1816363291}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 912557990}
+        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
+        m_MethodName: ShowPreviousSkin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1816363291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2538,7 +2577,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2067041266}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 912557990}
+        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
+        m_MethodName: ShowNextSkin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2067041266
 MonoBehaviour:
   m_ObjectHideFlags: 0
