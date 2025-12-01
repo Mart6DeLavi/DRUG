@@ -5950,7 +5950,7 @@ Transform:
   m_GameObject: {fileID: 572256348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.88, y: 10.1, z: 0}
+  m_LocalPosition: {x: 2.88, y: 6.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6794,7 +6794,7 @@ MonoBehaviour:
   trapRules:
   - name: Spike
     prefab: {fileID: 6458244458520929164, guid: c70b160bbbd73e34ba8acf6a8f898762, type: 3}
-    spawnChance: 0.1
+    spawnChance: 0.02
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
@@ -6803,7 +6803,7 @@ MonoBehaviour:
     heightOffset: 0.8
   - name: Trap
     prefab: {fileID: 6768792793882634564, guid: ed98311c742f19b4e9a638034b1b5885, type: 3}
-    spawnChance: 0.1
+    spawnChance: 0.2
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
@@ -6868,7 +6868,7 @@ MonoBehaviour:
     heightOffset: 2
   - name: ReverseControls
     prefab: {fileID: 8982998009498194069, guid: 615f66cee2619264f916d192d68b841f, type: 3}
-    spawnChance: 0.024
+    spawnChance: 0.005
     allowOnGrass: 1
     allowOnLava: 1
     allowOnStartPlatform: 0
@@ -6905,7 +6905,7 @@ MonoBehaviour:
   ignoreTriggerTilesOnDisappear: 0
   levels: 3
   levelSpacing: 12
-  startLevelIndex: 0
+  startLevelIndex: 1
   levelConfigs: []
   avoidPlatformOverlap: 1
   minPlatformVerticalDistance: 4
