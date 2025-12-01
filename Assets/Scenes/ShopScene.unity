@@ -1118,7 +1118,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248cbb05cd7164dedace15fdcd714577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
-  skins: []
+  skins:
+  - id: 4
+    displayName: Kozak
+    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
+    price: 200
+    unlockedByDefault: 0
+  - id: 1
+    displayName: Jezus
+    previewSprite: {fileID: 6727483113430113752, guid: f0fa327c63156694b9f5e6efda71bcbb, type: 3}
+    price: 200
+    unlockedByDefault: 0
+  - id: 2
+    displayName: Student
+    previewSprite: {fileID: 2319804339520371302, guid: e376ba9359104ad4bb387c6bc9a727ba, type: 3}
+    price: 200
+    unlockedByDefault: 0
+  - id: 3
+    displayName: Maciek
+    previewSprite: {fileID: -5341746856972362467, guid: c63c90621674147c69965cdaf050102c, type: 3}
+    price: 200
+    unlockedByDefault: 1
   leftPreview: {fileID: 0}
   centerPreview: {fileID: 1100887433}
   rightPreview: {fileID: 0}
@@ -1177,7 +1197,7 @@ GameObject:
   - component: {fileID: 1100887434}
   - component: {fileID: 1100887433}
   m_Layer: 5
-  m_Name: Skin
+  m_Name: Kozak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1373,6 +1393,7 @@ GameObject:
   - component: {fileID: 1295280794}
   - component: {fileID: 1295280793}
   - component: {fileID: 1295280792}
+  - component: {fileID: 1295280795}
   m_Layer: 5
   m_Name: Button_back_to_MainMenu
   m_TagString: Untagged
@@ -1443,7 +1464,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1295280793}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1295280795}
+        m_TargetAssemblyTypeName: BackToMenu, Assembly-CSharp
+        m_MethodName: LoadMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1295280793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1482,6 +1515,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295280790}
   m_CullTransparentMesh: 1
+--- !u!114 &1295280795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1295280790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a54d58fa9f6d9146b626047a4e76909, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackToMenu
 --- !u!1 &1415541191
 GameObject:
   m_ObjectHideFlags: 0
@@ -2002,7 +2047,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1737254496
 MonoBehaviour:
