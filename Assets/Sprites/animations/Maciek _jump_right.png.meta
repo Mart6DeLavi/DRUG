@@ -1,37 +1,31 @@
 fileFormatVersion: 2
-guid: 18304eccdc33dd2479e2542bda4f62bc
+guid: b300bdf7623383c42890f6f1bbb4fe29
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 598691907654838498
-    second: walk_left_anim_0
+      213: -2343670858628615599
+    second: Maciek _jump_right_animation_0
   - first:
-      213: 3001759781045295611
-    second: walk_left_anim_1
+      213: 6284626311751968379
+    second: Maciek _jump_right_animation_1
   - first:
-      213: -4055750453036607839
-    second: walk_left_anim_2
+      213: 1832622731792972725
+    second: Maciek _jump_right_animation_2
   - first:
-      213: 5595422782166016595
-    second: walk_left_anim_3
+      213: -7444455171563467917
+    second: Maciek _jump_right_animation_3
   - first:
-      213: 3092595516655220530
-    second: walk_left_anim_4
+      213: 8042458528602246076
+    second: Maciek _jump_right_animation_4
   - first:
-      213: -8944026588995899137
-    second: walk_left_anim_5
+      213: 7371033812335123527
+    second: Maciek _jump_right_animation_5
   - first:
-      213: -3364527915155763499
-    second: walk_left_anim_6
+      213: 1903470687298128314
+    second: Maciek _jump_right_animation_6
   - first:
-      213: 458081778447271684
-    second: walk_left_anim_7
-  - first:
-      213: 6487344845965069555
-    second: walk_left_anim_8
-  - first:
-      213: -2304716862303108365
-    second: walk_left_anim_9
+      213: -3013689970866376368
+    second: Maciek _jump_right_animation_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -140,10 +134,10 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Maciek_walk_left_0
+      name: Maciek _jump_right_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 0
         y: 0
         width: 21
         height: 40
@@ -155,20 +149,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba8a96f086bb8b847914afd502fc280c
-      internalID: -2095892164
+      spriteID: f059641433da57846a32987754d7ffc7
+      internalID: -190417317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_1
+      name: Maciek _jump_right_1
       rect:
         serializedVersion: 2
-        x: 25
-        y: 0
-        width: 23
-        height: 40
+        x: 24
+        y: 1
+        width: 21
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -177,20 +171,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6cbb4b9c06892b54b9e7c92b020fe1e7
-      internalID: 82865673
+      spriteID: 017b931af79317744b57bc90f56045f6
+      internalID: -763979980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_2
+      name: Maciek _jump_right_2
       rect:
         serializedVersion: 2
-        x: 50
-        y: 0
+        x: 48
+        y: 2
         width: 22
-        height: 40
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -199,20 +193,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c565affb182edd41b85f3e3c2ab8393
-      internalID: 709585218
+      spriteID: 3f0af96d8640720478069ef1a50d7b50
+      internalID: 1781803902
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_3
+      name: Maciek _jump_right_3
       rect:
         serializedVersion: 2
-        x: 74
-        y: 0
+        x: 72
+        y: 3
         width: 22
-        height: 40
+        height: 37
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,42 +215,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2516c4cc61da40c47a6961a9b91b5d1c
-      internalID: -264231756
+      spriteID: 9b532cef4c92f5842a5932ee9b0dd0fa
+      internalID: 885494138
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_4
+      name: Maciek _jump_right_4
       rect:
         serializedVersion: 2
-        x: 97
-        y: 0
-        width: 23
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c75471f27b289df4ba4b6318568d7f59
-      internalID: 1091962337
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Maciek_walk_left_5
-      rect:
-        serializedVersion: 2
-        x: 122
-        y: 0
+        x: 96
+        y: 3
         width: 22
-        height: 40
+        height: 37
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -265,20 +237,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efa945090c864564dbafbecf75ded3af
-      internalID: 952124128
+      spriteID: f69fa5208973d5842846199db8e22774
+      internalID: 694869586
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_6
+      name: Maciek _jump_right_5
       rect:
         serializedVersion: 2
-        x: 146
-        y: 0
+        x: 120
+        y: 2
         width: 22
-        height: 40
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -287,20 +259,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6585aef98e5e0a24bbf1bd7671d83af1
-      internalID: 1336719958
+      spriteID: bcf6845090a94a34cb91a46eb62abc44
+      internalID: -932323999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_7
+      name: Maciek _jump_right_6
       rect:
         serializedVersion: 2
-        x: 170
-        y: 0
-        width: 22
-        height: 40
+        x: 144
+        y: 1
+        width: 21
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -309,39 +281,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 706a3fd3991328a4ba941ce4b20a67fc
-      internalID: 1062715286
+      spriteID: 3838dd92fd99be34cb322f81e83f35cf
+      internalID: -31596454
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Maciek_walk_left_8
+      name: Maciek _jump_right_7
       rect:
         serializedVersion: 2
-        x: 194
-        y: 0
-        width: 22
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8a65b0d1cba75d44faacf60b9cc83edb
-      internalID: -653531194
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Maciek_walk_left_9
-      rect:
-        serializedVersion: 2
-        x: 219
+        x: 168
         y: 0
         width: 21
         height: 40
@@ -353,8 +303,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ccebb8825ad8054c8cb87f898aa5962
-      internalID: -1218671334
+      spriteID: 7d75bf5049d40894f99c4251e7f42101
+      internalID: -1068052094
       vertices: []
       indices: 
       edges: []
@@ -363,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 675cd332b91f6324384052a5fe67e567
+    spriteID: 1c32754318c098c49965251bb6853d54
     internalID: 0
     vertices: []
     indices: 
@@ -375,16 +325,14 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Maciek_walk_left_0: -2095892164
-      Maciek_walk_left_1: 82865673
-      Maciek_walk_left_2: 709585218
-      Maciek_walk_left_3: -264231756
-      Maciek_walk_left_4: 1091962337
-      Maciek_walk_left_5: 952124128
-      Maciek_walk_left_6: 1336719958
-      Maciek_walk_left_7: 1062715286
-      Maciek_walk_left_8: -653531194
-      Maciek_walk_left_9: -1218671334
+      Maciek _jump_right_0: -190417317
+      Maciek _jump_right_1: -763979980
+      Maciek _jump_right_2: 1781803902
+      Maciek _jump_right_3: 885494138
+      Maciek _jump_right_4: 694869586
+      Maciek _jump_right_5: -932323999
+      Maciek _jump_right_6: -31596454
+      Maciek _jump_right_7: -1068052094
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

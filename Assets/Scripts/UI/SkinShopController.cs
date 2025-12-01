@@ -62,8 +62,10 @@ public class SkinShopController : MonoBehaviour
 
     void OnEnable()
     {
+        Debug.Log($"SkinShopController OnEnable on {name}: skins count before load = {skins?.Count ?? -1}");
         SubscribeToWallet();
         LoadState();
+        Debug.Log($"SkinShopController OnEnable on {name}: skins count after load = {skins?.Count ?? -1}");
         RefreshUI();
     }
 
@@ -75,15 +77,27 @@ public class SkinShopController : MonoBehaviour
     // --- UI HOOKS (set these on the buttons) ---
     public void ShowNextSkin()
     {
-        if (skins.Count == 0) return;
+        if (skins.Count == 0)
+        {
+            Debug.Log("SkinShopController: ShowNextSkin ignored because catalog is empty.");
+            return;
+        }
+
         currentIndex = WrapIndex(currentIndex + 1);
+        Debug.Log($"SkinShopController: Next pressed -> index {currentIndex}/{skins.Count - 1}");
         RefreshUI();
     }
 
     public void ShowPreviousSkin()
     {
-        if (skins.Count == 0) return;
+        if (skins.Count == 0)
+        {
+            Debug.Log("SkinShopController: ShowPreviousSkin ignored because catalog is empty.");
+            return;
+        }
+
         currentIndex = WrapIndex(currentIndex - 1);
+        Debug.Log($"SkinShopController: Previous pressed -> index {currentIndex}/{skins.Count - 1}");
         RefreshUI();
     }
 

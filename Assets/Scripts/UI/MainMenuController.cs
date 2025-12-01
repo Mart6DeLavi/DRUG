@@ -6,6 +6,7 @@ public class MainMenuController : MonoBehaviour
     [Header("Nazwy scen")]
     public string gameSceneName = "GameScene";
     public string scoreboardSceneName = "ScoreboardScene"; 
+    public string shopSceneName = "ShopScene";
 
     private void Start()
     {
@@ -27,6 +28,12 @@ public class MainMenuController : MonoBehaviour
     public void OnScoreboardClicked()
     {
         Debug.Log("Scoreboard jeszcze niezaimplementowany.");
+    }
+
+    // Sklep
+    public void OnShopClicked()
+    {
+        SceneManager.LoadScene(shopSceneName);
     }
 
     // Wyjście z gry
