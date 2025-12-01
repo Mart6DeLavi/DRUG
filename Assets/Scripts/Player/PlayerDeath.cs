@@ -19,6 +19,12 @@ public class PlayerDeath : MonoBehaviour
         if (sounds != null)
             sounds.PlayDeathSound();
 
+        // --- NOWE: efekt cząsteczkowy śmierci ---
+        PlayerVfxController vfx = GetComponent<PlayerVfxController>();
+        if (vfx != null)
+            vfx.PlayDeathEffect();
+        // ----------------------------------------
+
         if (SurvivalScore.Instance != null)
         {
             SurvivalScore.Instance.SealFinalScore();
