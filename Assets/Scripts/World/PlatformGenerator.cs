@@ -148,6 +148,25 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private float dynamicObstacleEdgePadding = 0.1f;
 
     // -------------------------------------
+    // MOVING PLATFORMS (NEW)
+    // -------------------------------------
+    [Header("Moving Platforms")]
+    [Tooltip("If true, randomly selected platform segments will move left-right.")]
+    public bool enableMovingPlatforms = true;
+
+    [Range(0f, 1f)]
+    [Tooltip("Chance that a generated platform segment becomes a moving platform.")]
+    public float movingPlatformChance = 0.15f;
+
+    [Tooltip("Horizontal movement amplitude range (world units).")]
+    public float minMoveAmplitude = 1f;
+    public float maxMoveAmplitude = 3f;
+
+    [Tooltip("Horizontal movement speed range.")]
+    public float minMoveSpeed = 0.5f;
+    public float maxMoveSpeed = 1.8f;
+
+    // -------------------------------------
     // DISAPPEARING TILES
     // -------------------------------------
     [Header("Disappearing Tiles")]
@@ -465,6 +484,8 @@ public class PlatformGenerator : MonoBehaviour
 
         // Marker for cleanup i testów odległości
         PlatformSegmentMarker marker = segmentGO.AddComponent<PlatformSegmentMarker>();
+        TryAddMovingPlatform(segmentGO);
+
         marker.startX = startX;
         marker.endX = endX;
         marker.yCenter = adjustedY;
@@ -864,6 +885,24 @@ public class PlatformGenerator : MonoBehaviour
 
             return lavaMiddleSprite;
         }
+    }
+
+    // -------------------------------------
+    // MOVING PLATFORM SETUP (NEW)
+    // -------------------------------------
+    private void TryAddMovingPlatform(GameObject segmentGO)
+    {
+        if (!enableMovingPlatforms)
+            return;
+
+        if (Random.value > movingPlatformChance)
+            return;
+
+        MovingPlatform mp = segmentGO.AddComponent<MovingPlatform>();
+
+        mp.amplitude = Random.Range(minMoveAmplitude, maxMoveAmplitude);
+        mp.speed = Random.Range(minMoveSpeed, maxMoveSpeed);
+        mp.randomOffset = true;
     }
 
     // -------------------------------------
