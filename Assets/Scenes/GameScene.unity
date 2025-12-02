@@ -5629,10 +5629,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LeftWallScroller
   baseScrollSpeed: 1
   maxScrollSpeed: 12
-  accelerationRate: 2
-  boostAccelerationMultiplier: 3
-  distanceBoostThreshold: 8
-  baseGrowthRate: 0.2
+  accelerationRate: 1
+  boostAccelerationMultiplier: 4
+  distanceBoostThreshold: 20
+  baseGrowthRate: 0.1
   maxWallSpeed: 0
   playerTag: Player
 --- !u!50 &510762331
