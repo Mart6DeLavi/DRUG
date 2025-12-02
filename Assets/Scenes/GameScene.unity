@@ -5436,7 +5436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   score: 0
-  doubleJumpActive: 1
+  doubleJumpActive: 0
   enemySpeedMultiplier: 1
   playerSpeedMultiplier: 1
   controlsReversed: 0
@@ -5627,9 +5627,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a47d936fd163f46cbaefa3973ad70841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LeftWallScroller
-  baseScrollSpeed: 2
+  baseScrollSpeed: 1
   maxScrollSpeed: 12
-  accelerationRate: 4
+  accelerationRate: 2
   boostAccelerationMultiplier: 3
   distanceBoostThreshold: 8
   baseGrowthRate: 0.2
