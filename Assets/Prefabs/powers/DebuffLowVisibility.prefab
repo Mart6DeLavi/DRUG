@@ -150,4 +150,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25054fca96d68144f96765c605c8e553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebuffLimitedVisibility
-  duration: 5
+  duration: 2

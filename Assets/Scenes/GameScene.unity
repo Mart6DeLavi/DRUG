@@ -5951,7 +5951,7 @@ Transform:
   m_GameObject: {fileID: 572256348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.88, y: 6.2, z: 0}
+  m_LocalPosition: {x: 2.88, y: 10.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6007,13 +6007,13 @@ MonoBehaviour:
   speed: 0
   mouseAimedJumpEnabled: 1
   chargedJumpEnabled: 1
-  minJumpForce: 15
-  maxJumpForce: 20
-  maxChargeTime: 1
+  minJumpForce: 10
+  maxJumpForce: 30
+  maxChargeTime: 2
   baseMouseJumpForce: 10
   verticalJumpForce: 10
-  moveAcceleration: 100
-  maxHorizontalSpeed: 10
+  moveAcceleration: 50
+  maxHorizontalSpeed: 15
   minUpwardY: 0.1
   maxJumpAngleFromUp: 65
   groundChecks:
@@ -6527,7 +6527,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 350, y: 165}
+  m_AnchoredPosition: {x: 551, y: 236}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &908708805
@@ -6656,7 +6656,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 230, y: 170}
+  m_AnchoredPosition: {x: 396, y: 241}
   m_SizeDelta: {x: 32, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1028121893
@@ -6832,14 +6832,14 @@ RectTransform:
   m_GameObject: {fileID: 1074475325}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.6309, y: 2.1922839, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 380579452}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.000015259}
+  m_AnchoredPosition: {x: 0, y: 0.000045777}
   m_SizeDelta: {x: 724, y: 407}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1074475327
@@ -6922,8 +6922,8 @@ MonoBehaviour:
   lavaGroundLeftSprite: {fileID: -4576631363291807033, guid: d23ea119425d447788a3cd3e8d16cf74, type: 3}
   lavaGroundRightSprite: {fileID: -4836710515755216852, guid: 27199936f50d54271bdef6e0fc0c3a0e, type: 3}
   tileWidth: 1
-  minTiles: 5
-  maxTiles: 15
+  minTiles: 10
+  maxTiles: 20
   startPlatformGrassTiles: 5
   minGap: 4
   maxGap: 7
@@ -7051,7 +7051,7 @@ MonoBehaviour:
   disappearWholeSegment: 1
   ignoreTriggerTilesOnDisappear: 0
   levels: 3
-  levelSpacing: 12
+  levelSpacing: 20
   startLevelIndex: 1
   levelConfigs: []
   avoidPlatformOverlap: 1
@@ -7455,7 +7455,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -112, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1614298576

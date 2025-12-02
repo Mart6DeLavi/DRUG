@@ -150,5 +150,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94d832150e7af844cb009894c61c02a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BonusSpeed
-  speedMultiplier: 1.5
-  duration: 5
+  speedMultiplier: 1.1
+  duration: 2
