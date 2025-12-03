@@ -5848,6 +5848,7 @@ GameObject:
   - component: {fileID: 572256357}
   - component: {fileID: 572256359}
   - component: {fileID: 572256353}
+  - component: {fileID: 572256360}
   - component: {fileID: 572256354}
   - component: {fileID: 572256356}
   - component: {fileID: 572256358}
@@ -5993,6 +5994,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fa9a37ef1e7c541a03464b696ddf6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeath
+  deathZoneTag: DeathZone
+  obstacleTag: Obstacle
+  upwardIgnoreVelocity: 0.1
 --- !u!114 &572256354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6261,6 +6265,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   speedXParamName: SpeedX
   moveThreshold: 0.1
+--- !u!114 &572256360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572256348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bec12508346f224da7f8c748e4a10e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTimeSlow
+  slowFactor: 0.2
+  maxSlowDuration: 5
+  rechargeRate: 1
+  infiniteSlow: 0
+  currentSlowTime: 0
 --- !u!1 &585302952
 GameObject:
   m_ObjectHideFlags: 0
@@ -6923,9 +6944,10 @@ MonoBehaviour:
   lavaGroundLeftSprite: {fileID: -4576631363291807033, guid: d23ea119425d447788a3cd3e8d16cf74, type: 3}
   lavaGroundRightSprite: {fileID: -4836710515755216852, guid: 27199936f50d54271bdef6e0fc0c3a0e, type: 3}
   tileWidth: 1
+  tileHeight: 1
   minTiles: 10
   maxTiles: 20
-  startPlatformGrassTiles: 5
+  startPlatformGrassTiles: 30
   minGap: 4
   maxGap: 7
   maxStepUp: 3
@@ -6942,13 +6964,13 @@ MonoBehaviour:
   trapRules:
   - name: Spike
     prefab: {fileID: 6458244458520929164, guid: c70b160bbbd73e34ba8acf6a8f898762, type: 3}
-    spawnChance: 0.02
+    spawnChance: 0.21
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
     minDistanceFromStart: 0
     maxPerPlatform: 1
-    heightOffset: 0.8
+    heightOffset: 0.4
   - name: Trap
     prefab: {fileID: 6768792793882634564, guid: ed98311c742f19b4e9a638034b1b5885, type: 3}
     spawnChance: 0.2
@@ -6957,7 +6979,7 @@ MonoBehaviour:
     allowOnStartPlatform: 0
     minDistanceFromStart: 0
     maxPerPlatform: 1
-    heightOffset: 0.8
+    heightOffset: 0.4
   bonusRules:
   - name: DoubleJump
     prefab: {fileID: 5732392334418272061, guid: 1b1f550d53d86f046b424c243c6967eb, type: 3}
