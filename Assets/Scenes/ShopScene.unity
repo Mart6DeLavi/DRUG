@@ -1118,7 +1118,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248cbb05cd7164dedace15fdcd714577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
-  skins: []
+  skins:
+  - id: 1
+    displayName: Kozak
+    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
+    price: 200
+    unlockedByDefault: 0
+  - id: 2
+    displayName: Kozak 2_0
+    previewSprite: {fileID: -3694931860255928667, guid: 0a6a63b34d0dd447691b4504fdb74adc, type: 3}
+    price: 300
+    unlockedByDefault: 0
+  - id: 3
+    displayName: Juzus 2_0
+    previewSprite: {fileID: 7808068400895915289, guid: b68d7577f62fa4d5eab4d11df9a79748, type: 3}
+    price: 300
+    unlockedByDefault: 0
   leftPreview: {fileID: 0}
   centerPreview: {fileID: 1100887433}
   rightPreview: {fileID: 0}
@@ -1128,13 +1143,25 @@ MonoBehaviour:
   previousButton: {fileID: 1816363290}
   nextButton: {fileID: 2067041265}
   buyButton: {fileID: 733498690}
-  buyButtonLabel: {fileID: 0}
+  buyButtonLabel: {fileID: 775902188}
   previewButton: {fileID: 0}
   refundButton: {fileID: 1221179766}
-  refundButtonLabel: {fileID: 0}
+  refundButtonLabel: {fileID: 87907669}
   onSkinPreview:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 912557990}
+        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
+        m_MethodName: PreviewCurrentSkin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onSkinRefunded:
     m_PersistentCalls:
       m_Calls:
@@ -2190,7 +2217,6 @@ GameObject:
   - component: {fileID: 1803883084}
   - component: {fileID: 1803883083}
   - component: {fileID: 1803883082}
-  - component: {fileID: 1803883086}
   m_Layer: 5
   m_Name: Canvas_Shop
   m_TagString: Untagged
@@ -2291,77 +2317,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1803883086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1803883081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 248cbb05cd7164dedace15fdcd714577, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
-  skins:
-  - id: 1
-    displayName: Kozak
-    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
-    price: 200
-    unlockedByDefault: 0
-  - id: 2
-    displayName: Kozak 2_0
-    previewSprite: {fileID: -3694931860255928667, guid: 0a6a63b34d0dd447691b4504fdb74adc, type: 3}
-    price: 300
-    unlockedByDefault: 1
-  - id: 3
-    displayName: Juzus 2_0
-    previewSprite: {fileID: 7808068400895915289, guid: b68d7577f62fa4d5eab4d11df9a79748, type: 3}
-    price: 300
-    unlockedByDefault: 0
-  leftPreview: {fileID: 0}
-  centerPreview: {fileID: 1100887433}
-  rightPreview: {fileID: 0}
-  skinNameLabel: {fileID: 1737254496}
-  priceLabel: {fileID: 764690462}
-  currencyLabel: {fileID: 412612122}
-  previousButton: {fileID: 1816363290}
-  nextButton: {fileID: 2067041265}
-  buyButton: {fileID: 733498690}
-  buyButtonLabel: {fileID: 775902188}
-  previewButton: {fileID: 0}
-  refundButton: {fileID: 1221179766}
-  refundButtonLabel: {fileID: 87907669}
-  onSkinPreview:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 912557990}
-        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
-        m_MethodName: PreviewCurrentSkin
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onSkinRefunded:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 912557990}
-        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
-        m_MethodName: RefundCurrentSkin
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1816363288
 GameObject:
   m_ObjectHideFlags: 0
