@@ -7,10 +7,10 @@ using UnityEngine.Events;
 
 /// <summary>
 /// Handles the UI logic for the skin shop: browsing, buying, previewing and equipping skins.
+/// Uses GameDatabase API for persisting purchased skins and currency.
 /// </summary>
 public class SkinShopController : MonoBehaviour
 {
-    private const string PurchasedKey = "SkinShop_Purchased";
 
     [Serializable]
     public class SkinDefinition
@@ -62,11 +62,14 @@ public class SkinShopController : MonoBehaviour
 
     void OnEnable()
     {
-        Debug.Log($"SkinShopController OnEnable on {name}: skins count before load = {skins?.Count ?? -1}");
+        Debug.Log($"[SHOP] SkinShopController OnEnable - Starting initialization");
+        Debug.Log($"[SHOP] Current GameData currency: {GameData.GetCurrency()}");
+        
         SubscribeToWallet();
         LoadState();
-        Debug.Log($"SkinShopController OnEnable on {name}: skins count after load = {skins?.Count ?? -1}");
         RefreshUI();
+        
+        Debug.Log($"[SHOP] Initialization complete. Skins loaded: {skins?.Count ?? 0}");
     }
 
     void OnDisable()
@@ -103,24 +106,45 @@ public class SkinShopController : MonoBehaviour
 
     public void BuyCurrentSkin()
     {
-        if (!TryGetCurrentSkin(out SkinDefinition skin)) return;
-        if (IsSkinOwned(skin)) return;
-
-        if (PlayerWallet.Instance == null)
+        Debug.Log("[SHOP] Buy button clicked!");
+        
+        if (!TryGetCurrentSkin(out SkinDefinition skin))
         {
-            Debug.LogWarning("PlayerWallet is missing from the scene. Cannot process purchase.");
+            Debug.LogWarning("[SHOP] No current skin to buy");
+            return;
+        }
+        
+        if (IsSkinOwned(skin))
+        {
+            Debug.Log("[SHOP] Skin already owned");
             return;
         }
 
-        if (!PlayerWallet.Instance.TrySpendCurrency(skin.price))
+        string skinId = GetSkinId(skin);
+        int price = skin.price;
+        int currentCurrency = GameData.GetCurrency();
+        
+        Debug.Log($"[SHOP] Attempting to purchase: {skinId} for {price} (Current: {currentCurrency})");
+
+        // Atomic purchase via GameData
+        bool success = GameData.PurchaseSkin(skinId, price);
+        if (!success)
         {
-            Debug.Log("Not enough currency to buy: " + GetDisplayName(skin));
+            Debug.Log($"[SHOP] Purchase FAILED: {skinId}. Insufficient funds or already owned.");
             return;
         }
 
-        purchasedSkinIds.Add(GetSkinId(skin));
-        SavePurchased();
+        Debug.Log($"[SHOP] Purchase SUCCESS! New balance: {GameData.GetCurrency()}");
+
+        // Update local cache & UI
+        purchasedSkinIds.Add(skinId);
         RefreshUI();
+
+        // Ensure PlayerWallet reflects new value
+        if (PlayerWallet.Instance != null)
+        {
+            PlayerWallet.Instance.SetCurrency(GameData.GetCurrency());
+        }
     }
 
     public void PreviewCurrentSkin()
@@ -136,17 +160,23 @@ public class SkinShopController : MonoBehaviour
         if (skin.unlockedByDefault) return; // Cannot remove default skins.
 
         string id = GetSkinId(skin);
-        if (!purchasedSkinIds.Remove(id))
+
+        // Atomic refund via GameData
+        bool success = GameData.RefundSkin(id, skin.price);
+        if (!success)
         {
             return;
         }
 
+        // Update local cache & UI
+        purchasedSkinIds.Remove(id);
+
+        // Ensure PlayerWallet reflects new value
         if (PlayerWallet.Instance != null)
         {
-            PlayerWallet.Instance.AddCurrency(skin.price);
+            PlayerWallet.Instance.SetCurrency(GameData.GetCurrency());
         }
 
-        SavePurchased();
         onSkinRefunded?.Invoke(skin);
         RefreshUI();
     }
@@ -157,6 +187,8 @@ public class SkinShopController : MonoBehaviour
         if (PlayerWallet.Instance != null)
         {
             PlayerWallet.Instance.CurrencyChanged += HandleCurrencyChanged;
+            // Immediately update currency label with current value
+            HandleCurrencyChanged(PlayerWallet.Instance.CurrentCurrency);
         }
     }
 
@@ -170,9 +202,16 @@ public class SkinShopController : MonoBehaviour
 
     private void HandleCurrencyChanged(int amount)
     {
+        Debug.Log($"[SHOP] HandleCurrencyChanged called with amount: {amount}");
+        
         if (currencyLabel != null)
         {
             currencyLabel.text = amount.ToString();
+            Debug.Log($"[SHOP] Currency label updated to: {amount}");
+        }
+        else
+        {
+            Debug.LogWarning("[SHOP] currencyLabel is NULL!");
         }
 
         UpdateBuyButtonState();
@@ -181,31 +220,23 @@ public class SkinShopController : MonoBehaviour
     private void LoadState()
     {
         purchasedSkinIds.Clear();
+        
+        // Add default unlocked skins to GameData if not already there
         foreach (SkinDefinition skin in skins)
         {
             if (skin != null && skin.unlockedByDefault)
             {
-                purchasedSkinIds.Add(GetSkinId(skin));
+                string skinId = GetSkinId(skin);
+                GameData.AddOwnedSkin(skinId); // Idempotent
             }
         }
 
-        string saved = PlayerPrefs.GetString(PurchasedKey, string.Empty);
-        if (!string.IsNullOrEmpty(saved))
+        // Load all owned skins from GameData
+        List<string> ownedSkins = GameData.GetOwnedSkins();
+        foreach (string skinId in ownedSkins)
         {
-            string[] ids = saved.Split('|', StringSplitOptions.RemoveEmptyEntries);
-            foreach (string id in ids)
-            {
-                purchasedSkinIds.Add(id);
-            }
+            purchasedSkinIds.Add(skinId);
         }
-
-    }
-
-    private void SavePurchased()
-    {
-        string serialized = string.Join("|", purchasedSkinIds);
-        PlayerPrefs.SetString(PurchasedKey, serialized);
-        PlayerPrefs.Save();
     }
 
     private bool TryGetCurrentSkin(out SkinDefinition skin)
@@ -247,7 +278,7 @@ public class SkinShopController : MonoBehaviour
         return string.IsNullOrWhiteSpace(skin.displayName) ? GetSkinId(skin) : skin.displayName;
     }
 
-    private void RefreshUI()
+    public void RefreshUI()
     {
         if (skins.Count == 0)
         {
@@ -282,7 +313,7 @@ public class SkinShopController : MonoBehaviour
     {
         if (skinNameLabel != null) skinNameLabel.text = "Brak skinów";
         if (priceLabel != null) priceLabel.text = "-";
-        if (currencyLabel != null) currencyLabel.text = PlayerWallet.Instance != null ? PlayerWallet.Instance.CurrentCurrency.ToString() : "--";
+        UpdateCurrencyLabel(); // Use the same method for consistency
         SetPreviewImage(leftPreview, null);
         SetPreviewImage(centerPreview, null);
         SetPreviewImage(rightPreview, null);
@@ -295,8 +326,25 @@ public class SkinShopController : MonoBehaviour
 
     private void UpdateCurrencyLabel()
     {
-        if (currencyLabel == null) return;
-        currencyLabel.text = PlayerWallet.Instance != null ? PlayerWallet.Instance.CurrentCurrency.ToString() : "--";
+        if (currencyLabel == null)
+        {
+            Debug.LogWarning("[SHOP] UpdateCurrencyLabel: currencyLabel is NULL!");
+            return;
+        }
+        
+        // Prefer PlayerWallet for UI consistency, fallback to GameData
+        if (PlayerWallet.Instance != null)
+        {
+            int walletCurrency = PlayerWallet.Instance.CurrentCurrency;
+            currencyLabel.text = walletCurrency.ToString();
+            Debug.Log($"[SHOP] Currency label updated from PlayerWallet: {walletCurrency}");
+        }
+        else
+        {
+            int dataCurrency = GameData.GetCurrency();
+            currencyLabel.text = dataCurrency.ToString();
+            Debug.Log($"[SHOP] Currency label updated from GameData: {dataCurrency}");
+        }
     }
 
     private void UpdatePriceLabel(SkinDefinition current)
