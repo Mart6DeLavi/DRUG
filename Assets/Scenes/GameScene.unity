@@ -6959,7 +6959,8 @@ MonoBehaviour:
   lavaChancePerPlatform: 1
   minLavaRun: 2
   maxLavaRun: 4
-  groundLayerName: Ground
+  lavaKillZoneHeightAbove: 0.25
+  lavaKillZoneDepthBelow: 0.25
   lavaTag: DeathZone
   trapRules:
   - name: Spike
@@ -7080,6 +7081,9 @@ MonoBehaviour:
   avoidPlatformOverlap: 1
   minPlatformVerticalDistance: 4
   maxRelocateAttempts: 6
+  enableDifficultyScaling: 1
+  lavaChanceIncreasePerSecond: 0
+  trapSpawnChanceIncreasePerSecond: 0
   useFixedSeed: 0
   seed: 11111
 --- !u!4 &1102387337
@@ -7091,7 +7095,7 @@ Transform:
   m_GameObject: {fileID: 1102387335}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.2, z: 0}
+  m_LocalPosition: {x: -15.24, y: -14.98, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

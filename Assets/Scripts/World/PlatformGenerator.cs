@@ -409,7 +409,21 @@ public class PlatformGenerator : MonoBehaviour
             : Random.Range(minTiles, maxTiles + 1);
 
         // materiały GRASS / LAVA z difficulty scaling
-        TileMaterial[] materials = GenerateCoreMaterials(coreCount);
+        // Determine materials for this platform. On the very first start platform we enforce only grass tiles
+        // so that the player always begins on a safe area without lava.
+        TileMaterial[] materials;
+        if (isStartPlatform)
+        {
+            materials = new TileMaterial[coreCount];
+            for (int iMaterial = 0; iMaterial < coreCount; iMaterial++)
+            {
+                materials[iMaterial] = TileMaterial.Grass;
+            }
+        }
+        else
+        {
+            materials = GenerateCoreMaterials(coreCount);
+        }
 
         // Segment GameObject
         GameObject segmentGO = new GameObject($"PlatformSegment_L{laneIndex}");
@@ -431,7 +445,11 @@ public class PlatformGenerator : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Static;
 
         // MOVING PLATFORM (cały segment)
-        TryAddMovingPlatform(segmentGO);
+        // Do not add moving behaviour to the very first start platform
+        if (!isStartPlatform)
+        {
+            TryAddMovingPlatform(segmentGO);
+        }
 
         // counts per platform dla spawn rules
         int[] trapCounts = trapRules.Count > 0 ? new int[trapRules.Count] : null;
@@ -519,6 +537,9 @@ public class PlatformGenerator : MonoBehaviour
             // SPAWN TRAP / BONUS / DEBUFF na górze kafelka
             float tileTopY = worldY + tileHeight * 0.5f;
 
+            // Only spawn traps/bonuses/debuffs on platforms other than the initial start platform
+            if (!isStartPlat)
+            {
             TrySpawnAllRulesOnTile(
                 mat,
                 worldX,
@@ -531,6 +552,7 @@ public class PlatformGenerator : MonoBehaviour
                 debuffCounts,
                 materials,
                 i);
+            }
         }
     }
 
