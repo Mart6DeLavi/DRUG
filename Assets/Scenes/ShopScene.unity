@@ -703,7 +703,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 733498691}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 912557990}
+        m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
+        m_MethodName: BuyCurrentSkin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &733498691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1126,12 +1138,12 @@ MonoBehaviour:
     unlockedByDefault: 0
   - id: 2
     displayName: Kozak 2_0
-    previewSprite: {fileID: -3694931860255928667, guid: 0a6a63b34d0dd447691b4504fdb74adc, type: 3}
+    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
     price: 300
     unlockedByDefault: 0
   - id: 3
     displayName: Juzus 2_0
-    previewSprite: {fileID: 7808068400895915289, guid: b68d7577f62fa4d5eab4d11df9a79748, type: 3}
+    previewSprite: {fileID: 6727483113430113752, guid: f0fa327c63156694b9f5e6efda71bcbb, type: 3}
     price: 300
     unlockedByDefault: 0
   leftPreview: {fileID: 0}
