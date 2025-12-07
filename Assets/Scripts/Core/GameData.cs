@@ -397,13 +397,14 @@ public static class GameData
             }
 
             // Add refund amount
+            int oldCurrency = d.currency;
             if (refundAmount > 0)
             {
                 d.currency += refundAmount;
             }
 
             SavePlayerData(d);
-            Debug.Log($"GameData: Refunded skin '{skinId}' for {refundAmount} currency");
+            Debug.Log($"[GameData] Refunded skin '{skinId}' for {refundAmount} currency. Balance: {oldCurrency} → {d.currency}");
             return true;
         }
     }

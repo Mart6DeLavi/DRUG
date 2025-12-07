@@ -155,18 +155,42 @@ public class SkinShopController : MonoBehaviour
 
     public void RefundCurrentSkin()
     {
-        if (!TryGetCurrentSkin(out SkinDefinition skin)) return;
-        if (!IsSkinOwned(skin)) return;
-        if (skin.unlockedByDefault) return; // Cannot remove default skins.
+        Debug.Log("[SHOP] Ubierz button clicked!");
+        
+        if (!TryGetCurrentSkin(out SkinDefinition skin))
+        {
+            Debug.LogWarning("[SHOP] Cannot refund - no current skin");
+            return;
+        }
+        
+        Debug.Log($"[SHOP] Current skin: {GetSkinId(skin)}, Owned: {IsSkinOwned(skin)}, UnlockedByDefault: {skin.unlockedByDefault}");
+        
+        if (!IsSkinOwned(skin))
+        {
+            Debug.LogWarning("[SHOP] Cannot refund - skin not owned");
+            return;
+        }
+        
+        if (skin.unlockedByDefault)
+        {
+            Debug.LogWarning("[SHOP] Cannot refund - skin is unlocked by default (free skin)");
+            return;
+        }
 
         string id = GetSkinId(skin);
+        
+        Debug.Log($"[SHOP] Refunding skin: {id}, price: {skin.price}");
+        Debug.Log($"[SHOP] Current currency before refund: {GameData.GetCurrency()}");
 
-        // Atomic refund via GameData
+        // Atomic refund via GameData - removes skin and adds currency back
         bool success = GameData.RefundSkin(id, skin.price);
         if (!success)
         {
+            Debug.Log($"[SHOP] Refund FAILED for skin: {id}");
             return;
         }
+
+        Debug.Log($"[SHOP] Refund SUCCESS! New currency: {GameData.GetCurrency()}");
 
         // Update local cache & UI
         purchasedSkinIds.Remove(id);
@@ -233,9 +257,24 @@ public class SkinShopController : MonoBehaviour
 
         // Load all owned skins from GameData
         List<string> ownedSkins = GameData.GetOwnedSkins();
+        Debug.Log($"[SHOP] LoadState: GameData has {ownedSkins.Count} owned skins: {string.Join(", ", ownedSkins)}");
+        
         foreach (string skinId in ownedSkins)
         {
             purchasedSkinIds.Add(skinId);
+        }
+        
+        Debug.Log($"[SHOP] LoadState: Local cache now has {purchasedSkinIds.Count} skins");
+        
+        // Show what ID each skin in catalog generates
+        for (int i = 0; i < skins.Count; i++)
+        {
+            if (skins[i] != null)
+            {
+                string catalogId = GetSkinId(skins[i]);
+                bool owned = purchasedSkinIds.Contains(catalogId);
+                Debug.Log($"[SHOP] Catalog[{i}]: displayName='{skins[i].displayName}', id='{skins[i].id}', generated ID='{catalogId}', owned={owned}");
+            }
         }
     }
 
@@ -252,7 +291,27 @@ public class SkinShopController : MonoBehaviour
     {
         if (skin == null) return false;
         if (skin.unlockedByDefault) return true;
-        return purchasedSkinIds.Contains(GetSkinId(skin));
+        
+        string skinId = GetSkinId(skin);
+        // Check both local cache AND GameData for consistency
+        bool inCache = purchasedSkinIds.Contains(skinId);
+        bool inGameData = GameData.HasSkin(skinId);
+        
+        if (inCache != inGameData)
+        {
+            Debug.LogWarning($"[SHOP] Ownership mismatch for '{skinId}': cache={inCache}, GameData={inGameData}. Using GameData as source of truth.");
+            // Sync the cache with GameData
+            if (inGameData)
+            {
+                purchasedSkinIds.Add(skinId);
+            }
+            else
+            {
+                purchasedSkinIds.Remove(skinId);
+            }
+        }
+        
+        return inGameData;
     }
 
     private string GetSkinId(SkinDefinition skin)
