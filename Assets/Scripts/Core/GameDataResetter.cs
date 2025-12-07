@@ -40,4 +40,24 @@ public class GameDataResetter : MonoBehaviour
         PlayerData data = GameData.LoadPlayerData();
         Debug.Log($"[GameDataResetter] Fresh save loaded: Currency={data.currency}, Skins={data.ownedSkinIds.Count}");
     }
+    
+    // Показать текущие данные игрока (вызвать из Inspector)
+    [ContextMenu("Debug: Show Player Data")]
+    public void DebugShowPlayerData()
+    {
+        PlayerData data = GameData.LoadPlayerData();
+        Debug.Log($"[DEBUG] === PLAYER DATA ===");
+        Debug.Log($"[DEBUG] Currency: {data.currency}");
+        Debug.Log($"[DEBUG] Owned Skins Count: {data.ownedSkinIds?.Count ?? 0}");
+        if (data.ownedSkinIds != null && data.ownedSkinIds.Count > 0)
+        {
+            Debug.Log($"[DEBUG] Owned Skin IDs: {string.Join(", ", data.ownedSkinIds)}");
+        }
+        else
+        {
+            Debug.Log($"[DEBUG] No skins owned");
+        }
+        Debug.Log($"[DEBUG] Equipped Skin: '{data.equippedSkinId}'");
+        Debug.Log($"[DEBUG] ==================");
+    }
 }
