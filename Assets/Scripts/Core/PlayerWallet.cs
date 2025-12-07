@@ -2,19 +2,18 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Keeps track of the player's soft currency (e.g. points used inside the shop).
-/// The value is persisted through PlayerPrefs and exposed via a lightweight singleton.
+/// Mirrors player currency from GameData and publishes currency change events.
+/// This is NOT the authoritative source - it reads from GameData on initialization
+/// and after every operation. Use this for UI updates and event subscriptions.
 /// </summary>
 public class PlayerWallet : MonoBehaviour
 {
-    private const string CurrencyKey = "PlayerWallet_Currency";
-
     public static PlayerWallet Instance { get; private set; }
 
     [Header("Setup")]
-    [Tooltip("Currency that the player starts with if no save exists yet.")]
+    [Tooltip("Currency that the player starts with if no save file exists yet.")]
     [Min(0)]
-    public int startingCurrency = 0;
+    public int startingCurrency = 500;
 
     [Tooltip("Keep this object alive when changing scenes.")]
     public bool dontDestroyOnLoad = true;
@@ -40,7 +39,7 @@ public class PlayerWallet : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
-        LoadCurrency();
+        RefreshFromGameData();
     }
 
     void OnDestroy()
@@ -52,7 +51,7 @@ public class PlayerWallet : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds currency (e.g. awarded after a run).
+    /// Adds currency via GameData and refreshes local mirror.
     /// </summary>
     public void AddCurrency(int amount)
     {
@@ -61,61 +60,51 @@ public class PlayerWallet : MonoBehaviour
             return;
         }
 
-        CurrentCurrency += amount;
-        SaveCurrency();
+        CurrentCurrency = GameData.AddCurrency(amount);
+        CurrencyChanged?.Invoke(CurrentCurrency);
     }
 
     /// <summary>
-    /// Attempts to subtract currency for a purchase.
-    /// Returns true if the transaction succeeded.
+    /// Attempts to spend currency via GameData. Returns true if successful.
+    /// Refreshes local mirror on success.
     /// </summary>
     public bool TrySpendCurrency(int amount)
     {
         if (amount <= 0)
         {
-            return true; // Nothing to spend.
+            return true;
         }
 
-        if (CurrentCurrency < amount)
+        bool success = GameData.TrySpendCurrency(amount);
+        if (success)
         {
-            return false;
+            CurrentCurrency = GameData.GetCurrency();
+            CurrencyChanged?.Invoke(CurrentCurrency);
         }
-
-        CurrentCurrency -= amount;
-        SaveCurrency();
-        return true;
+        return success;
     }
 
     /// <summary>
-    /// Overrides the current amount and saves it immediately.
-    /// Useful for debug buttons in the editor.
+    /// Sets currency to a specific value via GameData and refreshes local mirror.
     /// </summary>
     public void SetCurrency(int newValue)
     {
-        CurrentCurrency = Mathf.Max(0, newValue);
-        SaveCurrency();
-    }
-
-    private void LoadCurrency()
-    {
-        if (PlayerPrefs.HasKey(CurrencyKey))
-        {
-            CurrentCurrency = Mathf.Max(0, PlayerPrefs.GetInt(CurrencyKey, 0));
-        }
-        else
-        {
-            CurrentCurrency = Mathf.Max(0, startingCurrency);
-            PlayerPrefs.SetInt(CurrencyKey, CurrentCurrency);
-            PlayerPrefs.Save();
-        }
-
+        GameData.SetCurrency(newValue);
+        CurrentCurrency = GameData.GetCurrency();
         CurrencyChanged?.Invoke(CurrentCurrency);
     }
 
-    private void SaveCurrency()
+    /// <summary>
+    /// Refreshes CurrentCurrency from GameData (the authoritative source).
+    /// GameData will handle setting the starting currency (5000) for new players.
+    /// </summary>
+    public void RefreshFromGameData()
     {
-        PlayerPrefs.SetInt(CurrencyKey, CurrentCurrency);
-        PlayerPrefs.Save();
+        // Simply get the currency from GameData
+        // GameData.LoadPlayerData() will create new data with 5000 starting currency if needed
+        CurrentCurrency = GameData.GetCurrency();
+        
+        Debug.Log($"[PlayerWallet] Currency loaded: {CurrentCurrency}");
         CurrencyChanged?.Invoke(CurrentCurrency);
     }
 }

@@ -1,10 +1,26 @@
 using UnityEngine;
 
+/// <summary>
+/// Legacy currency manager for backward compatibility.
+/// Delegates all operations to PlayerWallet (if available) or GameData.
+/// No file I/O in this class - all persistence is handled by GameData.
+/// </summary>
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance;
 
-    public int Coins { get; private set; } = 0;
+    public int Coins 
+    { 
+        get 
+        {
+            // Return currency from PlayerWallet if available, otherwise from GameData
+            if (PlayerWallet.Instance != null)
+            {
+                return PlayerWallet.Instance.CurrentCurrency;
+            }
+            return GameData.GetCurrency();
+        }
+    }
 
     void Awake()
     {
@@ -14,18 +30,38 @@ public class CurrencyManager : MonoBehaviour
 
     public void AddCoins(int amount)
     {
-        Coins += amount;
+        // Delegate to PlayerWallet if available, otherwise use GameData
+        if (PlayerWallet.Instance != null)
+        {
+            PlayerWallet.Instance.AddCurrency(amount);
+        }
+        else
+        {
+            GameData.AddCurrency(amount);
+        }
+        
         CurrencyUI.Instance?.UpdateCoinUI(Coins);
     }
 
     public bool SpendCoins(int amount)
     {
-        if (Coins >= amount)
+        bool success;
+        
+        // Delegate to PlayerWallet if available, otherwise use GameData
+        if (PlayerWallet.Instance != null)
         {
-            Coins -= amount;
-            CurrencyUI.Instance?.UpdateCoinUI(Coins);
-            return true;
+            success = PlayerWallet.Instance.TrySpendCurrency(amount);
         }
-        return false;
+        else
+        {
+            success = GameData.TrySpendCurrency(amount);
+        }
+        
+        if (success)
+        {
+            CurrencyUI.Instance?.UpdateCoinUI(Coins);
+        }
+        
+        return success;
     }
 }
