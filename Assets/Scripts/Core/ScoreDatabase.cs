@@ -29,10 +29,22 @@ public static class ScoreDatabase
 
         list.Sort((a, b) => b.score.CompareTo(a.score));
 
-        if (list.Count > 20)
-            list.RemoveRange(20, list.Count - 20);
+        if (list.Count > 10)
+            list.RemoveRange(10, list.Count - 10);
 
         SaveScores(list);
+    }
+
+    /// <summary>
+    /// Delete all saved scores
+    /// </summary>
+    public static void ClearAllScores()
+    {
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            Debug.Log("[ScoreDatabase] All scores cleared.");
+        }
     }
 
     [System.Serializable]

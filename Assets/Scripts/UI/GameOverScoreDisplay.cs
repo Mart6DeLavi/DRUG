@@ -28,17 +28,31 @@ public class GameOverScoreDisplay : MonoBehaviour
 
         // ===== ZAPIS DO BAZY WYNIKÓW =====
 
-        // Data w formie tekstu (łatwa do zapisania w JSON)
-        string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        // Zapisujemy tylko jeśli wynik > 0
+        if (score > 0)
+        {
+            // Data w formie tekstu (łatwa do zapisania w JSON)
+            string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
-        // Tworzymy rekord i dodajemy go do bazy
-        ScoreRecord record = new ScoreRecord(
-            "PLAYER",   // tu później możesz podstawić nick gracza
-            score,
-            time,
-            date
-        );
+            // Tworzymy rekord i dodajemy go do bazy
+            ScoreRecord record = new ScoreRecord(
+                "PLAYER",   // tu później możesz podstawić nick gracza
+                score,
+                time,
+                date
+            );
 
-        ScoreDatabase.AddScore(record);
+            ScoreDatabase.AddScore(record);
+
+            // Odświeżamy wyświetlacz tablicy wyników, jeśli istnieje
+            ScoreboardDisplay scoreboard = FindObjectOfType<ScoreboardDisplay>();
+            if (scoreboard != null)
+            {
+                scoreboard.ShowResults();
+            }
+        }
+
+        // Czyścimy zapisany wynik, żeby nie dodać go ponownie przy następnym uruchomieniu
+        SurvivalScore.ClearLastResults();
     }
 }

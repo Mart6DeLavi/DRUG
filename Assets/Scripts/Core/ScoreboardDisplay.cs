@@ -3,19 +3,40 @@ using TMPro;
 
 public class ScoreboardDisplay : MonoBehaviour
 {
-    public TextMeshProUGUI template;
-    public Transform listParent;
+    [SerializeField] private TextMeshProUGUI template;
+    [SerializeField] private Transform listParent;
 
     void Start()
     {
-        var scores = ScoreDatabase.LoadScores();
+        // Do not call here - will be called from GameOverScoreDisplay after saving
+        // ShowResults();
+    }
 
-        foreach (var s in scores)
+    public void ShowResults()
+    {
+        // Wyczyść stare wpisy (poza szablonem)
+        foreach (Transform child in listParent)
         {
-            var row = Instantiate(template, listParent);
-            row.text = $"{s.playerName} — {s.score} pkt — {s.time:F1} s";
+            if (child != template.transform && child.gameObject != template.gameObject)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
+        // Załaduj wyniki z bazy
+        var scores = ScoreDatabase.LoadScores();
+
+        // Wyświetl każdy wynik w formacie: "1. 1200"
+        for (int i = 0; i < scores.Count; i++)
+        {
+            TextMeshProUGUI entry = Instantiate(template, listParent);
+            entry.text = $"{i + 1}. {scores[i].score}";
+            // Aktywuj AFTER ustawienia tekstu
+            entry.enabled = true;
+            entry.gameObject.SetActive(true);
+        }
+
+        // Ukryj szablon
         template.gameObject.SetActive(false);
     }
 }

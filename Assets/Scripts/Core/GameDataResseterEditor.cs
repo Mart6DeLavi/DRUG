@@ -24,5 +24,10 @@ public class GameDataResetterEditor : Editor
         {
             resetter.ForceLoadFresh();
         }
+
+        if (GUILayout.Button("Clear All Scores"))
+        {
+            ScoreDatabase.ClearAllScores();
+        }
     }
 }
