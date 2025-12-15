@@ -2328,8 +2328,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 57
+  m_fontSizeBase: 57
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2366,7 +2366,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0.00012207031, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2396,8 +2396,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 350, y: 165}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 765, y: 468}
+  m_SizeDelta: {x: 303.7334, y: 57.3251}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &725313302
 GameObject:
@@ -2999,6 +2999,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fa9a37ef1e7c541a03464b696ddf6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeath
+  deathZoneTag: DeathZone
+  obstacleTag: Obstacle
+  upwardIgnoreVelocity: 0.1
 --- !u!114 &850753140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3012,11 +3015,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
-  jumpForce: 20
-  extraJumpAvailable: 1
+  mouseAimedJumpEnabled: 1
+  chargedJumpEnabled: 1
+  minJumpForce: 6
+  maxJumpForce: 12
+  maxChargeTime: 1.2
+  baseMouseJumpForce: 10
+  verticalJumpForce: 10
   moveAcceleration: 50
   maxHorizontalSpeed: 10
   minUpwardY: 0.2
+  maxJumpAngleFromUp: 65
   groundChecks:
   - {fileID: 77070004}
   - {fileID: 341094924}
@@ -3025,6 +3034,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  trajectoryLine: {fileID: 0}
+  enableGroundTrajectory: 1
+  enableAirTrajectory: 1
+  alwaysShowGroundTrajectory: 1
+  trajectorySimulationTime: 1.5
+  trajectorySegments: 25
+  extraJumpAvailable: 1
 --- !u!61 &850753141
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5126,7 +5142,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.000015259}
-  m_SizeDelta: {x: 724, y: 407}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1463909459
 MonoBehaviour:
@@ -5664,8 +5680,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 230, y: 170}
-  m_SizeDelta: {x: 32, y: 32}
+  m_AnchoredPosition: {x: 559, y: 468}
+  m_SizeDelta: {x: 91.4025, y: 91.4025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1813172874
 GameObject:

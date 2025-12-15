@@ -41,7 +41,7 @@ public static class GameData
         {
             // Create new player data with starting currency of 5000
             _cached = new PlayerData();
-            _cached.currency = 5000;
+            _cached.currency = 0;
             
             // Save immediately so the player has their starting currency
             SavePlayerData(_cached);

@@ -12,7 +12,16 @@ public class CurrencyUI : MonoBehaviour
     void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else { Destroy(gameObject); return; }
+    }
+
+    void Start()
+    {
+        // ustaw tekst na aktualn¹ liczbê monet z CurrencyManager
+        if (CurrencyManager.Instance != null)
+        {
+            UpdateCoinUI(CurrencyManager.Instance.Coins);
+        }
     }
 
     public void UpdateCoinUI(int coins)

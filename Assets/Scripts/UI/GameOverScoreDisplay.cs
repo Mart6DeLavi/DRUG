@@ -45,7 +45,7 @@ public class GameOverScoreDisplay : MonoBehaviour
             ScoreDatabase.AddScore(record);
 
             // Odświeżamy wyświetlacz tablicy wyników, jeśli istnieje
-            ScoreboardDisplay scoreboard = FindObjectOfType<ScoreboardDisplay>();
+            ScoreboardDisplay scoreboard = Object.FindFirstObjectByType<ScoreboardDisplay>();
             if (scoreboard != null)
             {
                 scoreboard.ShowResults();
