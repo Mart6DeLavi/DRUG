@@ -1970,10 +1970,29 @@ MonoBehaviour:
   musicSource: {fileID: 1699240818}
   menuMusic: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}
   gameMusic: {fileID: 8300000, guid: 4c0c53a8da8294f45a4d1e3b8c96d11c, type: 3}
-  minMusicPitch: 1
-  maxMusicPitch: 1.3
   buffGoodClip: {fileID: 8300000, guid: e3f789d8dd747af46b8a355a4eb5b7b6, type: 3}
   debuffClip: {fileID: 0}
+  sceneMusic:
+  - sceneName: MainMenu
+    musicClip: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}
+    loop: 1
+    fadeTime: 0.5
+    pitchControl: 0
+    minPitch: 0
+    maxPitch: 0
+    pitchSmooth: 0
+    secondsToMaxTempo: 0
+  - sceneName: GameScene
+    musicClip: {fileID: 8300000, guid: 4c0c53a8da8294f45a4d1e3b8c96d11c, type: 3}
+    loop: 1
+    fadeTime: 0.5
+    pitchControl: 2
+    minPitch: 0.5
+    maxPitch: 10
+    pitchSmooth: 10
+    secondsToMaxTempo: 120
+  fallbackMusic: {fileID: 8300000, guid: d3d6f3c234e908146b307aab4a1320fc, type: 3}
+  fallbackFadeTime: 0.35
 --- !u!4 &1699240816
 Transform:
   m_ObjectHideFlags: 0
