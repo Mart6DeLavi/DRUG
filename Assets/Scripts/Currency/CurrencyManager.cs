@@ -39,8 +39,8 @@ public class CurrencyManager : MonoBehaviour
         {
             GameData.AddCurrency(amount);
         }
-        
-        CurrencyUI.Instance?.UpdateCoinUI(Coins);
+
+        CurrencyUI.Instance?.ShowAndFade(Coins);
     }
 
     public bool SpendCoins(int amount)
