@@ -1978,8 +1978,8 @@ MonoBehaviour:
     loop: 1
     fadeTime: 0.5
     pitchControl: 0
-    minPitch: 0
-    maxPitch: 0
+    minPitch: 1
+    maxPitch: 1
     pitchSmooth: 0
     secondsToMaxTempo: 0
   - sceneName: GameScene
@@ -1987,10 +1987,10 @@ MonoBehaviour:
     loop: 1
     fadeTime: 0.5
     pitchControl: 2
-    minPitch: 0.5
-    maxPitch: 10
-    pitchSmooth: 10
-    secondsToMaxTempo: 120
+    minPitch: 0.9
+    maxPitch: 3
+    pitchSmooth: 5
+    secondsToMaxTempo: 360
   fallbackMusic: {fileID: 8300000, guid: d3d6f3c234e908146b307aab4a1320fc, type: 3}
   fallbackFadeTime: 0.35
 --- !u!4 &1699240816
