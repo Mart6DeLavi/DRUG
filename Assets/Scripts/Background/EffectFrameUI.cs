@@ -18,6 +18,7 @@ public class EffectFrameUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+
     public void ShowBuffFrame()
     {
         if (frameImage == null) return;
@@ -28,7 +29,7 @@ public class EffectFrameUI : MonoBehaviour
     public void ShowDebuffFrame()
     {
         if (frameImage == null) return;
-        frameImage.color = new Color(1f, 0.4f, 0.4f, 0.4f); // light red
+        frameImage.color = new Color(1f, 0f, 0f, 1f); // red
         gameObject.SetActive(true);
     }
 
