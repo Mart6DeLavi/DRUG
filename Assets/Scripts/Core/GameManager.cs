@@ -80,6 +80,32 @@ public class GameManager : MonoBehaviour
             if (lowVisibilityDuration <= 0)
                 lowVisibilityPanel.SetActive(false);
         }
+
+        UpdateEffectFrameVisibility();
+    }
+
+
+    void UpdateEffectFrameVisibility()
+    {
+        bool anyBuff =
+            playerSpeedMultiplier > 1f ||
+            doubleJumpActive;
+
+        bool anyDebuff =
+            controlsReversed ||
+            randomImpulsActive ||
+            playerSpeedMultiplier < 1f;
+            
+        if (!anyBuff && !anyDebuff)
+        {
+            EffectFrameUI.Instance?.HideFrame();
+        }
+        else
+        {   if (anyBuff)
+                EffectFrameUI.Instance?.ShowBuffFrame();
+            else if (anyDebuff)
+                EffectFrameUI.Instance?.ShowDebuffFrame();
+        }
     }
 
     #region Buffes
@@ -92,6 +118,8 @@ public class GameManager : MonoBehaviour
     {
         scoreMultiplier = 2f;
         bonusTime = duration;
+
+        EffectFrameUI.Instance?.ShowBuffFrame();
     }
 
     public void ActivateSlowEnemies(float duration, float slowMultiplier)
@@ -104,6 +132,8 @@ public class GameManager : MonoBehaviour
     {
         playerSpeedMultiplier = speedMultiplier;
         bonusTime = duration;
+
+        EffectFrameUI.Instance?.ShowBuffFrame();
     }
 
     private void ResetBonuses()
@@ -117,6 +147,8 @@ public class GameManager : MonoBehaviour
     {
         doubleJumpActive = true;
         doubleJumpBonusTime = duration;
+
+        EffectFrameUI.Instance?.ShowBuffFrame();
     }
     #endregion
 
@@ -126,12 +158,16 @@ public class GameManager : MonoBehaviour
     {
         controlsReversed = true;
         reverseDuration = duration;
+
+        EffectFrameUI.Instance?.ShowDebuffFrame();
     }
 
     public void ActivateRandomImpulse(float duration)
     {
         randomImpulsActive = true;
         impulsDuration = duration;
+
+        EffectFrameUI.Instance?.ShowDebuffFrame();
     }
 
 
@@ -139,6 +175,8 @@ public class GameManager : MonoBehaviour
     {
         playerSpeedMultiplier = slowMultiplier;
         slowDuration = duration;
+
+        EffectFrameUI.Instance?.ShowDebuffFrame();
     }
 
     public void ActivateLimitedVisibility(float duration)
