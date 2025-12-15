@@ -5531,6 +5531,7 @@ GameObject:
   - component: {fileID: 572256359}
   - component: {fileID: 572256353}
   - component: {fileID: 572256360}
+  - component: {fileID: 572256361}
   - component: {fileID: 572256354}
   - component: {fileID: 572256356}
   - component: {fileID: 572256358}
@@ -5645,6 +5646,8 @@ Transform:
   - {fileID: 376283413}
   - {fileID: 2128039210}
   - {fileID: 1544747219}
+  - {fileID: 1059578831}
+  - {fileID: 1536982500}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &572256352
@@ -5977,6 +5980,36 @@ MonoBehaviour:
   rechargeRate: 1
   infiniteSlow: 0
   currentSlowTime: 0
+--- !u!114 &572256361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572256348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09f62250def3e4507b0c288869369229, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlatformLedgeAssist
+  rb: {fileID: 572256349}
+  playerCollider: {fileID: 572256355}
+  probe: {fileID: 1536982500}
+  platformLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  probeWidth: 0.1
+  probeHeight: 0.8
+  castDistance: 0.5
+  maxStepUp: 100
+  extraStepUp: 50
+  stepUpSpeed: 25
+  minTowardInput: 0.1
+  requireFallingOrNeutralY: 0
+  debugDraw: 1
+  debugHud: 0
+  onlyWhileAirborne: 1
+  groundedRayExtra: 0.05
 --- !u!1 &585302952
 GameObject:
   m_ObjectHideFlags: 0
@@ -6736,6 +6769,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1028121893}
   m_CullTransparentMesh: 1
+--- !u!1 &1059578830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1059578831}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1059578831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059578830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 572256351}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1074475325
 GameObject:
   m_ObjectHideFlags: 0
@@ -7363,6 +7427,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1503279262}
   m_CullTransparentMesh: 1
+--- !u!1 &1536982499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1536982500}
+  m_Layer: 0
+  m_Name: PlatformProbe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1536982500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536982499}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.74, y: -0.762, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 572256351}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1539922888
 GameObject:
   m_ObjectHideFlags: 0
