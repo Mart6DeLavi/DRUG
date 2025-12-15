@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     public float minJumpForce = 6f;
     public float maxJumpForce = 12f;
     public float maxChargeTime = 1.2f;
+    [Tooltip("Charge speed multiplier while charging the DOUBLE JUMP in air (e.g. 2 = 2x faster).")]
+    public float airDoubleJumpChargeMultiplier = 2.5f;
 
     [Header("Non-Charged Jump Settings")]
     public float baseMouseJumpForce = 10f;
@@ -31,9 +33,13 @@ public class PlayerMovement : MonoBehaviour
     public Transform[] groundChecks;
     public float groundCheckRadius = 0.18f;
     public LayerMask groundLayer;
+    [Tooltip("How long (in seconds) ground contact must be detected before considering the player grounded. Helps prevent trajectory flicker.")]
+    public float groundedConfirmTime = 0.05f;
 
     [Header("Trajectory")]
-    public LineRenderer trajectoryLine;
+    public LineRenderer trajectoryLine;          // obecna trajektoria (bez skoku)
+    public LineRenderer chargedTrajectoryLine;   // NOWA: trajektoria skoku podczas charge w powietrzu
+
     public bool enableGroundTrajectory = true;
     public bool enableAirTrajectory = true;
     public bool alwaysShowGroundTrajectory = true;
@@ -42,23 +48,51 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private float groundedConfirmTimer;
     private float moveInput;
 
     private bool isCharging;
     private bool chargeValid;
     private float chargeTimer;
 
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        ClearLine();
-    }
+   void Start()
+{
+    rb = GetComponent<Rigidbody2D>();
+
+    // Porządek w hierarchii: oba LineRenderery jako child gracza
+    if (trajectoryLine != null && trajectoryLine.transform.parent != transform)
+        trajectoryLine.transform.SetParent(transform, true);
+
+    if (chargedTrajectoryLine != null && chargedTrajectoryLine.transform.parent != transform)
+        chargedTrajectoryLine.transform.SetParent(transform, true);
+
+    ClearLine();
+    ClearLine(chargedTrajectoryLine);
+}
 
     void Update()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
         if (GameManager.Instance != null && GameManager.Instance.controlsReversed)
             moveInput *= -1f;
+
+        // Keep grounded state in sync for visuals (trajectory) and input logic.
+        // Debounce ground detection to prevent single-frame overlaps from toggling grounded/air and causing trajectory flicker.
+        bool rawGrounded = IsGrounded();
+        if (rawGrounded)
+        {
+            groundedConfirmTimer += Time.deltaTime;
+            if (groundedConfirmTimer >= groundedConfirmTime)
+            {
+                isGrounded = true;
+                extraJumpAvailable = true;
+            }
+        }
+        else
+        {
+            groundedConfirmTimer = 0f;
+            isGrounded = false;
+        }
 
         bool canJump = isGrounded ||
                        (GameManager.Instance != null &&
@@ -87,7 +121,14 @@ public class PlayerMovement : MonoBehaviour
 
             if (isCharging && chargeValid)
             {
-                chargeTimer += Time.deltaTime;
+                float chargeMult = 1f;
+
+                // Faster charge only when charging the SECOND jump (double jump) in the air
+                if (!isGrounded && GameManager.Instance?.doubleJumpActive == true && extraJumpAvailable)
+                    chargeMult = airDoubleJumpChargeMultiplier;
+
+                chargeTimer += Time.deltaTime * chargeMult;
+
                 if (chargeTimer > maxChargeTime)
                     chargeTimer = maxChargeTime;
             }
@@ -117,11 +158,6 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         ApplyHorizontalMovement();
-
-        isGrounded = IsGrounded();
-
-        if (isGrounded)
-            extraJumpAvailable = true;
     }
 
     // ----------------------------------------------------------
@@ -247,32 +283,53 @@ public class PlayerMovement : MonoBehaviour
     // ----------------------------------------------------------
     //                     TRAJECTORY HANDLING
     // ----------------------------------------------------------
-    private void UpdateTrajectory()
+   private void UpdateTrajectory()
+{
+    if (trajectoryLine == null)
+        return;
+
+    if (isGrounded)
     {
-        if (trajectoryLine == null)
-            return;
+        // Na ziemi druga linia niepotrzebna
+        ClearLine(chargedTrajectoryLine);
 
-        if (isGrounded)
+        if (!enableGroundTrajectory)
         {
-            if (!enableGroundTrajectory)
-            {
-                ClearLine();
-                return;
-            }
+            ClearLine();
+            return;
+        }
 
-            DrawGroundTrajectory();
+        DrawGroundTrajectory();
+    }
+    else
+    {
+        if (!enableAirTrajectory)
+        {
+            ClearLine();
+            ClearLine(chargedTrajectoryLine);
+            return;
+        }
+
+        // 1) Zawsze pokazuj aktualną trajektorię lotu (bez skoku)
+        DrawAirTrajectory();
+
+        // 2) Pokaż dodatkową trajektorię skoku tylko podczas charge w powietrzu
+        if (chargedTrajectoryLine != null && isCharging && chargeValid)
+        {
+            float t = Mathf.Clamp01(chargeTimer / maxChargeTime);
+            float force = Mathf.Lerp(minJumpForce, maxJumpForce, t);
+
+            Vector2 dir = mouseAimedJumpEnabled ? GetMouseDir() : Vector2.up;
+            Vector2 jumpVel = ClampHorizontal(dir * force);
+
+            SimulateTrajectory(chargedTrajectoryLine, rb.position, jumpVel);
         }
         else
         {
-            if (!enableAirTrajectory)
-            {
-                ClearLine();
-                return;
-            }
-
-            DrawAirTrajectory();
+            ClearLine(chargedTrajectoryLine);
         }
     }
+}
 
     private void DrawGroundTrajectory()
     {
@@ -332,25 +389,88 @@ public class PlayerMovement : MonoBehaviour
         {
             float t = dt * i;
             Vector2 pos = startPos + initialVel * t + 0.5f * gravity * t * t;
+
+            // Continuous ground detection to avoid "missing" the floor between segments (which causes flicker)
+            if (i > 0)
+            {
+                Vector2 prev = (Vector2)trajectoryLine.GetPosition(i - 1);
+                Vector2 delta = pos - prev;
+                float dist = delta.magnitude;
+
+                if (dist > 0.0001f)
+                {
+                    RaycastHit2D hit = Physics2D.CircleCast(prev, groundCheckRadius, delta / dist, dist, groundLayer);
+                    if (hit.collider != null)
+                    {
+                        trajectoryLine.SetPosition(i, hit.point);
+                        used++;
+                        break;
+                    }
+                }
+            }
+
             trajectoryLine.SetPosition(i, pos);
             used++;
-
-            bool hit = Physics2D.OverlapCircle(pos, groundCheckRadius, groundLayer);
-            if (hit)
-                break;
         }
 
         trajectoryLine.positionCount = used;
         trajectoryLine.enabled = true;
     }
+private void SimulateTrajectory(LineRenderer line, Vector2 startPos, Vector2 initialVel)
+{
+    if (line == null) return;
 
+    Vector2 gravity = Physics2D.gravity * rb.gravityScale;
+    int maxSeg = Mathf.Max(2, trajectorySegments);
+
+    line.positionCount = maxSeg;
+
+    float dt = trajectorySimulationTime / (maxSeg - 1);
+    int used = 0;
+
+    for (int i = 0; i < maxSeg; i++)
+    {
+        float t = dt * i;
+        Vector2 pos = startPos + initialVel * t + 0.5f * gravity * t * t;
+
+        // Continuous ground detection to avoid "missing" the floor between segments (which causes flicker)
+        if (i > 0)
+        {
+            Vector2 prev = (Vector2)line.GetPosition(i - 1);
+            Vector2 delta = pos - prev;
+            float dist = delta.magnitude;
+
+            if (dist > 0.0001f)
+            {
+                RaycastHit2D hit = Physics2D.CircleCast(prev, groundCheckRadius, delta / dist, dist, groundLayer);
+                if (hit.collider != null)
+                {
+                    line.SetPosition(i, hit.point);
+                    used++;
+                    break;
+                }
+            }
+        }
+
+        line.SetPosition(i, pos);
+        used++;
+    }
+
+    line.positionCount = used;
+    line.enabled = true;
+}
     private void ClearLine()
     {
         if (trajectoryLine == null) return;
         trajectoryLine.positionCount = 0;
         trajectoryLine.enabled = false;
     }
-
+private void ClearLine(LineRenderer line)
+{
+    if (line == null) return;
+    line.positionCount = 0;
+    line.enabled = false;
+}
     // ----------------------------------------------------------
     //                     GROUND CHECK
     // ----------------------------------------------------------
