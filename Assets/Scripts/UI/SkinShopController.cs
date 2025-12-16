@@ -29,6 +29,10 @@ public class SkinShopController : MonoBehaviour
 
         [Tooltip("If enabled the skin is owned from the beginning.")]
         public bool unlockedByDefault = false;
+
+        [Header("Animator")]
+        [Tooltip("Animator używany przez tę skórkę.")]
+        public RuntimeAnimatorController animatorController;
     }
 
     [Header("Catalog")]
@@ -365,7 +369,6 @@ public class SkinShopController : MonoBehaviour
         UpdateCurrencyLabel();
         UpdatePriceLabel(current);
         UpdateBuyButtonState();
-        UpdateRefundButtonState(current);
     }
 
     private void ApplyEmptyState()
@@ -437,30 +440,6 @@ public class SkinShopController : MonoBehaviour
             buyButtonLabel.text = owned ? "Posiadane" : $"Kup ({skin.price})";
         }
     }
-
-    private void UpdateRefundButtonState(SkinDefinition skin)
-    {
-        if (refundButton == null)
-        {
-            return;
-        }
-
-        bool owned = IsSkinOwned(skin);
-        bool canRefund = owned && skin != null && !skin.unlockedByDefault;
-        refundButton.interactable = canRefund;
-        refundButton.gameObject.SetActive(owned);
-
-        if (refundButtonLabel != null)
-        {
-            refundButtonLabel.text = canRefund ? "Ubierz" : (owned ? "Zablokowane" : "Brak");
-        }
-
-        if (previewButton != null)
-        {
-            previewButton.interactable = skin != null;
-        }
-    }
-
     private bool CanAfford(SkinDefinition skin)
     {
         if (skin == null) return false;
@@ -490,6 +469,28 @@ public class SkinShopController : MonoBehaviour
         target.enabled = skin != null && skin.previewSprite != null;
     }
 
+    public void EquipCurrentSkin()
+    {
+        Debug.Log("[SHOP] Equip button clicked!");
+
+        if (!TryGetCurrentSkin(out SkinDefinition skin))
+        {
+            Debug.LogWarning("[SHOP] Cannot equip - no current skin");
+            return;
+        }
+
+        if (!IsSkinOwned(skin))
+        {
+            Debug.LogWarning("[SHOP] Cannot equip - skin not owned");
+            return;
+        }
+
+        string id = GetSkinId(skin);
+        Debug.Log($"[SHOP] Equipping skin: {id}");
+
+        GameData.SetEquippedSkin(id);
+        Debug.Log($"[SHOP] EquippedSkin in GameData is now: {GameData.GetEquippedSkin()}");
+    }
     private int WrapIndex(int index)
     {
         if (skins.Count == 0) return 0;

@@ -1213,7 +1213,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 912557990}
         m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
-        m_MethodName: PreviewCurrentSkin
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1228,7 +1228,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 912557990}
         m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
-        m_MethodName: RefundCurrentSkin
+        m_MethodName: EquipCurrentSkin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1413,7 +1413,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 912557990}
         m_TargetAssemblyTypeName: SkinShopController, Assembly-CSharp
-        m_MethodName: RefundCurrentSkin
+        m_MethodName: EquipCurrentSkin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
