@@ -55,8 +55,11 @@ public class PlayerAnimationController : MonoBehaviour
                     if (skin.previewSprite != null)
                         spriteRenderer.sprite = skin.previewSprite;
 
-                    if (skin.animatorController != null)
-                        animator.runtimeAnimatorController = skin.animatorController;
+                    //if (skin.animatorController != null)
+                    //    animator.runtimeAnimatorController = skin.animatorController;
+
+                    animator.enabled = false;
+
 
                     found = true;
                     break;
