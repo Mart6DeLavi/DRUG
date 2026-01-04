@@ -1,0 +1,60 @@
+﻿using UnityEngine;
+using TMPro;
+
+public class PlayerIdleSpeech : MonoBehaviour
+{
+    public TextMeshProUGUI speechText;   // Tekst w dymku
+    public GameObject speechBubble;       // Cały dymek (Image + Text)
+    public float timeToShow = 4.5f;
+
+    private Vector3 lastPosition;
+    private float idleTimer;
+
+    private string[] messages = {
+        "Przynajmniej zabije mnie czas, a nie twoje umiejętności",
+        "Dobrze Ci idzie:) Nic nie robienie…",
+        "To byłby dobry moment, żeby ruszyć.",
+        "Ściana nie będzie czekać.",
+        "Nie śpiesz się… i tak prędzej czy później umrę",
+        "Ja bym poszedł dalej… ale co ja tam wiem",
+        "Może… strzałka w prawo? Tak tylko sugeruję."
+    };
+
+    void Start()
+    {
+        lastPosition = transform.position;
+        speechBubble.SetActive(false);       // Wyłączamy cały dymek na start
+        speechText.gameObject.SetActive(false); // Wyłączamy też tekst
+    }
+
+    void Update()
+    {
+        // Sprawdzenie czy gracz się rusza
+        if (Vector3.Distance(transform.position, lastPosition) < 0.001f)
+        {
+            idleTimer += Time.deltaTime;
+
+            if (idleTimer >= timeToShow && !speechBubble.activeSelf)
+            {
+                ShowRandomMessage();
+            }
+        }
+        else
+        {
+            idleTimer = 0f;
+            // Wyłączamy cały dymek wraz z tekstem
+            speechBubble.SetActive(false);
+            speechText.gameObject.SetActive(false);
+        }
+
+        lastPosition = transform.position;
+    }
+
+    void ShowRandomMessage()
+    {
+        int index = Random.Range(0, messages.Length);
+        speechText.text = messages[index];   // Ustawiamy losowy tekst
+        speechBubble.SetActive(true);        // Włączamy Image (dymek)
+        speechText.gameObject.SetActive(true); // Włączamy tekst w dymku
+    }
+}
