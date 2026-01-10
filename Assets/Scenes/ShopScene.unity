@@ -1175,26 +1175,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkinShopController
   skins:
-  - id: 1
+  - id: Kozak
     displayName: Kozak
     previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
     price: 200
     unlockedByDefault: 0
-  - id: 2
+    animatorController: {fileID: 0}
+  - id: Student
     displayName: Student
     previewSprite: {fileID: 2319804339520371302, guid: e376ba9359104ad4bb387c6bc9a727ba, type: 3}
     price: 300
     unlockedByDefault: 0
-  - id: 3
+    animatorController: {fileID: 0}
+  - id: Jezus
     displayName: Jezus
     previewSprite: {fileID: 6727483113430113752, guid: f0fa327c63156694b9f5e6efda71bcbb, type: 3}
     price: 300
     unlockedByDefault: 0
+    animatorController: {fileID: 0}
   - id: 4
     displayName: Maciek
     previewSprite: {fileID: -5341746856972362467, guid: c63c90621674147c69965cdaf050102c, type: 3}
     price: 0
     unlockedByDefault: 1
+    animatorController: {fileID: 0}
   leftPreview: {fileID: 0}
   centerPreview: {fileID: 1100887433}
   rightPreview: {fileID: 0}

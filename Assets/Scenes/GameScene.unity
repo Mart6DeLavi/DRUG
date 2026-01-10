@@ -5607,14 +5607,14 @@ GameObject:
   - component: {fileID: 572256355}
   - component: {fileID: 572256352}
   - component: {fileID: 572256357}
-  - component: {fileID: 572256359}
   - component: {fileID: 572256353}
   - component: {fileID: 572256360}
   - component: {fileID: 572256361}
   - component: {fileID: 572256354}
   - component: {fileID: 572256356}
-  - component: {fileID: 572256358}
   - component: {fileID: 572256362}
+  - component: {fileID: 572256363}
+  - component: {fileID: 572256364}
   m_Layer: 0
   m_Name: Maciek
   m_TagString: Player
@@ -6008,67 +6008,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
---- !u!95 &572256358
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 572256348}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 58ea0734b08e11b409f0cc27eb2e3bef, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!114 &572256359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 572256348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7396d302c1fda49429dc167a9ebc45b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
-  speedXParamName: SpeedX
-  moveThreshold: 0.1
-  allSkins:
-  - id: 1
-    displayName: Kozak
-    previewSprite: {fileID: 4192656850626919130, guid: 9533f6922a1d0814a95fd9add5034c87, type: 3}
-    price: 0
-    unlockedByDefault: 0
-    animatorController: {fileID: 9100000, guid: 8960ecd87941e1c409f009857308d35e, type: 2}
-  - id: 2
-    displayName: Student
-    previewSprite: {fileID: 2319804339520371302, guid: e376ba9359104ad4bb387c6bc9a727ba, type: 3}
-    price: 0
-    unlockedByDefault: 0
-    animatorController: {fileID: 0}
-  - id: 3
-    displayName: "Jez\xF3s"
-    previewSprite: {fileID: 6727483113430113752, guid: f0fa327c63156694b9f5e6efda71bcbb, type: 3}
-    price: 0
-    unlockedByDefault: 0
-    animatorController: {fileID: 0}
-  - id: 4
-    displayName: Maciej
-    previewSprite: {fileID: -5341746856972362467, guid: c63c90621674147c69965cdaf050102c, type: 3}
-    price: 0
-    unlockedByDefault: 1
-    animatorController: {fileID: 9100000, guid: 331972f7d47a97447b7d24ea4a77ae01, type: 2}
 --- !u!114 &572256360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6131,6 +6070,62 @@ MonoBehaviour:
   speechText: {fileID: 1899268561}
   speechBubble: {fileID: 6934170}
   timeToShow: 4.5
+--- !u!95 &572256363
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572256348}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6d211b534809d7c4b84a953bc878e40b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &572256364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572256348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7396d302c1fda49429dc167a9ebc45b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
+  speedXParamName: SpeedX
+  isGroundedParam: IsGrounded
+  moveThreshold: 0.5
+  allSkins:
+  - id: Jezus
+    displayName: Jezus
+    previewSprite: {fileID: -197333469605160478, guid: b7f53ae51c04a934483e78efd800b615, type: 3}
+    price: 0
+    unlockedByDefault: 0
+    animatorController: {fileID: 22100000, guid: 133527b850c31484b9069f3024de4a7c, type: 2}
+  - id: Kozak
+    displayName: Kozak
+    previewSprite: {fileID: 5228714860006048073, guid: 1fa303c787bf23d4492cd63ee5a03d6b, type: 3}
+    price: 0
+    unlockedByDefault: 0
+    animatorController: {fileID: 22100000, guid: b0a85da127ca8104eab6658b05e6323a, type: 2}
+  - id: Student
+    displayName: Student
+    previewSprite: {fileID: -7540735299569867749, guid: c6651668de728cb46818335ff56b467f, type: 3}
+    price: 0
+    unlockedByDefault: 0
+    animatorController: {fileID: 22100000, guid: ea65f3d68e7a09b449a6a44f8a054afb, type: 2}
 --- !u!1 &585302952
 GameObject:
   m_ObjectHideFlags: 0
@@ -8714,7 +8709,7 @@ MonoBehaviour:
   m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

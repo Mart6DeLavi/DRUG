@@ -1,31 +1,28 @@
 fileFormatVersion: 2
-guid: abc0d0c87e5395c46b886d67fcc9609a
+guid: dbf9905f4ca7a194a90e9aafe6383f18
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2976405827689306012
-    second: Jezus_right_walk_0
+      213: -4872237776905088973
+    second: Kozak_right_jump_0
   - first:
-      213: -8103726048958921634
-    second: Jezus_right_walk_1
+      213: -7833011124579188040
+    second: Kozak_right_jump_1
   - first:
-      213: -7267650055458536034
-    second: Jezus_right_walk_2
+      213: 7211641326774040602
+    second: Kozak_right_jump_2
   - first:
-      213: 6742992568507357420
-    second: Jezus_right_walk_3
+      213: 1776537681557648110
+    second: Kozak_right_jump_3
   - first:
-      213: 5971233258055101034
-    second: Jezus_right_walk_4
+      213: 369921354916559069
+    second: Kozak_right_jump_4
   - first:
-      213: 288061108293546739
-    second: Jezus_right_walk_5
+      213: 5353650867564808858
+    second: Kozak_right_jump_5
   - first:
-      213: -884819901785922993
-    second: Jezus_right_walk_6
-  - first:
-      213: 850693143336951224
-    second: Jezus_right_walk_7
+      213: 2457885869970579034
+    second: Kozak_right_jump_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,13 +131,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jezus_right_walk_0
+      name: Kozak_right_jump_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 5
         y: 0
-        width: 18
-        height: 40
+        width: 17
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,20 +146,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c97d2d2a4515e4920800000000000000
-      internalID: 2976405827689306012
+      spriteID: 330555e5e85526cb0800000000000000
+      internalID: -4872237776905088973
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_1
+      name: Kozak_right_jump_1
       rect:
         serializedVersion: 2
         x: 28
         y: 0
-        width: 18
-        height: 40
+        width: 17
+        height: 37
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -171,20 +168,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e5449b60818c98f80800000000000000
-      internalID: -8103726048958921634
+      spriteID: 8b246cd12ed8b4390800000000000000
+      internalID: -7833011124579188040
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_2
+      name: Kozak_right_jump_2
       rect:
         serializedVersion: 2
         x: 51
         y: 0
         width: 19
-        height: 40
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,20 +190,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e95cb8cb7ce142b90800000000000000
-      internalID: -7267650055458536034
+      spriteID: a18b4e9e395e41460800000000000000
+      internalID: 7211641326774040602
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_3
+      name: Kozak_right_jump_3
       rect:
         serializedVersion: 2
-        x: 76
+        x: 74
         y: 0
-        width: 18
-        height: 40
+        width: 21
+        height: 35
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,42 +212,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ce8daf0e30ce39d50800000000000000
-      internalID: 6742992568507357420
+      spriteID: ee2f65fdb9787a810800000000000000
+      internalID: 1776537681557648110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_4
+      name: Kozak_right_jump_4
       rect:
         serializedVersion: 2
-        x: 100
-        y: 0
-        width: 18
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a6a6f51e2051ed250800000000000000
-      internalID: 5971233258055101034
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jezus_right_walk_5
-      rect:
-        serializedVersion: 2
-        x: 123
+        x: 99
         y: 0
         width: 19
-        height: 40
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -259,20 +234,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3f231714d066ff300800000000000000
-      internalID: 288061108293546739
+      spriteID: dd8f1aa2389322500800000000000000
+      internalID: 369921354916559069
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_6
+      name: Kozak_right_jump_5
       rect:
         serializedVersion: 2
-        x: 147
+        x: 124
         y: 0
-        width: 19
-        height: 40
+        width: 17
+        height: 37
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -281,20 +256,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f42aadfbcfc78b3f0800000000000000
-      internalID: -884819901785922993
+      spriteID: a9a89a4691dfb4a40800000000000000
+      internalID: 5353650867564808858
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_7
+      name: Kozak_right_jump_6
       rect:
         serializedVersion: 2
-        x: 171
+        x: 149
         y: 0
-        width: 19
-        height: 40
+        width: 17
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -303,8 +278,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8bd957d18e44ecb00800000000000000
-      internalID: 850693143336951224
+      spriteID: a5e5c022d2a2c1220800000000000000
+      internalID: 2457885869970579034
       vertices: []
       indices: 
       edges: []
@@ -313,7 +288,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b35b522a0eb1b0b4e8e5124ab0224d18
+    spriteID: 30ddca56f3302984dad35ad4dd645840
     internalID: 0
     vertices: []
     indices: 
@@ -325,14 +300,13 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Jezus_right_walk_0: 2976405827689306012
-      Jezus_right_walk_1: -8103726048958921634
-      Jezus_right_walk_2: -7267650055458536034
-      Jezus_right_walk_3: 6742992568507357420
-      Jezus_right_walk_4: 5971233258055101034
-      Jezus_right_walk_5: 288061108293546739
-      Jezus_right_walk_6: -884819901785922993
-      Jezus_right_walk_7: 850693143336951224
+      Kozak_right_jump_0: -4872237776905088973
+      Kozak_right_jump_1: -7833011124579188040
+      Kozak_right_jump_2: 7211641326774040602
+      Kozak_right_jump_3: 1776537681557648110
+      Kozak_right_jump_4: 369921354916559069
+      Kozak_right_jump_5: 5353650867564808858
+      Kozak_right_jump_6: 2457885869970579034
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

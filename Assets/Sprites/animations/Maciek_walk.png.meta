@@ -1,31 +1,37 @@
 fileFormatVersion: 2
-guid: abc0d0c87e5395c46b886d67fcc9609a
+guid: 51d45c25798b6cc47be96521a698f880
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2976405827689306012
-    second: Jezus_right_walk_0
+      213: -6546479750824125623
+    second: Maciek_walk_0
   - first:
-      213: -8103726048958921634
-    second: Jezus_right_walk_1
+      213: -6218114308890908576
+    second: Maciek_walk_1
   - first:
-      213: -7267650055458536034
-    second: Jezus_right_walk_2
+      213: 530302988744598621
+    second: Maciek_walk_2
   - first:
-      213: 6742992568507357420
-    second: Jezus_right_walk_3
+      213: 1539969927121159269
+    second: Maciek_walk_3
   - first:
-      213: 5971233258055101034
-    second: Jezus_right_walk_4
+      213: -8940203872291992070
+    second: Maciek_walk_4
   - first:
-      213: 288061108293546739
-    second: Jezus_right_walk_5
+      213: 5579628935042897661
+    second: Maciek_walk_5
   - first:
-      213: -884819901785922993
-    second: Jezus_right_walk_6
+      213: -892800142787185182
+    second: Maciek_walk_6
   - first:
-      213: 850693143336951224
-    second: Jezus_right_walk_7
+      213: 1810039770621539957
+    second: Maciek_walk_7
+  - first:
+      213: 2413088336587388411
+    second: Maciek_walk_8
+  - first:
+      213: -132791884504360125
+    second: Maciek_walk_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,12 +140,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jezus_right_walk_0
+      name: Maciek_walk_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 0
         y: 0
-        width: 18
+        width: 21
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -149,19 +155,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c97d2d2a4515e4920800000000000000
-      internalID: 2976405827689306012
+      spriteID: 94b17d2f95b3625a0800000000000000
+      internalID: -6546479750824125623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_1
+      name: Maciek_walk_1
       rect:
         serializedVersion: 2
-        x: 28
+        x: 24
         y: 0
-        width: 18
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -171,19 +177,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e5449b60818c98f80800000000000000
-      internalID: -8103726048958921634
+      spriteID: 068a8c52bf1d4b9a0800000000000000
+      internalID: -6218114308890908576
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_2
+      name: Maciek_walk_2
       rect:
         serializedVersion: 2
-        x: 51
+        x: 48
         y: 0
-        width: 19
+        width: 23
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -193,19 +199,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e95cb8cb7ce142b90800000000000000
-      internalID: -7267650055458536034
+      spriteID: d54237332c30c5700800000000000000
+      internalID: 530302988744598621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_3
+      name: Maciek_walk_3
       rect:
         serializedVersion: 2
-        x: 76
+        x: 72
         y: 0
-        width: 18
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -215,19 +221,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ce8daf0e30ce39d50800000000000000
-      internalID: 6742992568507357420
+      spriteID: 56447d65d721f5510800000000000000
+      internalID: 1539969927121159269
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_4
+      name: Maciek_walk_4
       rect:
         serializedVersion: 2
-        x: 100
+        x: 96
         y: 0
-        width: 18
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -237,19 +243,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6a6f51e2051ed250800000000000000
-      internalID: 5971233258055101034
+      spriteID: afdc67402f30ee380800000000000000
+      internalID: -8940203872291992070
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_5
+      name: Maciek_walk_5
       rect:
         serializedVersion: 2
-        x: 123
+        x: 120
         y: 0
-        width: 19
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -259,19 +265,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3f231714d066ff300800000000000000
-      internalID: 288061108293546739
+      spriteID: df619bb44f2de6d40800000000000000
+      internalID: 5579628935042897661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_6
+      name: Maciek_walk_6
       rect:
         serializedVersion: 2
-        x: 147
+        x: 144
         y: 0
-        width: 19
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -281,19 +287,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f42aadfbcfc78b3f0800000000000000
-      internalID: -884819901785922993
+      spriteID: 2e570c910032c93f0800000000000000
+      internalID: -892800142787185182
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_7
+      name: Maciek_walk_7
       rect:
         serializedVersion: 2
-        x: 171
+        x: 168
         y: 0
-        width: 19
+        width: 22
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -303,8 +309,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8bd957d18e44ecb00800000000000000
-      internalID: 850693143336951224
+      spriteID: 576f935d49d8e1910800000000000000
+      internalID: 1810039770621539957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maciek_walk_8
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 23
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf5fde99e030d7120800000000000000
+      internalID: 2413088336587388411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maciek_walk_9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 21
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b101f0c7a382ef0800000000000000
+      internalID: -132791884504360125
       vertices: []
       indices: 
       edges: []
@@ -313,7 +363,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b35b522a0eb1b0b4e8e5124ab0224d18
+    spriteID: 23f5125433cf84340808969f796677b4
     internalID: 0
     vertices: []
     indices: 
@@ -325,14 +375,16 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Jezus_right_walk_0: 2976405827689306012
-      Jezus_right_walk_1: -8103726048958921634
-      Jezus_right_walk_2: -7267650055458536034
-      Jezus_right_walk_3: 6742992568507357420
-      Jezus_right_walk_4: 5971233258055101034
-      Jezus_right_walk_5: 288061108293546739
-      Jezus_right_walk_6: -884819901785922993
-      Jezus_right_walk_7: 850693143336951224
+      Maciek_walk_0: -6546479750824125623
+      Maciek_walk_1: -6218114308890908576
+      Maciek_walk_2: 530302988744598621
+      Maciek_walk_3: 1539969927121159269
+      Maciek_walk_4: -8940203872291992070
+      Maciek_walk_5: 5579628935042897661
+      Maciek_walk_6: -892800142787185182
+      Maciek_walk_7: 1810039770621539957
+      Maciek_walk_8: 2413088336587388411
+      Maciek_walk_9: -132791884504360125
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

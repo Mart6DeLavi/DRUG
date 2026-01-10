@@ -499,4 +499,6 @@ private void ClearLine(LineRenderer line)
 
     // Double jump flag from original code
     public bool extraJumpAvailable = true;
+    public bool IsGroundedAnim => isGrounded;
+
 }

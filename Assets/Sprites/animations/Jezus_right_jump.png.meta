@@ -1,31 +1,28 @@
 fileFormatVersion: 2
-guid: abc0d0c87e5395c46b886d67fcc9609a
+guid: 759c2fe9236329249af62bccf39ee992
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2976405827689306012
-    second: Jezus_right_walk_0
+      213: -6486936656381491002
+    second: Jezus_right_jump_0
   - first:
-      213: -8103726048958921634
-    second: Jezus_right_walk_1
+      213: -1146845718532154810
+    second: Jezus_right_jump_1
   - first:
-      213: -7267650055458536034
-    second: Jezus_right_walk_2
+      213: -1056884684331903200
+    second: Jezus_right_jump_2
   - first:
-      213: 6742992568507357420
-    second: Jezus_right_walk_3
+      213: 829046184062445451
+    second: Jezus_right_jump_3
   - first:
-      213: 5971233258055101034
-    second: Jezus_right_walk_4
+      213: -439913322275842168
+    second: Jezus_right_jump_4
   - first:
-      213: 288061108293546739
-    second: Jezus_right_walk_5
+      213: 1382015263284916250
+    second: Jezus_right_jump_5
   - first:
-      213: -884819901785922993
-    second: Jezus_right_walk_6
-  - first:
-      213: 850693143336951224
-    second: Jezus_right_walk_7
+      213: 60080279333448226
+    second: Jezus_right_jump_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,177 +131,155 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jezus_right_walk_0
+      name: Jezus_right_jump_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 3
         y: 0
-        width: 18
+        width: 20
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c97d2d2a4515e4920800000000000000
-      internalID: 2976405827689306012
+      spriteID: 6c8cbe3fa75c9f5a0800000000000000
+      internalID: -6486936656381491002
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_1
+      name: Jezus_right_jump_1
       rect:
         serializedVersion: 2
-        x: 28
+        x: 27
         y: 0
-        width: 18
+        width: 20
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e5449b60818c98f80800000000000000
-      internalID: -8103726048958921634
+      spriteID: 64a96be25e59510f0800000000000000
+      internalID: -1146845718532154810
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_2
+      name: Jezus_right_jump_2
       rect:
         serializedVersion: 2
-        x: 51
+        x: 50
         y: 0
-        width: 19
+        width: 21
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e95cb8cb7ce142b90800000000000000
-      internalID: -7267650055458536034
+      spriteID: 02798ddaaf03551f0800000000000000
+      internalID: -1056884684331903200
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_3
+      name: Jezus_right_jump_3
       rect:
         serializedVersion: 2
-        x: 76
+        x: 75
         y: 0
-        width: 18
-        height: 40
+        width: 20
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ce8daf0e30ce39d50800000000000000
-      internalID: 6742992568507357420
+      spriteID: b876f67ac1d518b00800000000000000
+      internalID: 829046184062445451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_4
+      name: Jezus_right_jump_4
       rect:
         serializedVersion: 2
-        x: 100
+        x: 98
         y: 0
-        width: 18
+        width: 21
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6a6f51e2051ed250800000000000000
-      internalID: 5971233258055101034
+      spriteID: 88759c50a2d15e9f0800000000000000
+      internalID: -439913322275842168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_5
+      name: Jezus_right_jump_5
       rect:
         serializedVersion: 2
         x: 123
         y: 0
-        width: 19
+        width: 20
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3f231714d066ff300800000000000000
-      internalID: 288061108293546739
+      spriteID: a10f34a4f87ed2310800000000000000
+      internalID: 1382015263284916250
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jezus_right_walk_6
+      name: Jezus_right_jump_6
       rect:
         serializedVersion: 2
         x: 147
         y: 0
-        width: 19
+        width: 20
         height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f42aadfbcfc78b3f0800000000000000
-      internalID: -884819901785922993
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jezus_right_walk_7
-      rect:
-        serializedVersion: 2
-        x: 171
-        y: 0
-        width: 19
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8bd957d18e44ecb00800000000000000
-      internalID: 850693143336951224
+      spriteID: 22a2dab12b275d000800000000000000
+      internalID: 60080279333448226
       vertices: []
       indices: 
       edges: []
@@ -313,7 +288,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b35b522a0eb1b0b4e8e5124ab0224d18
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -321,18 +296,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Jezus_right_walk_0: 2976405827689306012
-      Jezus_right_walk_1: -8103726048958921634
-      Jezus_right_walk_2: -7267650055458536034
-      Jezus_right_walk_3: 6742992568507357420
-      Jezus_right_walk_4: 5971233258055101034
-      Jezus_right_walk_5: 288061108293546739
-      Jezus_right_walk_6: -884819901785922993
-      Jezus_right_walk_7: 850693143336951224
+      Jezus_right_jump_0: -6486936656381491002
+      Jezus_right_jump_1: -1146845718532154810
+      Jezus_right_jump_2: -1056884684331903200
+      Jezus_right_jump_3: 829046184062445451
+      Jezus_right_jump_4: -439913322275842168
+      Jezus_right_jump_5: 1382015263284916250
+      Jezus_right_jump_6: 60080279333448226
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
