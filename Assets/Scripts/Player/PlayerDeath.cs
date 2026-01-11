@@ -4,13 +4,13 @@ using UnityEngine.SceneManagement;
 public class PlayerDeath : MonoBehaviour
 {
     [Header("Death settings")]
-    [Tooltip("Tag strefy natychmiastowej śmierci (np. dół mapy).")]
+    [Tooltip("Tag for instant death zone (e.g. bottom of map).")]
     public string deathZoneTag = "DeathZone";
 
-    [Tooltip("Tag lawy / przeszkód śmiertelnych.")]
+    [Tooltip("Tag for lava / deadly obstacles.")]
     public string obstacleTag = "Obstacle";
 
-    [Tooltip("Jeśli gracz porusza się szybciej w górę niż ta wartość, zderzenie z lawą jest ignorowane.")]
+    [Tooltip("If player moves upward faster than this value, collision with lava is ignored.")]
     public float upwardIgnoreVelocity = 0.1f;
 
     private Rigidbody2D rb;
@@ -22,19 +22,19 @@ public class PlayerDeath : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // 1) klasyczna strefa śmierci – zawsze zabija
+        // 1) classic death zone – always kills
         if (other.CompareTag(obstacleTag))
         {
             Die();
             return;
         }
 
-        // 2) lawa / przeszkody: zabijają tylko jeśli nie lecimy wyraźnie do góry
+        // 2) lava / obstacles: kill only if not flying clearly upward
         if (other.CompareTag(deathZoneTag))
         {
             if (rb != null && rb.linearVelocity.y > upwardIgnoreVelocity)
             {
-                // Skaczemy w górę w lawę od spodu -> ignorujemy
+                // Jumping upward into lava from below -> ignore
                 return;
             }
 
@@ -50,7 +50,7 @@ public class PlayerDeath : MonoBehaviour
         if (sounds != null)
             sounds.PlayDeathSound();
 
-        // efekt cząsteczkowy śmierci
+        // death particle effect
         PlayerVfxController vfx = GetComponent<PlayerVfxController>();
         if (vfx != null)
             vfx.PlayDeathEffect();

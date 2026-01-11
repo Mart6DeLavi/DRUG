@@ -373,7 +373,7 @@ public class SkinShopController : MonoBehaviour
 
     private void ApplyEmptyState()
     {
-        if (skinNameLabel != null) skinNameLabel.text = "Brak skinów";
+        if (skinNameLabel != null) skinNameLabel.text = "No skins";
         if (priceLabel != null) priceLabel.text = "-";
         UpdateCurrencyLabel(); // Use the same method for consistency
         SetPreviewImage(leftPreview, null);
@@ -440,6 +440,30 @@ public class SkinShopController : MonoBehaviour
             buyButtonLabel.text = owned ? "Posiadane" : $"Kup ({skin.price})";
         }
     }
+
+    private void UpdateRefundButtonState(SkinDefinition skin)
+    {
+        if (refundButton == null)
+        {
+            return;
+        }
+
+        bool owned = IsSkinOwned(skin);
+        bool canRefund = owned && skin != null && !skin.unlockedByDefault;
+        refundButton.interactable = canRefund;
+        refundButton.gameObject.SetActive(owned);
+
+        if (refundButtonLabel != null)
+        {
+            refundButtonLabel.text = canRefund ? "Equip" : (owned ? "Locked" : "None");
+        }
+
+        if (previewButton != null)
+        {
+            previewButton.interactable = skin != null;
+        }
+    }
+
     private bool CanAfford(SkinDefinition skin)
     {
         if (skin == null) return false;

@@ -90,6 +90,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        // simple singleton to avoid duplicates between scenes
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -169,7 +170,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ===================== SFX =====================
+    // ============= SFX (clicks) =============
 
     public void PlaySfx(AudioClip clip)
     {
@@ -277,8 +278,14 @@ public class AudioManager : MonoBehaviour
         musicSource.clip = null;
     }
 
-    // ===================== TEMPO / PITCH =====================
+        // ============= GAME SPEED -> MUSIC TEMPO =============
 
+    /// <summary>
+    /// normalizedSpeed – value 0..1
+    /// 0  -> minMusicPitch
+    /// 1  -> maxMusicPitch
+    /// Call this where you update game speed.
+    /// </summary>
     public void SetGameSpeed01(float normalizedSpeed)
     {
         _gameSpeed01 = Mathf.Clamp01(normalizedSpeed);

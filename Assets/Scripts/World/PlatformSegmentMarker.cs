@@ -4,5 +4,5 @@ public class PlatformSegmentMarker : MonoBehaviour
 {
     public float startX;
     public float endX;
-    public float yCenter;   // do sprawdzania dystansu między segmentami
+    public float yCenter;   // for checking distance between segments
 }

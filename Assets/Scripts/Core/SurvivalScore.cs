@@ -8,12 +8,12 @@ public class SurvivalScore : MonoBehaviour
     private float multiplierTimer = 0f;
     public static SurvivalScore Instance { get; private set; }
 
-    [Header("Konfiguracja punktacji czasu przetrwania")]
-    [Tooltip("Ile punktów na sekundę przetrwania.")]
+    [Header("Survival time scoring configuration")]
+    [Tooltip("Points per second survived.")]
     public float pointsPerSecond = 10f;
 
-    [Header("UI (opcjonalne)")] 
-    [Tooltip("Tekst TMP do wyświetlania bieżącego wyniku.")]
+    [Header("UI (optional)")] 
+    [Tooltip("TMP text to display current score.")]
     public TextMeshProUGUI scoreText;
 
     public float TimeSurvived { get; private set; }
@@ -46,7 +46,7 @@ public class SurvivalScore : MonoBehaviour
         CurrentScore = Mathf.FloorToInt(TimeSurvived * pointsPerSecond);
         if (scoreText != null)
         {
-            scoreText.text = $"Wynik: {CurrentScore}";
+            scoreText.text = $"Score: {CurrentScore}";
         }
 
         // Apply multiplier for BUFF
@@ -72,7 +72,7 @@ public class SurvivalScore : MonoBehaviour
         PlayerPrefs.SetFloat("LastSurvivalTime", TimeSurvived);
     }
 
-    // Resetuje stan bieżącej rundy (dla nowej gry w tej samej sesji)
+    // Resets current run state (for new game in same session)
     public void ResetState()
     {
         isActive = true;
@@ -81,11 +81,11 @@ public class SurvivalScore : MonoBehaviour
         FinalScore = 0;
         if (scoreText != null)
         {
-            scoreText.text = "Wynik: 0";
+            scoreText.text = "Score: 0";
         }
     }
 
-    // Czyści zapamiętany wynik z PlayerPrefs i ewentualny stan instancji
+    // Clears remembered result from PlayerPrefs and optional instance state
     public static void ClearLastResults()
     {
         PlayerPrefs.DeleteKey("LastSurvivalScore");

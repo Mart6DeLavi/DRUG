@@ -38,7 +38,7 @@ public class DisappearingTile : MonoBehaviour
         StartCoroutine(DisappearRoutine());
     }
 
-    // Jeśli kiedyś zechcesz używać triggerów zamiast kolizji, możesz odkomentować:
+    // If you ever want to use triggers instead of collisions, you can uncomment:
 //  void OnTriggerEnter2D(Collider2D other)
 //  {
 //      if (triggered) return;
@@ -50,20 +50,20 @@ public class DisappearingTile : MonoBehaviour
 
     private IEnumerator DisappearRoutine()
     {
-        // Czekamy przed startem zanikania
+        // Wait before starting to fade
         if (delayBeforeDisappear > 0f)
             yield return new WaitForSeconds(delayBeforeDisappear);
 
         if (affectWholeSegment && transform.parent != null)
         {
-            // DZIAŁAMY NA CAŁEJ PLATFORMIE (segment)
+            // ACT ON WHOLE PLATFORM (segment)
             SpriteRenderer[] sprites = transform.parent.GetComponentsInChildren<SpriteRenderer>();
             Collider2D[] colliders = transform.parent.GetComponentsInChildren<Collider2D>();
 
             // Fade OUT
             yield return Fade(sprites, 1f, 0f);
 
-            // Wyłączamy collidery (pomijając triggery, jeśli tak ustawione)
+            // Disable colliders (skipping triggers if set)
             foreach (Collider2D col in colliders)
             {
                 if (ignoreTriggerTiles && col.isTrigger) continue;
@@ -72,7 +72,7 @@ public class DisappearingTile : MonoBehaviour
         }
         else
         {
-            // TYLKO TEN JEDEN TILE
+            // ONLY THIS ONE TILE
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
             Collider2D col = GetComponent<Collider2D>();
 
@@ -82,11 +82,11 @@ public class DisappearingTile : MonoBehaviour
                 if (col != null) col.enabled = false;
         }
 
-        // Nie wracamy – koniec
+        // Don't return – end
         if (delayBeforeReappear <= 0f)
             yield break;
 
-        // Czekamy przed powrotem
+        // Wait before return
         yield return new WaitForSeconds(delayBeforeReappear);
 
         if (affectWholeSegment && transform.parent != null)
@@ -94,7 +94,7 @@ public class DisappearingTile : MonoBehaviour
             SpriteRenderer[] sprites = transform.parent.GetComponentsInChildren<SpriteRenderer>();
             Collider2D[] colliders = transform.parent.GetComponentsInChildren<Collider2D>();
 
-            // Włączamy collidery z powrotem
+            // Enable colliders back
             foreach (Collider2D col in colliders)
             {
                 if (ignoreTriggerTiles && col.isTrigger) continue;
@@ -121,7 +121,7 @@ public class DisappearingTile : MonoBehaviour
     private IEnumerator Fade(SpriteRenderer[] sprites, float from, float to)
     {
         float time = 0f;
-        float duration = Mathf.Max(0.0001f, fadeDuration); // żeby nie dzielić przez zero
+        float duration = Mathf.Max(0.0001f, fadeDuration); // so we don't divide by zero
 
         while (time < duration)
         {
@@ -135,7 +135,7 @@ public class DisappearingTile : MonoBehaviour
                 {
                     Collider2D col = sr.GetComponent<Collider2D>();
                     if (col != null && col.isTrigger)
-                        continue; // pomijamy np. lawę
+                        continue; // skip e.g. lava
                 }
 
                 Color c = sr.color;
@@ -147,7 +147,7 @@ public class DisappearingTile : MonoBehaviour
             yield return null;
         }
 
-        // ustawiamy końcową alphę „na sztywno”
+        // set final alpha "hard"
         foreach (SpriteRenderer sr in sprites)
         {
             if (!sr) continue;

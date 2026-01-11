@@ -4,20 +4,20 @@ using UnityEngine.SceneManagement;
 public class GameOverController : MonoBehaviour
 {
     [SerializeField]
-    [Tooltip("Nazwa sceny z rozgrywką, która ma zostać załadowana po kliknięciu Zagraj ponownie.")]
+    [Tooltip("Name of gameplay scene to load after clicking Play Again.")]
     private string gameSceneName = "GameScene";
 
-    // Przypnij tę metodę do przycisku "Zagraj ponownie" (OnClick)
+    // Attach this method to "Play Again" button (OnClick)
     public void OnPlayAgain()
     {
-        // Upewnij się, że gra nie jest spauzowana
+        // Make sure game is not paused
         Time.timeScale = 1f;
         AudioListener.pause = false;
 
-        // Wyczyść poprzednie wyniki/stan rundy
+        // Clear previous results/round state
         SurvivalScore.ClearLastResults();
 
-        // Wczytaj wskazaną scenę jeśli dostępna, inaczej przeładuj bieżącą
+        // Load specified scene if available, otherwise reload current
         string targetScene = string.IsNullOrEmpty(gameSceneName) ? "GameScene" : gameSceneName;
         if (Application.CanStreamedLevelBeLoaded(targetScene))
         {

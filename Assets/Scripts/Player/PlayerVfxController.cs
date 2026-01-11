@@ -19,7 +19,7 @@ public class PlayerVfxController : MonoBehaviour
     private PlayerMovement playerMovement;
     private Rigidbody2D rb;
 
-    // Flaga: po skoku czekamy na pierwsze lądowanie
+    // Flag: after jump we wait for first landing
     private bool pendingLandEffect = false;
 
     void Awake()
@@ -45,48 +45,48 @@ public class PlayerVfxController : MonoBehaviour
     }
 
     /// <summary>
-    /// Wywoływane, gdy PlayerMovement robi skok (OnJump event).
+    /// Called when PlayerMovement performs a jump (OnJump event).
     /// </summary>
     private void HandleJump()
     {
-        // Efekt skoku
+        // Jump effect
         if (jumpEffect != null)
         {
             jumpEffect.transform.position = transform.position;
             jumpEffect.Play();
         }
 
-        // Po skoku oczekujemy na pierwsze lądowanie
+        // After jump we await first landing
         pendingLandEffect = true;
     }
 
     /// <summary>
-    /// Pierwsza kolizja z ziemią po skoku odpala efekt lądowania (tylko raz).
+    /// First ground collision after jump triggers landing effect (only once).
     /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!pendingLandEffect || landEffect == null)
             return;
 
-        // Sprawdź, czy obiekt jest na warstwie groundLayer
+        // Check if object is on groundLayer
         int otherLayerMask = 1 << collision.gameObject.layer;
         bool isGround = (otherLayerMask & groundLayer.value) != 0;
 
         if (!isGround)
             return;
 
-        // Tu: pierwsze lądowanie po skoku
+        // Here: first landing after jump
         pendingLandEffect = false;
 
-        // Ustawiamy efekt w punkcie kontaktu lub przy stopach gracza
+        // Set effect at contact point or at player's feet
         Vector2 contactPoint = collision.GetContact(0).point;
         landEffect.transform.position = contactPoint;
         landEffect.Play();
     }
 
     /// <summary>
-    /// Publiczna metoda do odpalenia efektu śmierci.
-    /// Wywołaj ją z PlayerDeath.
+    /// Public method to trigger death effect.
+    /// Call it from PlayerDeath.
     /// </summary>
     public void PlayDeathEffect()
     {

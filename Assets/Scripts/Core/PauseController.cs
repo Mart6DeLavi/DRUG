@@ -3,22 +3,22 @@ using UnityEngine;
 public class PauseController : MonoBehaviour
 {
     [Header("UI")]
-    [Tooltip("Panel z menu pauzy (Canvas/Panel)")]
+    [Tooltip("Pause menu panel (Canvas/Panel)")]
     public GameObject pauseMenuUI;
 
     [Header("Game Speed")]
-    [Tooltip("Domyślne tempo gry (1 = normalnie, 0.8 = lekko zwolnione).")]
+    [Tooltip("Default game tempo (1 = normal, 0.8 = slightly slowed).")]
     [Range(0.1f, 2f)]
     public float baseTimeScale = 0.8f;
 
     private bool isPaused = false;
 
-    // Zapamiętujemy domyślne fixedDeltaTime z projektu (Unity domyślnie 0.02f)
+    // Remember default fixedDeltaTime from project (Unity default 0.02f)
     private const float defaultFixedDeltaTime = 0.02f;
 
     private void Start()
     {
-        // Upewniamy się, że nie ustawimy 0 lub wartości ujemnej
+        // Make sure we don't set 0 or negative value
         if (baseTimeScale <= 0f)
             baseTimeScale = 1f;
 
@@ -44,7 +44,7 @@ public class PauseController : MonoBehaviour
         if (isPaused) return;
 
         isPaused = true;
-        // Całkowite zatrzymanie czasu
+        // Complete time stop
         Time.timeScale = 0f;
         Time.fixedDeltaTime = defaultFixedDeltaTime * Time.timeScale;
 
@@ -57,7 +57,7 @@ public class PauseController : MonoBehaviour
         if (!isPaused) return;
 
         isPaused = false;
-        // Powrót do bazowego tempa (np. 0.8 zamiast 1.0)
+        // Return to base tempo (e.g. 0.8 instead of 1.0)
         ApplyTimeScale(baseTimeScale);
 
         if (pauseMenuUI != null)

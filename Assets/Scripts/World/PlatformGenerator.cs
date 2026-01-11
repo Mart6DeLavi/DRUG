@@ -28,10 +28,10 @@ public class SpawnableObjectRule
 [System.Serializable]
 public class LevelConfig
 {
-    [Tooltip("Dodatkowy offset Y dla tego poziomu (na bazie: transform.y + levelSpacing * index).")]
+    [Tooltip("Additional Y offset for this level (based on: transform.y + levelSpacing * index).")]
     public float extraYOffset = 0f;
 
-    [Tooltip("Mnożnik przerw między platformami (>1 = rzadziej, <1 = gęściej).")]
+    [Tooltip("Gap multiplier between platforms (>1 = rarer, <1 = denser).")]
     public float gapMultiplier = 1f;
 }
 
@@ -47,7 +47,7 @@ public class PlatformGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Stan generacji dla jednego poziomu (linii).
+    /// Generation state for one level (lane).
     /// </summary>
     private class LaneState
     {
@@ -88,7 +88,7 @@ public class PlatformGenerator : MonoBehaviour
     // -------------------------------------
     [Header("Tile Settings")]
     [SerializeField] private float tileWidth = 1f;    // Width of one tile in world units
-    [SerializeField] private float tileHeight = 1f;   // Height of tile in world units (ważne dla spawnów i lawy)
+    [SerializeField] private float tileHeight = 1f;   // Height of tile in world units (important for spawns and lava)
 
     [Header("Platform Length (core tiles)")]
     [SerializeField] private int minTiles = 4;
@@ -102,8 +102,8 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private float minGap = 1.5f;
     [SerializeField] private float maxGap = 3.5f;
 
-    [Header("Vertical Constraints (dla skoków w ramach jednego levelu)")]
-    [SerializeField] private float maxStepUp = 1.5f;  // Max allowed up step (dodawane do lastY)
+    [Header("Vertical Constraints (for jumps within one level)")]
+    [SerializeField] private float maxStepUp = 1.5f;  // Max allowed up step (added to lastY)
     [SerializeField] private float maxStepDown = 3f;  // Max allowed down step
     [SerializeField] private float minY = -3f;
     [SerializeField] private float maxY = 5f;
@@ -122,13 +122,13 @@ public class PlatformGenerator : MonoBehaviour
     [SerializeField] private int maxLavaRun = 3;
 
     [Header("Lava Kill Zone")]
-    [Tooltip("Wysokość części kill-zony nad powierzchnią lawy.")]
+    [Tooltip("Height of kill-zone part above lava surface.")]
     [SerializeField] private float lavaKillZoneHeightAbove = 0.25f;
 
-    [Tooltip("Jak głęboko kill-zona wchodzi w kafelek (w dół).")]
+    [Tooltip("How deep kill-zone goes into tile (downward).")]
     [SerializeField] private float lavaKillZoneDepthBelow = 0.25f;
 
-    [Tooltip("Tag przypisywany kafelkom lawy (trigger śmierci).")]
+    [Tooltip("Tag assigned to lava tiles (death trigger).")]
     [SerializeField] private string lavaTag = "Obstacle";
 
     // -------------------------------------
@@ -209,20 +209,20 @@ public class PlatformGenerator : MonoBehaviour
     [Tooltip("Index of lane that is treated as 'start level' (with safe start platform). 0 = lowest.")]
     [SerializeField] private int startLevelIndex = 0;
 
-    [Tooltip("Opcjonalna konfiguracja per poziom (rozmiar <= levels). Brak wpisu = domyślnie gapMultiplier=1, extraYOffset=0.")]
+    [Tooltip("Optional per-level configuration (size <= levels). Missing entry = default gapMultiplier=1, extraYOffset=0.")]
     [SerializeField] private List<LevelConfig> levelConfigs = new List<LevelConfig>();
 
     // -------------------------------------
     // AVOIDING OVERLAP
     // -------------------------------------
     [Header("Platform Overlap Avoidance")]
-    [Tooltip("Jeśli true, generator będzie próbował przesuwać platformy w pionie tak, by nie były zbyt blisko innych.")]
+    [Tooltip("If true, generator will try to move platforms vertically so they're not too close to others.")]
     [SerializeField] private bool avoidPlatformOverlap = true;
 
-    [Tooltip("Minimalny pionowy dystans między środkami segmentów, jeśli zachodzą na siebie w osi X.")]
+    [Tooltip("Minimal vertical distance between segment centers if they overlap in X axis.")]
     [SerializeField] private float minPlatformVerticalDistance = 1.5f;
 
-    [Tooltip("Maksymalna liczba prób przesunięcia platformy w górę/dół, żeby znaleźć wolne miejsce.")]
+    [Tooltip("Maximum number of attempts to shift platform up/down to find free space.")]
     [SerializeField] private int maxRelocateAttempts = 6;
 
     // -------------------------------------
@@ -232,7 +232,7 @@ public class PlatformGenerator : MonoBehaviour
     [Tooltip("If true, some spawn chances (lava, traps) grow over time.")]
     [SerializeField] private bool enableDifficultyScaling = true;
 
-    [Tooltip("How much per second to ADD to lavaChancePerPlatform (0.05 = +5% szansy na lawę na sekundę).")]
+    [Tooltip("How much per second to ADD to lavaChancePerPlatform (0.05 = +5% chance for lava per second).")]
     [SerializeField] private float lavaChanceIncreasePerSecond = 0f;
 
     [Tooltip("How much per second to ADD to trap spawnChance in all trap rules.")]
@@ -392,7 +392,7 @@ public class PlatformGenerator : MonoBehaviour
         float gap = Random.Range(minGap, maxGap) * gapMult;
         float startX = lane.lastEndX + gap;
 
-        // wysokość
+        // height
         float baseY = lane.lastY;
         float randomDeltaY = Random.Range(-maxStepDown, maxStepUp);
         float candidateY = Mathf.Clamp(baseY + randomDeltaY, minY, maxY);
@@ -403,12 +403,12 @@ public class PlatformGenerator : MonoBehaviour
 
         lane.lastY = yFinal;
 
-        // długość
+        // length
         int coreCount = isStartPlatform
             ? startPlatformGrassTiles
             : Random.Range(minTiles, maxTiles + 1);
 
-        // materiały GRASS / LAVA z difficulty scaling
+        // GRASS / LAVA materials with difficulty scaling
         // Determine materials for this platform. On the very first start platform we enforce only grass tiles
         // so that the player always begins on a safe area without lava.
         TileMaterial[] materials;
@@ -440,18 +440,18 @@ public class PlatformGenerator : MonoBehaviour
         lane.segments.Add(marker);
         lane.lastEndX = segmentEndX;
 
-        // collider dzieje się na tile'ach – tu tylko rigidbody
+        // collider happens on tiles – here only rigidbody
         Rigidbody2D rb = segmentGO.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Static;
 
-        // MOVING PLATFORM (cały segment)
+        // MOVING PLATFORM (entire segment)
         // Do not add moving behaviour to the very first start platform
         if (!isStartPlatform)
         {
             TryAddMovingPlatform(segmentGO);
         }
 
-        // counts per platform dla spawn rules
+        // counts per platform for spawn rules
         int[] trapCounts = trapRules.Count > 0 ? new int[trapRules.Count] : null;
         int[] bonusCounts = bonusRules.Count > 0 ? new int[bonusRules.Count] : null;
         int[] debuffCounts = debuffRules.Count > 0 ? new int[debuffRules.Count] : null;
@@ -459,11 +459,11 @@ public class PlatformGenerator : MonoBehaviour
         bool isStartPlat = isStartPlatform;
         float distanceFromStart = segmentStartX - worldStartX;
 
-        // tworzenie kafelków
+        // creating tiles
         for (int i = 0; i < coreCount; i++)
         {
             float worldX = startX + i * tileWidth;
-            float worldY = yFinal; // środek kafelka
+            float worldY = yFinal; // tile center
 
             GameObject tile = Instantiate(tilePrefab, new Vector3(worldX, worldY, 0f), Quaternion.identity, segmentGO.transform);
             tile.name = $"Tile_{i}";
@@ -474,18 +474,18 @@ public class PlatformGenerator : MonoBehaviour
             Sprite sprite = ChooseSpriteForTile(materials, i, coreCount);
             sr.sprite = sprite;
 
-            // --- SOLID COLLIDER (dla wszystkich kafelków) ---
+            // --- SOLID COLLIDER (for all tiles) ---
             bool isLava = (mat == TileMaterial.Lava);
 
             PolygonCollider2D solid = tile.AddComponent<PolygonCollider2D>();
-            solid.isTrigger = false;   // zawsze solid – również dla lawy
+            solid.isTrigger = false;   // always solid – also for lava
 
             if (sprite != null)
             {
                 int shapeCount = sprite.GetPhysicsShapeCount();
                 if (shapeCount == 0)
                 {
-                    // fallback: pełny prostokąt
+                    // fallback: full rectangle
                     shapeBuffer.Clear();
                     Bounds b = sprite.bounds;
                     shapeBuffer.Add(new Vector2(b.min.x, b.min.y));
@@ -517,7 +517,7 @@ public class PlatformGenerator : MonoBehaviour
                 AddLavaKillCollider(tile);
             }
 
-            // DISAPPEARING TILES (tylko grass)
+            // DISAPPEARING TILES (only grass)
             if (enableDisappearingTiles &&
                 mat == TileMaterial.Grass &&
                 (!isStartPlat || disappearingOnStartPlatform))
@@ -530,11 +530,11 @@ public class PlatformGenerator : MonoBehaviour
                     dt.delayBeforeReappear = reappearDelay;
                     dt.affectWholeSegment = disappearWholeSegment;
                     dt.ignoreTriggerTiles = ignoreTriggerTilesOnDisappear;
-                    // brak groupRoot w Twojej klasie – nie ustawiamy
+                    // no groupRoot in your class – don't set it
                 }
             }
 
-            // SPAWN TRAP / BONUS / DEBUFF na górze kafelka
+            // SPAWN TRAP / BONUS / DEBUFF on top of tile
             float tileTopY = worldY + tileHeight * 0.5f;
 
             // Only spawn traps/bonuses/debuffs on platforms other than the initial start platform
@@ -561,7 +561,7 @@ public class PlatformGenerator : MonoBehaviour
     // -------------------------------------
     private void AddLavaKillCollider(GameObject tile)
     {
-        // Box trigger obejmujący górę lawy + kawałek w dół, żeby łapał też skoki w bok
+        // Box trigger covering lava top + part down, to also catch side jumps
         var kill = tile.AddComponent<BoxCollider2D>();
         kill.isTrigger = true;
 
@@ -571,9 +571,9 @@ public class PlatformGenerator : MonoBehaviour
 
         kill.size = new Vector2(tileWidth, totalHeight);
 
-        // zakładamy pivot w środku kafelka:
-        // górna krawędź kafelka jest na +tileHeight/2,
-        // kill-zona ma wystawać 'above' nad górę i 'below' w dół.
+        // assume pivot in tile center:
+        // top edge of tile is at +tileHeight/2,
+        // kill-zone should extend 'above' over top and 'below' down.
         float topLocalY = tileHeight * 0.5f;
         float centerLocalY = topLocalY - below + totalHeight * 0.5f;
 
@@ -594,7 +594,7 @@ public class PlatformGenerator : MonoBehaviour
             {
                 if (seg == null) continue;
 
-                // brak overlapu w osi X => można olać
+                // no overlap in X axis => can ignore
                 if (seg.endX <= startX || seg.startX >= endX)
                     continue;
 
@@ -620,7 +620,7 @@ public class PlatformGenerator : MonoBehaviour
             if (!IsTooCloseToExisting(startX, endX, candidate))
                 return candidate;
 
-            // Skaczemy do góry / w dół coraz dalej od pozycji bazowej
+            // Jump up / down further and further from base position
             int stepIndex = attempt / 2 + 1;
             float dir = (attempt % 2 == 0) ? 1f : -1f;
             float offset = dir * stepIndex * minPlatformVerticalDistance;
@@ -628,7 +628,7 @@ public class PlatformGenerator : MonoBehaviour
             candidate = Mathf.Clamp(baseY + offset, minY, maxY);
         }
 
-        // Jeśli po tylu próbach nadal ciasno – trudno, bierzemy ostatni wariant.
+        // If after so many attempts still too tight – oh well, we take the last variant.
         return candidate;
     }
 

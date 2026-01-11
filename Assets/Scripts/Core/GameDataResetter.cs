@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class GameDataResetter : MonoBehaviour
 {
-    // Сброс сохранений
+    // Reset save data
     public void ResetPlayerData()
     {
         GameData.ResetPlayerData();
@@ -27,13 +27,13 @@ public class GameDataResetter : MonoBehaviour
         }
     }
 
-    // Вывод текущих данных сохранения
+    // Output current save data
     public void PrintSaveData()
     {
         GameData.PrintPlayerData();
     }
 
-    // Загрузка свежего сохранения
+    // Load fresh save
     public void ForceLoadFresh()
     {
         GameData.ResetPlayerData();
@@ -41,7 +41,7 @@ public class GameDataResetter : MonoBehaviour
         Debug.Log($"[GameDataResetter] Fresh save loaded: Currency={data.currency}, Skins={data.ownedSkinIds.Count}");
     }
     
-    // Показать текущие данные игрока (вызвать из Inspector)
+    // Show current player data (call from Inspector)
     [ContextMenu("Debug: Show Player Data")]
     public void DebugShowPlayerData()
     {

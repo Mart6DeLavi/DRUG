@@ -3,30 +3,30 @@ using UnityEngine;
 public class PlayerTimeSlow : MonoBehaviour
 {
     [Header("Time Slow Settings")]
-    [Tooltip("Współczynnik spowolnienia względem bazowego tempa gry (0.2 = 20% prędkości).")]
+    [Tooltip("Slow-down factor relative to base game tempo (0.2 = 20% speed).")]
     [Range(0.05f, 1f)]
     public float slowFactor = 0.2f;
 
-    [Tooltip("Maksymalny czas spowolnienia (w sekundach realnego czasu).")]
+    [Tooltip("Maximum slow-down time (in real-time seconds).")]
     public float maxSlowDuration = 5f;
 
-    [Tooltip("Szybkość odnawiania zasobu (sekundy spowolnienia na sekundę realnego czasu).")]
+    [Tooltip("Recharge speed (slow seconds per real second).")]
     public float rechargeRate = 1f;
 
-    [Tooltip("Jeśli true, gracz ma nieskończony czas spowolnienia.")]
+    [Tooltip("If true, player has infinite slow-down time.")]
     public bool infiniteSlow = false;
 
-    [Header("Debug / UI (tylko podgląd)")]
-    [Tooltip("Aktualny stan zasobu spowalniania (0..maxSlowDuration).")]
+    [Header("Debug / UI (view only)")]
+    [Tooltip("Current slow-down resource state (0..maxSlowDuration).")]
     public float currentSlowTime;
 
-    // Czy aktualnie jesteśmy w trybie slow motion
+    // Whether we are currently in slow motion mode
     private bool isSlowing = false;
 
-    // Domyślne fixedDeltaTime (Unity default to 0.02f)
+    // Default fixedDeltaTime (Unity default is 0.02f)
     private const float defaultFixedDeltaTime = 0.02f;
 
-    // Referencja do PauseController, żeby znać baseTimeScale
+    // Reference to PauseController to know baseTimeScale
     private PauseController pauseController;
 
     private void Start()
@@ -34,8 +34,8 @@ public class PlayerTimeSlow : MonoBehaviour
         pauseController = FindFirstObjectByType<PauseController>();
         if (pauseController == null)
         {
-            Debug.LogWarning("PlayerTimeSlow: Nie znaleziono PauseController w scenie. " +
-                             "Spowalnianie będzie liczone względem Time.timeScale = 1.");
+            Debug.LogWarning("PlayerTimeSlow: PauseController not found in scene. " +
+                             "Slow-down will be calculated relative to Time.timeScale = 1.");
         }
 
         currentSlowTime = maxSlowDuration;
@@ -43,8 +43,8 @@ public class PlayerTimeSlow : MonoBehaviour
 
     private void Update()
     {
-        // Jeśli gra jest zapauzowana (ESC) -> nie dotykamy Time.timeScale,
-        // ale możemy ładować zasób spowolnienia.
+        // If game is paused (ESC) -> don't touch Time.timeScale,
+        // but we can recharge the slow-down resource.
         if (Time.timeScale == 0f)
         {
             if (!infiniteSlow && currentSlowTime < maxSlowDuration)
@@ -59,12 +59,12 @@ public class PlayerTimeSlow : MonoBehaviour
             return;
         }
 
-        // Shift (lewy lub prawy)
+        // Shift (left or right)
         bool slowKeyHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
         if (slowKeyHeld && (infiniteSlow || currentSlowTime > 0f))
         {
-            // Włączone spowalnianie
+            // Slow-down enabled
             if (!isSlowing)
             {
                 StartSlow();
@@ -72,13 +72,13 @@ public class PlayerTimeSlow : MonoBehaviour
 
             if (!infiniteSlow)
             {
-                // Użycie zasobu liczone w realnym czasie (unscaledDeltaTime)
+                // Resource usage counted in real time (unscaledDeltaTime)
                 currentSlowTime = Mathf.Max(
                     0f,
                     currentSlowTime - Time.unscaledDeltaTime
                 );
 
-                // Jeśli zasób się skończył w tej klatce
+                // If resource ran out this frame
                 if (currentSlowTime <= 0f)
                 {
                     StopSlow();
@@ -87,13 +87,13 @@ public class PlayerTimeSlow : MonoBehaviour
         }
         else
         {
-            // Klawisz puszczony -> wracamy do normalnego tempa
+            // Key released -> return to normal tempo
             if (isSlowing)
             {
                 StopSlow();
             }
 
-            // Ładowanie zasobu, gdy nie używamy slow motion
+            // Recharge resource when not using slow motion
             if (!infiniteSlow && currentSlowTime < maxSlowDuration)
             {
                 currentSlowTime = Mathf.Min(
@@ -114,7 +114,7 @@ public class PlayerTimeSlow : MonoBehaviour
             baseScale = pauseController.baseTimeScale;
         }
 
-        // Spowalniamy względem bazowego tempa, ale nie schodzimy do zera
+        // Slow down relative to base tempo, but don't go to zero
         float targetScale = Mathf.Clamp(baseScale * slowFactor, 0.01f, baseScale);
         Time.timeScale = targetScale;
         Time.fixedDeltaTime = defaultFixedDeltaTime * Time.timeScale;
@@ -130,7 +130,7 @@ public class PlayerTimeSlow : MonoBehaviour
             baseScale = pauseController.baseTimeScale;
         }
 
-        // Powrót do bazowego tempa gry (np. 0.8)
+        // Return to base game tempo (e.g. 0.8)
         Time.timeScale = baseScale;
         Time.fixedDeltaTime = defaultFixedDeltaTime * Time.timeScale;
     }

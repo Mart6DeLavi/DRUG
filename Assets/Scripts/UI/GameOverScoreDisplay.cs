@@ -3,19 +3,19 @@ using TMPro;
 
 public class GameOverScoreDisplay : MonoBehaviour
 {
-    [Tooltip("Tekst TMP do wyświetlenia końcowego wyniku.")]
+    [Tooltip("TMP text to display final score.")]
     public TextMeshProUGUI finalScoreText;
 
-    [Tooltip("Tekst TMP do wyświetlenia czasu przetrwania.")]
+    [Tooltip("TMP text to display survival time.")]
     public TextMeshProUGUI timeText;
 
     void Start()
     {
-        // Pobieramy ostatni wynik z SurvivalScore
+        // Get last score from SurvivalScore
         int score = SurvivalScore.GetLastScore();
         float time = SurvivalScore.GetLastTime();
 
-        // Wyświetlenie na ekranie Game Over
+        // Display on Game Over screen
         if (finalScoreText != null)
         {
             finalScoreText.text = $"{score}";
@@ -26,17 +26,17 @@ public class GameOverScoreDisplay : MonoBehaviour
             timeText.text = $"Czas przetrwania: {time:F1} s";
         }
 
-        // ===== ZAPIS DO BAZY WYNIKÓW =====
+        // ===== SAVE TO SCORE DATABASE =====
 
-        // Zapisujemy tylko jeśli wynik > 0
+        // Save only if score > 0
         if (score > 0)
         {
-            // Data w formie tekstu (łatwa do zapisania w JSON)
+            // Date in text format (easy to save in JSON)
             string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
-            // Tworzymy rekord i dodajemy go do bazy
+            // Create record and add it to database
             ScoreRecord record = new ScoreRecord(
-                "PLAYER",   // tu później możesz podstawić nick gracza
+                "PLAYER",   // you can substitute player nickname later
                 score,
                 time,
                 date
@@ -44,15 +44,15 @@ public class GameOverScoreDisplay : MonoBehaviour
 
             ScoreDatabase.AddScore(record);
 
-            // Odświeżamy wyświetlacz tablicy wyników, jeśli istnieje
-            ScoreboardDisplay scoreboard = Object.FindFirstObjectByType<ScoreboardDisplay>();
+            // Refresh scoreboard display if it exists
+            ScoreboardDisplay scoreboard = FindObjectOfType<ScoreboardDisplay>();
             if (scoreboard != null)
             {
                 scoreboard.ShowResults();
             }
         }
 
-        // Czyścimy zapisany wynik, żeby nie dodać go ponownie przy następnym uruchomieniu
+        // Clear saved score so it won't be added again on next run
         SurvivalScore.ClearLastResults();
     }
 }

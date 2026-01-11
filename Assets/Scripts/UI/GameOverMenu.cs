@@ -4,30 +4,30 @@ using UnityEngine.SceneManagement;
 public class GameOverMenu : MonoBehaviour
 {
     [SerializeField]
-    [Tooltip("Nazwa sceny z rozgrywką do ponownego wczytania.")]
+    [Tooltip("Name of gameplay scene to reload.")]
     private string gameSceneName = "GameScene";
 
-    // Przycisk "Zagraj ponownie"
+    // "Play Again" button
     public void RetryGame()
     {
-        // Upewnij się, że gra nie jest spauzowana
+        // Make sure game is not paused
         Time.timeScale = 1f;
         AudioListener.pause = false;
 
-        // Wyczyść poprzednie wyniki/stan rundy (jeśli używany)
+        // Clear previous results/round state (if used)
         SurvivalScore.ClearLastResults();
 
-        // Preferowana docelowa scena
+        // Preferred target scene
         string targetScene = string.IsNullOrEmpty(gameSceneName) ? "GameScene" : gameSceneName;
 
-        // Jeśli scena istnieje w Build Settings – wczytaj ją, w przeciwnym razie przeładuj bieżącą
+        // If scene exists in Build Settings – load it, otherwise reload current
         if (Application.CanStreamedLevelBeLoaded(targetScene))
         {
             SceneManager.LoadScene(targetScene);
         }
         else
         {
-            // Fallback: przeładuj aktualną scenę
+            // Fallback: reload current scene
             Scene active = SceneManager.GetActiveScene();
             SceneManager.LoadScene(active.buildIndex);
         }

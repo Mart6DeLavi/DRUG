@@ -6,10 +6,11 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerAnimationController : MonoBehaviour
 {
-    [Header("Animator parameters")]
+    [Tooltip("Name of Animator parameter corresponding to horizontal speed.")]
     public string speedXParamName = "SpeedX";
     public string isGroundedParam = "IsGrounded";
 
+    [Tooltip("Speed threshold at which we consider player is moving.")]
     public float moveThreshold = 0.1f;
 
     [Header("Skórki gracza")]
@@ -50,23 +51,29 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void Update()
     {
-        float vx = rb.linearVelocity.x;
+        // Get horizontal velocity from Rigidbody
+        float vx = rb.linearVelocity.x; // using linearVelocity as in PlayerMovement
 
-        animator.SetFloat(speedXParamName, Mathf.Abs(vx));
-        animator.SetBool(isGroundedParam, movement.IsGroundedAnim);
+        // Set parameter in Animator (absolute value)
+        if (animator != null)
+        {
+            animator.SetFloat(speedXParamName, Mathf.Abs(vx));
+        }
 
-        // flip
-        if (vx > moveThreshold)
-            spriteRenderer.flipX = false;
-        else if (vx < -moveThreshold)
-            spriteRenderer.flipX = true;
-    }
-
-    private string GetSkinIdFromDef(SkinShopController.SkinDefinition skin)
-    {
-        if (skin == null) return "";
-        if (!string.IsNullOrWhiteSpace(skin.id)) return skin.id.Trim();
-        if (!string.IsNullOrWhiteSpace(skin.displayName)) return skin.displayName.Trim();
-        return skin.GetHashCode().ToString();
+        // Flip sprite depending on movement direction
+        if (spriteRenderer != null)
+        {
+            if (vx > moveThreshold)
+            {
+                // looking right
+                spriteRenderer.flipX = false;
+            }
+            else if (vx < -moveThreshold)
+            {
+                // looking left
+                spriteRenderer.flipX = true;
+            }
+            // if |vx| < threshold – don't change flipX, keep last direction
+        }
     }
 }

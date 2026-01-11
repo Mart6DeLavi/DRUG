@@ -14,7 +14,7 @@ public class ScoreboardDisplay : MonoBehaviour
 
     public void ShowResults()
     {
-        // Wyczyść stare wpisy (poza szablonem)
+        // Clear old entries (except template)
         foreach (Transform child in listParent)
         {
             if (child != template.transform && child.gameObject != template.gameObject)
@@ -23,20 +23,20 @@ public class ScoreboardDisplay : MonoBehaviour
             }
         }
 
-        // Załaduj wyniki z bazy
+        // Load scores from database
         var scores = ScoreDatabase.LoadScores();
 
-        // Wyświetl każdy wynik w formacie: "1. 1200"
+        // Display each score in format: "1. 1200"
         for (int i = 0; i < scores.Count; i++)
         {
             TextMeshProUGUI entry = Instantiate(template, listParent);
             entry.text = $"{i + 1}. {scores[i].score}";
-            // Aktywuj AFTER ustawienia tekstu
+            // Activate AFTER setting text
             entry.enabled = true;
             entry.gameObject.SetActive(true);
         }
 
-        // Ukryj szablon
+        // Hide template
         template.gameObject.SetActive(false);
     }
 }

@@ -3,14 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    [Header("Nazwy scen")]
+    [Header("Scene names")]
     public string gameSceneName = "GameScene";
     public string scoreboardSceneName = "ScoreboardScene"; 
     public string shopSceneName = "ShopScene";
 
     private void Start()
     {
-        // Uruchamiamy muzykę menu po wejściu na scenę
+        // Start menu music after entering scene
         AudioManager.Instance?.PlayMenuMusic();
     }
 
@@ -18,7 +18,7 @@ public class MainMenuController : MonoBehaviour
     public void OnStartClicked()
     {
         // ======== NOWE ========
-        // Uruchamiamy muzykę gry przed przejściem do sceny
+        // Start game music before transitioning to scene
         AudioManager.Instance?.PlayGameMusic();
 
         SceneManager.LoadScene(gameSceneName);
@@ -27,7 +27,7 @@ public class MainMenuController : MonoBehaviour
     // Scoreboard
     public void OnScoreboardClicked()
     {
-        Debug.Log("Scoreboard jeszcze niezaimplementowany.");
+        Debug.Log("Scoreboard not yet implemented.");
     }
 
     // Sklep
@@ -36,7 +36,7 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene(shopSceneName);
     }
 
-    // Wyjście z gry
+    // Exit game
     public void OnExitClicked()
     {
         Application.Quit();
