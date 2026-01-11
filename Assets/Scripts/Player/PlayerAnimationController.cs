@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerAnimationController : MonoBehaviour
 {
-    [Tooltip("Name of Animator parameter corresponding to horizontal speed.")]
+    [Header("Animator parameters")]
     public string speedXParamName = "SpeedX";
     public string isGroundedParam = "IsGrounded";
 
@@ -51,29 +51,23 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void Update()
     {
-        // Get horizontal velocity from Rigidbody
-        float vx = rb.linearVelocity.x; // using linearVelocity as in PlayerMovement
+        float vx = rb.linearVelocity.x;
 
-        // Set parameter in Animator (absolute value)
-        if (animator != null)
-        {
-            animator.SetFloat(speedXParamName, Mathf.Abs(vx));
-        }
+        animator.SetFloat(speedXParamName, Mathf.Abs(vx));
+        animator.SetBool(isGroundedParam, movement.IsGroundedAnim);
 
-        // Flip sprite depending on movement direction
-        if (spriteRenderer != null)
-        {
-            if (vx > moveThreshold)
-            {
-                // looking right
-                spriteRenderer.flipX = false;
-            }
-            else if (vx < -moveThreshold)
-            {
-                // looking left
-                spriteRenderer.flipX = true;
-            }
-            // if |vx| < threshold – don't change flipX, keep last direction
-        }
+        // flip
+        if (vx > moveThreshold)
+            spriteRenderer.flipX = false;
+        else if (vx < -moveThreshold)
+            spriteRenderer.flipX = true;
+    }
+
+    private string GetSkinIdFromDef(SkinShopController.SkinDefinition skin)
+    {
+        if (skin == null) return "";
+        if (!string.IsNullOrWhiteSpace(skin.id)) return skin.id.Trim();
+        if (!string.IsNullOrWhiteSpace(skin.displayName)) return skin.displayName.Trim();
+        return skin.GetHashCode().ToString();
     }
 }
