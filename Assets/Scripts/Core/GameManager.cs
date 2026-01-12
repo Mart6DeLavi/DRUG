@@ -28,6 +28,16 @@ public class GameManager : MonoBehaviour
 
     private float reverseDuration = 0f, impulsDuration = 0f, slowDuration = 0f, lowVisibilityDuration = 0f;
 
+    // jakieœ gówno
+    public Sprite speedBuffSprite;
+    public Sprite doubleJumpSprite;
+    public Sprite doublePointsBuffSprite;
+
+    public Sprite reverseControlsDebuffSprite;
+    public Sprite randomImpulseSprite;
+    public Sprite slowPlayerSprite;
+    public Sprite lowVisibilitySprite;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -120,6 +130,9 @@ public class GameManager : MonoBehaviour
         bonusTime = duration;
 
         EffectFrameUI.Instance?.ShowBuffFrame();
+
+        if (BuffIconsManager.Instance != null && doublePointsBuffSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(doublePointsBuffSprite, duration);
     }
 
     public void ActivateSlowEnemies(float duration, float slowMultiplier)
@@ -134,6 +147,9 @@ public class GameManager : MonoBehaviour
         bonusTime = duration;
 
         EffectFrameUI.Instance?.ShowBuffFrame();
+
+        if (BuffIconsManager.Instance != null && speedBuffSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(speedBuffSprite, duration);
     }
 
     private void ResetBonuses()
@@ -149,6 +165,9 @@ public class GameManager : MonoBehaviour
         doubleJumpBonusTime = duration;
 
         EffectFrameUI.Instance?.ShowBuffFrame();
+
+        if (BuffIconsManager.Instance != null && doubleJumpSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(doubleJumpSprite, duration);
     }
     #endregion
 
@@ -160,6 +179,9 @@ public class GameManager : MonoBehaviour
         reverseDuration = duration;
 
         EffectFrameUI.Instance?.ShowDebuffFrame();
+
+        if (BuffIconsManager.Instance != null && reverseControlsDebuffSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(reverseControlsDebuffSprite, duration);
     }
 
     public void ActivateRandomImpulse(float duration)
@@ -168,6 +190,9 @@ public class GameManager : MonoBehaviour
         impulsDuration = duration;
 
         EffectFrameUI.Instance?.ShowDebuffFrame();
+
+        if (BuffIconsManager.Instance != null && randomImpulseSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(randomImpulseSprite, duration);
     }
 
 
@@ -177,6 +202,9 @@ public class GameManager : MonoBehaviour
         slowDuration = duration;
 
         EffectFrameUI.Instance?.ShowDebuffFrame();
+
+        if (BuffIconsManager.Instance != null && slowPlayerSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(slowPlayerSprite, duration);
     }
 
     public void ActivateLimitedVisibility(float duration)
@@ -186,6 +214,9 @@ public class GameManager : MonoBehaviour
             lowVisibilityPanel.SetActive(true);
             lowVisibilityDuration = duration;
         }
+
+        if (BuffIconsManager.Instance != null && lowVisibilitySprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(lowVisibilitySprite, duration);
     }
 
     #endregion
