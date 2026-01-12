@@ -1970,8 +1970,8 @@ MonoBehaviour:
   musicSource: {fileID: 1699240818}
   menuMusic: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}
   gameMusic: {fileID: 8300000, guid: 4c0c53a8da8294f45a4d1e3b8c96d11c, type: 3}
-  buffGoodClip: {fileID: 8300000, guid: e3f789d8dd747af46b8a355a4eb5b7b6, type: 3}
-  debuffClip: {fileID: 0}
+  buffGoodClip: {fileID: 8300000, guid: aac5b1bd4fbfbf5459d5b717d25723fc, type: 3}
+  debuffClip: {fileID: 8300000, guid: ffa9678c515ef6043831470b51c3f52d, type: 3}
   sceneMusic:
   - sceneName: MainMenu
     musicClip: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}

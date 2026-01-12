@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6513403602493068655}
   - component: {fileID: 3328147111176577567}
   - component: {fileID: 7593243764139580567}
+  - component: {fileID: -624352322518751193}
+  - component: {fileID: 4456055734144960836}
   m_Layer: 0
   m_Name: BuffSpeed
   m_TagString: Untagged
@@ -152,3 +154,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BonusSpeed
   speedMultiplier: 1.1
   duration: 2
+--- !u!50 &-624352322518751193
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3546687662670032636}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &4456055734144960836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3546687662670032636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feabced4b031c374094e13a211d1badd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickupEffect
+  effectSound: {fileID: 8300000, guid: aac5b1bd4fbfbf5459d5b717d25723fc, type: 3}
+  isBuff: 1
+  effectType: SpeedBoost

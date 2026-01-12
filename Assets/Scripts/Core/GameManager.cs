@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
 
     private float reverseDuration = 0f, impulsDuration = 0f, slowDuration = 0f, lowVisibilityDuration = 0f;
 
-    // jakieœ gówno
+    // Sprites for UI
     public Sprite speedBuffSprite;
     public Sprite doubleJumpSprite;
     public Sprite doublePointsBuffSprite;
