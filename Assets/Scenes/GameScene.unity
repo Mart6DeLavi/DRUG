@@ -7026,7 +7026,7 @@ MonoBehaviour:
   trapRules:
   - name: Spike
     prefab: {fileID: 6458244458520929164, guid: c70b160bbbd73e34ba8acf6a8f898762, type: 3}
-    spawnChance: 0.21
+    spawnChance: 0.1
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
@@ -7035,13 +7035,22 @@ MonoBehaviour:
     heightOffset: 0.4
   - name: Trap
     prefab: {fileID: 6768792793882634564, guid: ed98311c742f19b4e9a638034b1b5885, type: 3}
-    spawnChance: 0.2
+    spawnChance: 0.1
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 0.4
+  - name: SawBlade
+    prefab: {fileID: 521714328932359725, guid: a88218ab65b264526b57ab20c181218f, type: 3}
+    spawnChance: 0.1
+    allowOnGrass: 1
+    allowOnLava: 0
+    allowOnStartPlatform: 1
+    minDistanceFromStart: 0
+    maxPerPlatform: 1
+    heightOffset: 0
   bonusRules:
   - name: DoubleJump
     prefab: {fileID: 5732392334418272061, guid: 1b1f550d53d86f046b424c243c6967eb, type: 3}
@@ -7116,11 +7125,6 @@ MonoBehaviour:
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 1
-  enableDynamicObstacleMovement: 1
-  dynamicTravelFraction: 0.5
-  maxDynamicHorizontalTravel: 2
-  minDynamicHorizontalTravel: 0.25
-  dynamicObstacleEdgePadding: 0.1
   enableMovingPlatforms: 1
   movingPlatformChance: 0.1
   minMoveAmplitude: 1

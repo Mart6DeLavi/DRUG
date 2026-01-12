@@ -143,19 +143,6 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Debuff Rules")]
     [SerializeField] private List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
 
-    // -------------------------------------
-    // DYNAMIC OBSTACLES (TRAPS MOVING HORIZONTALLY)
-    // -------------------------------------
-    [Header("Dynamic Obstacles")]
-    [SerializeField] private bool enableDynamicObstacleMovement = true;
-    [Tooltip("Fraction of the safe grass span that dynamic obstacles are allowed to use for movement.")]
-    [SerializeField, Range(0.1f, 1f)] private float dynamicTravelFraction = 0.5f;
-    [Tooltip("Absolute cap for horizontal travel regardless of grass span.")]
-    [SerializeField] private float maxDynamicHorizontalTravel = 2f;
-    [Tooltip("Minimal useful travel distance. If the safe span is smaller the obstacle stays static.")]
-    [SerializeField] private float minDynamicHorizontalTravel = 0.25f;
-    [Tooltip("Padding kept from the lava boundary when computing available travel.")]
-    [SerializeField] private float dynamicObstacleEdgePadding = 0.1f;
 
     // -------------------------------------
     // MOVING PLATFORMS
@@ -661,7 +648,6 @@ public class PlatformGenerator : MonoBehaviour
                 trapSpawnChanceIncreasePerSecond,
                 out trapInstance))
         {
-            TryEnableDynamicObstacle(trapInstance, tileMaterial, platformMaterials, tileIndex);
             return;
         }
 
@@ -754,73 +740,6 @@ public class PlatformGenerator : MonoBehaviour
         return false;
     }
 
-    // -------------------------------------
-    // DYNAMIC OBSTACLES MOVEMENT RANGE
-    // -------------------------------------
-    private void TryEnableDynamicObstacle(
-        GameObject obstacleInstance,
-        TileMaterial tileMaterial,
-        TileMaterial[] platformMaterials,
-        int tileIndex)
-    {
-        if (!enableDynamicObstacleMovement || obstacleInstance == null)
-            return;
-
-        if (tileMaterial != TileMaterial.Grass)
-            return;
-
-        float safeTravel = CalculateDynamicTravelWithinGrass(platformMaterials, tileIndex);
-        if (safeTravel <= 0f)
-            return;
-
-        float cappedTravel = Mathf.Min(maxDynamicHorizontalTravel, safeTravel);
-        cappedTravel *= Mathf.Clamp01(dynamicTravelFraction);
-        cappedTravel = Mathf.Min(cappedTravel, safeTravel);
-
-        if (cappedTravel < minDynamicHorizontalTravel)
-        {
-            if (safeTravel >= minDynamicHorizontalTravel)
-                cappedTravel = minDynamicHorizontalTravel;
-            else
-                cappedTravel = safeTravel;
-        }
-
-        if (cappedTravel <= 0f)
-            return;
-
-        DynamicObstacle dynamicObstacle = obstacleInstance.GetComponent<DynamicObstacle>();
-        if (dynamicObstacle == null)
-            dynamicObstacle = obstacleInstance.AddComponent<DynamicObstacle>();
-
-        dynamicObstacle.SetLocalTravel(new Vector2(cappedTravel, 0f));
-    }
-
-    private float CalculateDynamicTravelWithinGrass(TileMaterial[] platformMaterials, int tileIndex)
-    {
-        if (platformMaterials == null || tileIndex < 0 || tileIndex >= platformMaterials.Length)
-            return 0f;
-
-        if (platformMaterials[tileIndex] != TileMaterial.Grass)
-            return 0f;
-
-        int left = tileIndex;
-        while (left > 0 && platformMaterials[left - 1] == TileMaterial.Grass)
-            left--;
-
-        int right = tileIndex;
-        while (right < platformMaterials.Length - 1 && platformMaterials[right + 1] == TileMaterial.Grass)
-            right++;
-
-        float tilesToLeftEdge = (tileIndex - left + 0.5f) * tileWidth;
-        float tilesToRightEdge = (right - tileIndex + 0.5f) * tileWidth;
-        float padding = Mathf.Max(0f, dynamicObstacleEdgePadding);
-
-        float leftDistance = Mathf.Max(0f, tilesToLeftEdge - padding);
-        float rightDistance = Mathf.Max(0f, tilesToRightEdge - padding);
-
-        float safeTravel = 2f * Mathf.Min(leftDistance, rightDistance);
-        return Mathf.Max(0f, safeTravel);
-    }
 
     // -------------------------------------
     // CORE MATERIALS (GRASS / LAVA) + DIFFICULTY
