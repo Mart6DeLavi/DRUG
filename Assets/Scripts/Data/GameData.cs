@@ -404,7 +404,7 @@ public static class GameData
             }
 
             SavePlayerData(d);
-            Debug.Log($"[GameData] Refunded skin '{skinId}' for {refundAmount} currency. Balance: {oldCurrency} → {d.currency}");
+            Debug.Log($"[GameData] Refunded skin '{skinId}' for {refundAmount} currency. Balance: {oldCurrency} -> {d.currency}");
             return true;
         }
     }

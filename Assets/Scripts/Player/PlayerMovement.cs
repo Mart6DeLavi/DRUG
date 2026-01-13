@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 {
     rb = GetComponent<Rigidbody2D>();
 
-    // Porządek w hierarchii: oba LineRenderery jako child gracza
+    // Hierarchy note: keep both LineRenderers as children of the player
     if (trajectoryLine != null && trajectoryLine.transform.parent != transform)
         trajectoryLine.transform.SetParent(transform, true);
 
@@ -310,10 +310,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // 1) Zawsze pokazuj aktualną trajektorię lotu (bez skoku)
+        // 1) Always show the current flight trajectory (without jump)
         DrawAirTrajectory();
 
-        // 2) Pokaż dodatkową trajektorię skoku tylko podczas charge w powietrzu
+        // 2) Show the extra jump trajectory only while charging in the air
         if (chargedTrajectoryLine != null && isCharging && chargeValid)
         {
             float t = Mathf.Clamp01(chargeTimer / maxChargeTime);

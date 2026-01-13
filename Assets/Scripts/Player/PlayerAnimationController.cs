@@ -13,7 +13,7 @@ public class PlayerAnimationController : MonoBehaviour
     [Tooltip("Speed threshold at which we consider player is moving.")]
     public float moveThreshold = 0.1f;
 
-    [Header("Skórki gracza")]
+    [Header("Player skins")]
     public SkinShopController.SkinDefinition[] allSkins;
 
     private Animator animator;

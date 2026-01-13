@@ -99,12 +99,15 @@ public class GameManager : MonoBehaviour
     {
         bool anyBuff =
             playerSpeedMultiplier > 1f ||
-            doubleJumpActive;
+            doubleJumpActive ||
+            scoreMultiplier > 1f ||
+            enemySpeedMultiplier != 1f;
 
         bool anyDebuff =
             controlsReversed ||
             randomImpulsActive ||
-            playerSpeedMultiplier < 1f;
+            playerSpeedMultiplier < 1f ||
+            (lowVisibilityPanel != null && lowVisibilityPanel.activeSelf);
             
         if (!anyBuff && !anyDebuff)
         {
@@ -118,7 +121,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #region Buffes
+    #region Buffs
     public void AddPoints(int basePoints)
     {
         score += Mathf.RoundToInt(basePoints * scoreMultiplier);
@@ -214,6 +217,8 @@ public class GameManager : MonoBehaviour
             lowVisibilityPanel.SetActive(true);
             lowVisibilityDuration = duration;
         }
+
+        EffectFrameUI.Instance?.ShowDebuffFrame();
 
         if (BuffIconsManager.Instance != null && lowVisibilitySprite != null)
             BuffIconsManager.Instance.ShowEffectIcon(lowVisibilitySprite, duration);

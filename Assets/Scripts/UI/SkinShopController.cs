@@ -31,7 +31,7 @@ public class SkinShopController : MonoBehaviour
         public bool unlockedByDefault = false;
 
         [Header("Animator")]
-        [Tooltip("Animator używany przez tę skórkę.")]
+        [Tooltip("Animator used by this skin.")]
         public RuntimeAnimatorController animatorController;
     }
 

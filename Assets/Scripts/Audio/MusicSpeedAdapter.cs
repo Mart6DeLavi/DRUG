@@ -6,7 +6,7 @@ public class MusicSpeedAdapter : MonoBehaviour
 
     void Update()
     {
-        // If something is missing – do nothing
+        // If something is missing - do nothing
         if (AudioManager.Instance == null || GameSpeedController.Instance == null)
             return;
 
@@ -20,7 +20,7 @@ public class MusicSpeedAdapter : MonoBehaviour
         // Normalize to 0..1 range
         float normalized = Mathf.InverseLerp(min, max, current);
 
-        // Pass to AudioManager – it will handle pitch between minMusicPitch and maxMusicPitch
+        // Pass to AudioManager - it will handle pitch between minMusicPitch and maxMusicPitch
         AudioManager.Instance.SetGameSpeed01(normalized);
     }
 }

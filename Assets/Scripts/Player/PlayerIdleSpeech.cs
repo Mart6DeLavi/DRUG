@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 
 public class PlayerIdleSpeech : MonoBehaviour
 {
-    public TextMeshProUGUI speechText;   // Tekst w dymku
-    public GameObject speechBubble;       // Cały dymek (Image + Text)
+    public TextMeshProUGUI speechText;   // Text inside the speech bubble
+    public GameObject speechBubble;       // Whole bubble (Image + Text)
     public float timeToShow = 4.5f;
 
     private Vector3 lastPosition;
@@ -12,24 +12,24 @@ public class PlayerIdleSpeech : MonoBehaviour
 
     private string[] messages = {
         "Przynajmniej zabije mnie czas, a nie twoje umiejętności",
-        "Dobrze Ci idzie:) Nic nie robienie…",
+        "Dobrze Ci idzie:) Nic nie robienie...",
         "To byłby dobry moment, żeby ruszyć.",
         "Ściana nie będzie czekać.",
-        "Nie śpiesz się… i tak prędzej czy później umrę",
-        "Ja bym poszedł dalej… ale co ja tam wiem",
-        "Może… strzałka w prawo? Tak tylko sugeruję."
+        "Nie śpiesz się... i tak prędzej czy później umrę",
+        "Ja bym poszedł dalej... ale co ja tam wiem",
+        "Może... strzałka w prawo? Tak tylko sugeruję."
     };
 
     void Start()
     {
         lastPosition = transform.position;
-        speechBubble.SetActive(false);       // Wyłączamy cały dymek na start
-        speechText.gameObject.SetActive(false); // Wyłączamy też tekst
+        speechBubble.SetActive(false);       // Hide the bubble on start
+        speechText.gameObject.SetActive(false); // Hide the text as well
     }
 
     void Update()
     {
-        // Sprawdzenie czy gracz się rusza
+        // Check whether the player is moving
         if (Vector3.Distance(transform.position, lastPosition) < 0.001f)
         {
             idleTimer += Time.deltaTime;
@@ -42,7 +42,7 @@ public class PlayerIdleSpeech : MonoBehaviour
         else
         {
             idleTimer = 0f;
-            // Wyłączamy cały dymek wraz z tekstem
+            // Hide the whole bubble including text
             speechBubble.SetActive(false);
             speechText.gameObject.SetActive(false);
         }
@@ -53,8 +53,8 @@ public class PlayerIdleSpeech : MonoBehaviour
     void ShowRandomMessage()
     {
         int index = Random.Range(0, messages.Length);
-        speechText.text = messages[index];   // Ustawiamy losowy tekst
-        speechBubble.SetActive(true);        // Włączamy Image (dymek)
-        speechText.gameObject.SetActive(true); // Włączamy tekst w dymku
+        speechText.text = messages[index];   // Set random message text
+        speechBubble.SetActive(true);        // Enable bubble image
+        speechText.gameObject.SetActive(true); // Enable bubble text
     }
 }

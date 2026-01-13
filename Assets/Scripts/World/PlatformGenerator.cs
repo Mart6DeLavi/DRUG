@@ -427,7 +427,7 @@ public class PlatformGenerator : MonoBehaviour
         lane.segments.Add(marker);
         lane.lastEndX = segmentEndX;
 
-        // collider happens on tiles – here only rigidbody
+        // collider happens on tiles - here only rigidbody
         Rigidbody2D rb = segmentGO.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Static;
 
@@ -465,7 +465,7 @@ public class PlatformGenerator : MonoBehaviour
             bool isLava = (mat == TileMaterial.Lava);
 
             PolygonCollider2D solid = tile.AddComponent<PolygonCollider2D>();
-            solid.isTrigger = false;   // always solid – also for lava
+            solid.isTrigger = false;   // always solid - also for lava
 
             if (sprite != null)
             {
@@ -517,7 +517,7 @@ public class PlatformGenerator : MonoBehaviour
                     dt.delayBeforeReappear = reappearDelay;
                     dt.affectWholeSegment = disappearWholeSegment;
                     dt.ignoreTriggerTiles = ignoreTriggerTilesOnDisappear;
-                    // no groupRoot in your class – don't set it
+                    // no groupRoot in your class - don't set it
                 }
             }
 
@@ -615,7 +615,7 @@ public class PlatformGenerator : MonoBehaviour
             candidate = Mathf.Clamp(baseY + offset, minY, maxY);
         }
 
-        // If after so many attempts still too tight – oh well, we take the last variant.
+        // If after so many attempts still too tight - oh well, we take the last variant.
         return candidate;
     }
 
@@ -799,7 +799,7 @@ public class PlatformGenerator : MonoBehaviour
         bool leftOther = hasLeft && left != current;
         bool rightOther = hasRight && right != current;
 
-        // PLATFORM BOUNDARIES – zawsze grass_left / grass_right / lava_left / lava_right
+        // PLATFORM BOUNDARIES - always grass_left / grass_right / lava_left / lava_right
         if (i == 0)
         {
             if (current == TileMaterial.Grass)

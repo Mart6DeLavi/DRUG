@@ -1,39 +1,39 @@
 using UnityEngine;
 
 /// <summary>
-/// Piła: jeździ lewo–prawo jako dziecko segmentu platformy i odbija się gdy:
-/// - kończy się platforma (brak Tile_ pod spodem),
-/// - pod spodem jest lawa (Tile_ ma tag Obstacle),
-/// - przed nią jest inny trap (tag Obstacle).
-/// Dodatkowo ma prostą animację sprite'ów (frames).
+/// Saw blade: patrols left/right as a child of a platform segment and turns around when:
+/// - the platform ends (no Tile_* below),
+/// - lava / death zone is detected below,
+/// - another trap is detected in front (Obstacle tag).
+/// Also plays a simple sprite animation (frames).
 /// </summary>
 [DisallowMultipleComponent]
 public class SawBladePatrol : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float speed = 2.2f;
-    [SerializeField] private int startDirection = 1; // 1 = prawo, -1 = lewo
+    [SerializeField] private int startDirection = 1; // 1 = right, -1 = left
 
     [Header("Ground check (platform / lava)")]
     [SerializeField] private float groundCheckDistance = 2.0f;
-    [Tooltip("Podnosimy punkt sprawdzania żeby nie startować raycasta z wnętrza kolidera platformy.")]
+    [Tooltip("Raise the probe origin so we don't raycast from inside the platform collider.")]
     [SerializeField] private float groundProbeUpOffset = 0.2f;
 
-    [Tooltip("Tag używany przez lavę i trapy (w generatorze lavaTag = \"Obstacle\").")]
+    [Tooltip("Tag used by traps (and optionally lava in older setups).")]
     [SerializeField] private string obstacleTag = "Obstacle";
 
-    [Tooltip("Tag używany przez lawę/strefę śmierci w projekcie.")]
+    [Tooltip("Tag used by lava / death zone in this project.")]
     [SerializeField] private string deathZoneTag = "DeathZone";
 
     [Header("Edge padding")]
-    [Tooltip("Ile wcześniej (w jednostkach świata) zawracać przed końcem platformy, żeby nie wjeżdżać na zaokrąglony rant.")]
+    [Tooltip("How early (world units) to turn around before the platform edge (to avoid the rounded end).")]
     [SerializeField] private float edgeTurnPadding = 0.25f;
 
     [Header("Obstacle check (other traps)")]
     [SerializeField] private float forwardLookAhead = 0.08f;
     [SerializeField] private LayerMask obstacleMask = ~0;
 
-    [Header("Sprite animation (2–3 frames)")]
+    [Header("Sprite animation (2-3 frames)")]
     [SerializeField] private Sprite[] frames;
     [SerializeField] private float fps = 10f;
     [SerializeField] private bool randomStartFrame = true;
@@ -57,7 +57,7 @@ public class SawBladePatrol : MonoBehaviour
         _sr = GetComponent<SpriteRenderer>();
         if (_sr == null) _sr = gameObject.AddComponent<SpriteRenderer>();
 
-        // promień do CircleCast (z collidra lub renderer-a)
+        // CircleCast radius (from collider or renderer)
         _radius = 0.18f;
         if (_selfCollider != null)
             _radius = Mathf.Max(_radius, _selfCollider.bounds.extents.x);
@@ -81,13 +81,13 @@ public class SawBladePatrol : MonoBehaviour
 
         float step = speed * dt * _dir;
 
-        // local space (platformy/segmenty mogą się ruszać)
+        // Local space (platform/segments may move)
         Vector3 local = transform.localPosition;
         Vector3 nextLocal = local + new Vector3(step, 0f, 0f);
 
         Vector3 nextWorld = (_parent != null) ? _parent.TransformPoint(nextLocal) : nextLocal;
 
-        // 1) Czy pod spodem nadal jest platforma? + zawracanie wcześniej przed krawędzią
+        // 1) Is there still platform below? + early turn before the edge
         Vector3 edgeProbeWorld = nextWorld + new Vector3(_dir * Mathf.Max(0f, edgeTurnPadding), 0f, 0f);
 
         if (!HasSolidTileBelow(edgeProbeWorld, out Collider2D tileCol))
@@ -97,14 +97,14 @@ public class SawBladePatrol : MonoBehaviour
         }
 
         // 2) Czy pod spodem nie jest lawa / deathzone?
-        // (Obsługujemy zarówno przypadek gdy "lava" jest tilem (Tile_*) jak i gdy jest osobnym colliderem.)
+        // (Handles both cases: lava as a tile (Tile_*) or as a separate collider.)
         if (IsTagBelow(edgeProbeWorld, obstacleTag) || IsTagBelow(edgeProbeWorld, deathZoneTag))
         {
             Flip();
             return;
         }
 
-        // 3) czy przed nami nie ma innego trapa?
+        // 3) Is there another trap in front of us?
         if (HitsOtherTrapAhead())
         {
             Flip();
@@ -155,7 +155,7 @@ public class SawBladePatrol : MonoBehaviour
             Collider2D col = hits[i].collider;
             if (col == null) continue;
 
-            // kafelki platformy z generatora: Tile_0, Tile_1, ...
+            // Platform tiles generated as: Tile_0, Tile_1, ...
             if (col.gameObject.name.StartsWith("Tile_"))
             {
                 tileCollider = col;
@@ -207,7 +207,7 @@ public class SawBladePatrol : MonoBehaviour
 
         Vector3 origin = worldPos + Vector3.up * groundProbeUpOffset;
 
-        // Dla deathzone/trapów chcemy też triggery (często są triggerami)
+        // For DeathZone/traps we also want to detect triggers (they are often triggers)
         ContactFilter2D filter = new ContactFilter2D
         {
             useTriggers = true,

@@ -22,7 +22,7 @@ public class PlayerDeath : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // 1) classic death zone – always kills
+        // 1) classic death zone - always kills
         if (other.CompareTag(obstacleTag))
         {
             Die();

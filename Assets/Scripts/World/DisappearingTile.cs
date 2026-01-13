@@ -82,7 +82,7 @@ public class DisappearingTile : MonoBehaviour
                 if (col != null) col.enabled = false;
         }
 
-        // Don't return – end
+        // Don't return - end
         if (delayBeforeReappear <= 0f)
             yield break;
 

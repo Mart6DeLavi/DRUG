@@ -20,7 +20,7 @@ public class GameOverMenu : MonoBehaviour
         // Preferred target scene
         string targetScene = string.IsNullOrEmpty(gameSceneName) ? "GameScene" : gameSceneName;
 
-        // If scene exists in Build Settings – load it, otherwise reload current
+        // If scene exists in Build Settings - load it, otherwise reload current
         if (Application.CanStreamedLevelBeLoaded(targetScene))
         {
             SceneManager.LoadScene(targetScene);

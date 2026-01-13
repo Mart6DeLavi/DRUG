@@ -281,7 +281,7 @@ public class AudioManager : MonoBehaviour
         // ============= GAME SPEED -> MUSIC TEMPO =============
 
     /// <summary>
-    /// normalizedSpeed – value 0..1
+    /// normalizedSpeed - value 0..1
     /// 0  -> minMusicPitch
     /// 1  -> maxMusicPitch
     /// Call this where you update game speed.

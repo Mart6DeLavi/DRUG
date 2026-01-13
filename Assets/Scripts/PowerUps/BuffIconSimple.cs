@@ -32,7 +32,7 @@ public class BuffIconSimple : MonoBehaviour
 
         if (isBlinking)
         {
-            // proste miganie alf¹
+            // Simple alpha blinking
             float a = (Mathf.Sin(Time.time * 10f) * 0.5f + 0.5f); // 0..1
             var c = iconImage.color;
             c.a = a;
