@@ -3,17 +3,23 @@ using TMPro;
 
 public class SurvivalScore : MonoBehaviour
 {
-    // Adding a points multiplier feature for buff effects
+    // Points multiplier (buff).
+    // IMPORTANT: the multiplier must affect only points earned while the buff is active,
+    // not retroactively multiply the entire run at the end.
     private float pointsMultiplier = 1f;
     private float multiplierTimer = 0f;
+
+    // Accumulated score so we can add points per-frame with the current multiplier.
+    // (Previous implementation recalculated score from total time, which caused the bug.)
+    private float scoreAccumulator = 0f;
     public static SurvivalScore Instance { get; private set; }
 
-    [Header("Survival time scoring configuration")]
-    [Tooltip("Points per second survived.")]
+    [Header("Konfiguracja punktacji czasu przetrwania")]
+    [Tooltip("Ile punktów na sekundę przetrwania.")]
     public float pointsPerSecond = 10f;
 
-    [Header("UI (optional)")] 
-    [Tooltip("TMP text to display current score.")]
+    [Header("UI (opcjonalne)")] 
+    [Tooltip("Tekst TMP do wyświetlania bieżącego wyniku.")]
     public TextMeshProUGUI scoreText;
 
     public float TimeSurvived { get; private set; }
@@ -22,11 +28,22 @@ public class SurvivalScore : MonoBehaviour
 
     bool isActive = true;
 
-    // Adding Update method to handle multiplier timing
+    // Activates (or refreshes) a points multiplier buff.
     public void ActivatePointsMultiplier(float multiplier, float duration)
     {
-        pointsMultiplier = multiplier;
-        multiplierTimer = duration;
+        if (multiplier <= 0f || duration <= 0f) return;
+
+        // If we picked a stronger multiplier, replace it and reset timer.
+        // If it's the same (e.g. another 2x pickup), just refresh/extend the timer.
+        if (multiplier > pointsMultiplier)
+        {
+            pointsMultiplier = multiplier;
+            multiplierTimer = duration;
+        }
+        else
+        {
+            multiplierTimer = Mathf.Max(multiplierTimer, duration);
+        }
     }
 
     void Awake()
@@ -42,24 +59,28 @@ public class SurvivalScore : MonoBehaviour
     void Update()
     {
         if (!isActive) return;
-        TimeSurvived += Time.deltaTime;
-        CurrentScore = Mathf.FloorToInt(TimeSurvived * pointsPerSecond);
-        if (scoreText != null)
-        {
-            scoreText.text = $"Score: {CurrentScore}";
-        }
 
-        // Apply multiplier for BUFF
-        CurrentScore = Mathf.FloorToInt(TimeSurvived * pointsPerSecond * pointsMultiplier);
+        float dt = Time.deltaTime;
+        TimeSurvived += dt;
 
-        // Update multiplier timer for BUFF
+        // Tick the buff timer first (so it expires cleanly).
         if (multiplierTimer > 0f)
         {
-            multiplierTimer -= Time.deltaTime;
+            multiplierTimer -= dt;
             if (multiplierTimer <= 0f)
             {
+                multiplierTimer = 0f;
                 pointsMultiplier = 1f;
             }
+        }
+
+        // Add points for this frame with current multiplier.
+        scoreAccumulator += dt * pointsPerSecond * pointsMultiplier;
+        CurrentScore = Mathf.FloorToInt(scoreAccumulator);
+
+        if (scoreText != null)
+        {
+            scoreText.text = $"Wynik: {CurrentScore}";
         }
     }
 
@@ -72,20 +93,23 @@ public class SurvivalScore : MonoBehaviour
         PlayerPrefs.SetFloat("LastSurvivalTime", TimeSurvived);
     }
 
-    // Resets current run state (for new game in same session)
+    // Resetuje stan bieżącej rundy (dla nowej gry w tej samej sesji)
     public void ResetState()
     {
         isActive = true;
         TimeSurvived = 0f;
         CurrentScore = 0;
         FinalScore = 0;
+        pointsMultiplier = 1f;
+        multiplierTimer = 0f;
+        scoreAccumulator = 0f;
         if (scoreText != null)
         {
-            scoreText.text = "Score: 0";
+            scoreText.text = "Wynik: 0";
         }
     }
 
-    // Clears remembered result from PlayerPrefs and optional instance state
+    // Czyści zapamiętany wynik z PlayerPrefs i ewentualny stan instancji
     public static void ClearLastResults()
     {
         PlayerPrefs.DeleteKey("LastSurvivalScore");
