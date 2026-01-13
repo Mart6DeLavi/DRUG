@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4033582212823799981}
   - component: {fileID: 3119695812261394597}
   m_Layer: 0
-  m_Name: money
+  m_Name: money 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,4 +150,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968cb68ae05b6604fa6186120f96ecae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinPickup
-  coinValue: 1
+  coinValue: 10

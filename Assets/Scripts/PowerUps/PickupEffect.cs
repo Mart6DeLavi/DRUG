@@ -26,10 +26,10 @@ public class PickupEffect : MonoBehaviour
         {
            ;
 
-            // DŸwiêk BEZPIECZNY - globalny lub opóŸniony
+            // Dï¿½wiï¿½k BEZPIECZNY - globalny lub opï¿½niony
             if (effectSound != null)
             {
-                // Opcja 1: Globalny dŸwiêk (najpewniejszy)
+                // Opcja 1: Globalny dï¿½wiï¿½k (najpewniejszy)
                 AudioSource.PlayClipAtPoint(effectSound, Camera.main.transform.position, 0.8f);
             }
             else

@@ -1991,6 +1991,15 @@ MonoBehaviour:
     maxPitch: 3
     pitchSmooth: 5
     secondsToMaxTempo: 360
+  - sceneName: GameOverScene
+    musicClip: {fileID: 8300000, guid: 23b30f43bf694ef4b9db66edc996837f, type: 3}
+    loop: 0
+    fadeTime: 0.5
+    pitchControl: 2
+    minPitch: 0.9
+    maxPitch: 3
+    pitchSmooth: 5
+    secondsToMaxTempo: 360
   fallbackMusic: {fileID: 8300000, guid: d3d6f3c234e908146b307aab4a1320fc, type: 3}
   fallbackFadeTime: 0.35
 --- !u!4 &1699240816
