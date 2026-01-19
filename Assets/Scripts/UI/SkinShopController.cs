@@ -72,6 +72,7 @@ public class SkinShopController : MonoBehaviour
         SubscribeToWallet();
         LoadState();
         RefreshUI();
+
         
         Debug.Log($"[SHOP] Initialization complete. Skins loaded: {skins?.Count ?? 0}");
     }
@@ -369,6 +370,7 @@ public class SkinShopController : MonoBehaviour
         UpdateCurrencyLabel();
         UpdatePriceLabel(current);
         UpdateBuyButtonState();
+        UpdateRefundButtonState(current);
     }
 
     private void ApplyEmptyState()
@@ -443,24 +445,20 @@ public class SkinShopController : MonoBehaviour
 
     private void UpdateRefundButtonState(SkinDefinition skin)
     {
-        if (refundButton == null)
-        {
-            return;
-        }
+        if (refundButton == null) return;
 
         bool owned = IsSkinOwned(skin);
-        bool canRefund = owned && skin != null && !skin.unlockedByDefault;
-        refundButton.interactable = canRefund;
+        bool isEquipped = skin != null && GameData.GetEquippedSkin() == GetSkinId(skin);
+
+        // przycisk "Equip" ma sens tylko dla posiadanych
         refundButton.gameObject.SetActive(owned);
+
+        // jeœli ju¿ wyposa¿ony, mo¿na zablokowaæ klikanie
+        refundButton.interactable = owned && !isEquipped;
 
         if (refundButtonLabel != null)
         {
-            refundButtonLabel.text = canRefund ? "Equip" : (owned ? "Locked" : "None");
-        }
-
-        if (previewButton != null)
-        {
-            previewButton.interactable = skin != null;
+            refundButtonLabel.text = isEquipped ? "Equipped" : "Equip";
         }
     }
 
@@ -514,6 +512,9 @@ public class SkinShopController : MonoBehaviour
 
         GameData.SetEquippedSkin(id);
         Debug.Log($"[SHOP] EquippedSkin in GameData is now: {GameData.GetEquippedSkin()}");
+
+        RefreshUI();
+        
     }
     private int WrapIndex(int index)
     {
