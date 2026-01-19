@@ -5,7 +5,12 @@ public class PlatformLedgeAssist : MonoBehaviour
     [Header("References")]
     public Rigidbody2D rb;
     public Collider2D playerCollider;
-    public Transform probe; // Empty child; place on the RIGHT side near the player's mid height
+
+    [Tooltip("Empty child; place on the LEFT side near the player's mid height")]
+    public Transform probeLeft;
+
+    [Tooltip("Empty child; place on the RIGHT side near the player's mid height")]
+    public Transform probeRight;
 
     [Header("Layers")]
     public LayerMask platformLayer;
@@ -57,7 +62,7 @@ public class PlatformLedgeAssist : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb == null || playerCollider == null || probe == null) return;
+        if (rb == null || playerCollider == null) return;
 
         // Detect what we're currently standing on (if anything)
         _currentGround = GetCurrentGround();
@@ -89,17 +94,21 @@ public class PlatformLedgeAssist : MonoBehaviour
         if (Mathf.Abs(dirSign) < 0.01f) return;
         lastDirSign = dirSign;
 
+        // Choose correct probe by direction
+        Transform probe = (dirSign >= 0f) ? probeRight : probeLeft;
+
+        // Fallback: if one probe isn't set, try the other
+        if (probe == null)
+            probe = (dirSign >= 0f) ? probeLeft : probeRight;
+
+        if (probe == null)
+        {
+            _dbg = "no probes assigned";
+            return;
+        }
+
         Vector2 dir = new Vector2(dirSign, 0f);
-
-        Bounds pb = playerCollider.bounds;
-        Vector2 playerCenter = pb.center;
-
-        // Probe world pos, mirrored to movement side
         Vector2 probeWorld = probe.position;
-        float localX = probeWorld.x - playerCenter.x;
-        if (Mathf.Sign(localX) != dirSign)
-            probeWorld.x = playerCenter.x - localX;
-
         Vector2 boxSize = new Vector2(probeWidth, probeHeight);
 
         RaycastHit2D hit = Physics2D.BoxCast(probeWorld, boxSize, 0f, dir, castDistance, platformLayer);
@@ -130,6 +139,9 @@ public class PlatformLedgeAssist : MonoBehaviour
             return;
 
         // Check that target space is free (avoid snapping into ceilings/walls)
+        Bounds pb = playerCollider.bounds;
+        Vector2 playerCenter = pb.center;
+
         Vector2 targetCenter = new Vector2(playerCenter.x, playerCenter.y + neededUp);
         Vector2 overlapSize = pb.size * 0.95f;
 
@@ -168,9 +180,13 @@ public class PlatformLedgeAssist : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (probe == null) return;
         Gizmos.color = new Color(1f, 1f, 0f, 0.6f);
-        Gizmos.DrawWireCube(probe.position, new Vector3(probeWidth, probeHeight, 0f));
+
+        if (probeLeft != null)
+            Gizmos.DrawWireCube(probeLeft.position, new Vector3(probeWidth, probeHeight, 0f));
+
+        if (probeRight != null)
+            Gizmos.DrawWireCube(probeRight.position, new Vector3(probeWidth, probeHeight, 0f));
     }
 #endif
 }
