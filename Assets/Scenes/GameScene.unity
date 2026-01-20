@@ -7183,6 +7183,9 @@ MonoBehaviour:
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 1
+  preventSpawnOverlap: 1
+  collectibleMinDistance: 5
+  trapMinSpacingTiles: 2
   enableMovingPlatforms: 1
   movingPlatformChance: 0.1
   minMoveAmplitude: 1

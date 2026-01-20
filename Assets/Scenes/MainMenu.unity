@@ -1694,13 +1694,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Sterowanie - W A S D\n\nShift - Spowolnienie tempa\n\nMyszk\u0105 sterujesz
-    kierunek lotu\n\nGra polega na jak najd\u0142u\u017Cszym prze\u017Cyciu, im d\u0142u\u017Cej
-    \u017Cyjesz tym wi\u0119cej zdobywasz punkt\xF3w, ale \u017Ceby nie by\u0142o
-    za \u0142atwo goni ci\u0119 lawowa \u015Bciana, a na dodatek masz wiele pu\u0142apek
-    oraz przeszk\xF3d. \u017Beby u\u0142atwi\u0107 sobie \u017Cycie masz do zbierania
-    bonusy kt\xF3re u\u0142atwi\u0105 ci rozgrywk\u0119, albo niebonusy, kt\xF3re
-    ci je utrudni."
+  m_text: "Sterowanie - W A S D\n\nShift - Spowolnienie tempa (5 sekund, odnawia
+    si\u0119 gdy jest nie u\u017Cywane)\n\nMyszk\u0105 sterujesz kierunek lotu\n\nGra
+    polega na jak najd\u0142u\u017Cszym prze\u017Cyciu, im d\u0142u\u017Cej \u017Cyjesz
+    tym wi\u0119cej zdobywasz punkt\xF3w, ale \u017Ceby nie by\u0142o za \u0142atwo
+    goni ci\u0119 lawowa \u015Bciana, a na dodatek masz wiele pu\u0142apek oraz przeszk\xF3d.
+    \u017Beby u\u0142atwi\u0107 sobie \u017Cycie masz do zbierania bonusy kt\xF3re
+    u\u0142atwi\u0105 ci rozgrywk\u0119, albo niebonusy, kt\xF3re ci je utrudni."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

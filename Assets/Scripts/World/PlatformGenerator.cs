@@ -140,8 +140,23 @@ public class PlatformGenerator : MonoBehaviour
     [Header("Bonus Rules")]
     [SerializeField] private List<SpawnableObjectRule> bonusRules = new List<SpawnableObjectRule>();
 
+
     [Header("Debuff Rules")]
     [SerializeField] private List<SpawnableObjectRule> debuffRules = new List<SpawnableObjectRule>();
+
+
+    // -------------------------------------
+    // SPAWN SPACING / ANTI-OVERLAP
+    // -------------------------------------
+    [Header("Spawn Spacing / Anti-Overlap")]
+    [Tooltip("If true, generator prevents spawning multiple objects on top of each other and keeps traps spaced out.")]
+    [SerializeField] private bool preventSpawnOverlap = true;
+
+    [Tooltip("Minimum distance between BONUS/DEBUFF spawns (world units). Prevents buffs/debuffs appearing on top of each other.")]
+    [SerializeField] private float collectibleMinDistance = 0.25f;
+
+    [Tooltip("Minimum spacing between TRAPS in tiles. 1 = traps can't be on neighboring tiles.")]
+    [SerializeField] private float trapMinSpacingTiles = 1f;
 
 
     // -------------------------------------
@@ -443,6 +458,10 @@ public class PlatformGenerator : MonoBehaviour
         int[] bonusCounts = bonusRules.Count > 0 ? new int[bonusRules.Count] : null;
         int[] debuffCounts = debuffRules.Count > 0 ? new int[debuffRules.Count] : null;
 
+        // Track what we already spawned on this segment to avoid overlaps / too-tight trap layouts
+        List<Vector2> spawnedTrapPositions = new List<Vector2>(16);
+        List<Vector2> spawnedCollectiblePositions = new List<Vector2>(16);
+
         bool isStartPlat = isStartPlatform;
         float distanceFromStart = segmentStartX - worldStartX;
 
@@ -537,8 +556,8 @@ public class PlatformGenerator : MonoBehaviour
                 trapCounts,
                 bonusCounts,
                 debuffCounts,
-                materials,
-                i);
+                spawnedTrapPositions,
+                spawnedCollectiblePositions);
             }
         }
     }
@@ -632,9 +651,13 @@ public class PlatformGenerator : MonoBehaviour
         int[] trapCounts,
         int[] bonusCounts,
         int[] debuffCounts,
-        TileMaterial[] platformMaterials,
-        int tileIndex)
+        List<Vector2> spawnedTrapPositions,
+        List<Vector2> spawnedCollectiblePositions)
     {
+        // Spacing rules
+        float trapMinDist = Mathf.Max(0f, tileWidth * Mathf.Max(0f, trapMinSpacingTiles));
+        float collectibleMinDist = Mathf.Max(0f, collectibleMinDistance);
+
         GameObject trapInstance;
         if (TrySpawnFromRules(
                 trapRules,
@@ -646,6 +669,8 @@ public class PlatformGenerator : MonoBehaviour
                 distanceFromStart,
                 parent,
                 trapSpawnChanceIncreasePerSecond,
+                spawnedTrapPositions,
+                trapMinDist,
                 out trapInstance))
         {
             return;
@@ -661,6 +686,8 @@ public class PlatformGenerator : MonoBehaviour
                 distanceFromStart,
                 parent,
                 0f,
+                spawnedCollectiblePositions,
+                collectibleMinDist,
                 out _))
         {
             return;
@@ -676,6 +703,8 @@ public class PlatformGenerator : MonoBehaviour
             distanceFromStart,
             parent,
             0f,
+            spawnedCollectiblePositions,
+            collectibleMinDist,
             out _);
     }
 
@@ -689,6 +718,8 @@ public class PlatformGenerator : MonoBehaviour
         float distanceFromStart,
         Transform parent,
         float extraChancePerSecond,
+        List<Vector2> occupiedPositions,
+        float minDistance,
         out GameObject spawnedInstance)
     {
         spawnedInstance = null;
@@ -729,12 +760,34 @@ public class PlatformGenerator : MonoBehaviour
                 continue;
 
             Vector2 spawnPos = new Vector2(worldX, tileTopY + rule.heightOffset);
+
+            // Prevent overlap / too-close placement (within THIS platform segment)
+            if (preventSpawnOverlap && occupiedPositions != null)
+            {
+                float minDist = Mathf.Max(0.01f, minDistance);
+                for (int p = 0; p < occupiedPositions.Count; p++)
+                {
+                    if (Vector2.Distance(occupiedPositions[p], spawnPos) < minDist)
+                    {
+                        // Too close to an already spawned object -> skip this spawn attempt
+                        spawnedInstance = null;
+                        goto NextRule;
+                    }
+                }
+            }
+
             spawnedInstance = Instantiate(rule.prefab, spawnPos, Quaternion.identity, parent);
+
+            if (occupiedPositions != null)
+                occupiedPositions.Add(spawnPos);
 
             if (counts != null && i < counts.Length)
                 counts[i]++;
 
             return true;
+
+            NextRule:;
+            continue;
         }
 
         return false;
