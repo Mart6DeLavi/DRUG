@@ -954,7 +954,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1699240815}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
-        m_MethodName: ToggleMute
+        m_MethodName: OnMusicMuteButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2578,17 +2578,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ddcdc8fda1624300810fedd0ad7c602, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  startVolume: 1
+  startMusicVolume: 1
+  startMuted: 0
+  persistMuteToPrefs: 0
+  usePerceptualCurve: 1
+  perceptualExponent: 2
+  sliderMinAudible: 0.1
+  sliderAutoUnmute: 1
   sfxSource: {fileID: 1699240817}
   buttonClickClip: {fileID: 8300000, guid: 4e8dc0b055a924526b20299300144c03, type: 3}
   musicSource: {fileID: 1699240818}
-  menuMusic: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}
+  menuMusic: {fileID: 8300000, guid: f8bc2655f76d54c80b49e68948b5acc0, type: 3}
   gameMusic: {fileID: 8300000, guid: 4c0c53a8da8294f45a4d1e3b8c96d11c, type: 3}
   buffGoodClip: {fileID: 8300000, guid: aac5b1bd4fbfbf5459d5b717d25723fc, type: 3}
   debuffClip: {fileID: 8300000, guid: ffa9678c515ef6043831470b51c3f52d, type: 3}
   sceneMusic:
   - sceneName: MainMenu
-    musicClip: {fileID: 8300000, guid: 76b2c92e253f884489ac6d3140e97b25, type: 3}
+    musicClip: {fileID: 8300000, guid: f8bc2655f76d54c80b49e68948b5acc0, type: 3}
     loop: 1
     fadeTime: 0.5
     pitchControl: 0
@@ -3059,7 +3065,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05fb552c055048e42a98682bcbff7d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialPopup
-  tutorialPanel: {fileID: 1461657929}
 --- !u!1 &1964155102
 GameObject:
   m_ObjectHideFlags: 0
@@ -3227,7 +3232,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1699240815}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
-        m_MethodName: SetVolume
+        m_MethodName: SetMusicVolumeSlider
         m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
