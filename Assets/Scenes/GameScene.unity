@@ -5311,9 +5311,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1115667104}
   - {fileID: 1074475326}
   - {fileID: 1847151551}
-  - {fileID: 1115667104}
   - {fileID: 1453274590}
   - {fileID: 1670913227}
   - {fileID: 203973211}
@@ -5406,6 +5406,13 @@ MonoBehaviour:
   randomImpulseSprite: {fileID: 21300000, guid: 2f265d5a453020e48ac052d3ae300b1d, type: 3}
   slowPlayerSprite: {fileID: 21300000, guid: 2d5ba6d3d8daff9408b5e75dc0e453a0, type: 3}
   lowVisibilitySprite: {fileID: 21300000, guid: d266c17a6dcf3d24bb082ecd69c259b3, type: 3}
+  iconSpeedBoost: {fileID: 0}
+  iconDoubleJump: {fileID: 0}
+  iconDoublePoints: {fileID: 0}
+  iconReverseControls: {fileID: 0}
+  iconRandomImpulse: {fileID: 0}
+  iconSlowPlayer: {fileID: 0}
+  iconLimitedVisibility: {fileID: 0}
 --- !u!4 &448133693
 Transform:
   m_ObjectHideFlags: 0
@@ -6519,8 +6526,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1381.1, y: 813}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 1381.1, y: 817.10376}
+  m_SizeDelta: {x: 200, y: 58.2075}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &908708805
 GameObject:
@@ -7135,6 +7142,15 @@ MonoBehaviour:
     minDistanceFromStart: 0
     maxPerPlatform: 1
     heightOffset: 1
+  - name: RandomPickyup
+    prefab: {fileID: 5642885311151309121, guid: 2d7569b723348b5488de1ef1a1ab87a4, type: 3}
+    spawnChance: 0.32
+    allowOnGrass: 1
+    allowOnLava: 0
+    allowOnStartPlatform: 0
+    minDistanceFromStart: 0
+    maxPerPlatform: 1
+    heightOffset: 1.4
   debuffRules:
   - name: LowVisibility
     prefab: {fileID: 475693982422669622, guid: 57c8a1b889bb39e419709fe712cc4c31, type: 3}
