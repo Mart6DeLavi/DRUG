@@ -350,7 +350,7 @@ Transform:
   m_GameObject: {fileID: 376283412}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.58, z: 0}
+  m_LocalPosition: {x: 0, y: -2.58, z: -10}
   m_LocalScale: {x: 0.91980004, y: 0.46920002, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5406,6 +5406,11 @@ MonoBehaviour:
   randomImpulseSprite: {fileID: 21300000, guid: 2f265d5a453020e48ac052d3ae300b1d, type: 3}
   slowPlayerSprite: {fileID: 21300000, guid: 2d5ba6d3d8daff9408b5e75dc0e453a0, type: 3}
   lowVisibilitySprite: {fileID: 21300000, guid: d266c17a6dcf3d24bb082ecd69c259b3, type: 3}
+  randomImpulseMinForce: 2
+  randomImpulseMaxForce: 6
+  randomImpulseInterval: 0.35
+  randomImpulseUseRandomInterval: 0
+  randomImpulseIntervalRange: {x: 0.2, y: 0.6}
 --- !u!4 &448133693
 Transform:
   m_ObjectHideFlags: 0
@@ -5662,6 +5667,7 @@ GameObject:
   - component: {fileID: 572256362}
   - component: {fileID: 572256363}
   - component: {fileID: 572256364}
+  - component: {fileID: 572256366}
   m_Layer: 0
   m_Name: Maciek
   m_TagString: Player
@@ -5824,6 +5830,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe010c21cd11aa40a0ad991deb7d082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  jumpEffect: {fileID: 0}
+  landEffect: {fileID: 0}
+  deathEffect: {fileID: 0}
+  vfxFeetPoint: {fileID: 0}
+  landVfxMinDelay: 0.05
   speed: 0
   mouseAimedJumpEnabled: 1
   chargedJumpEnabled: 1
@@ -6147,6 +6158,19 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1.375, y: 2.5}
   m_Direction: 0
+--- !u!114 &572256366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572256348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0e0203ab91f04d45b85e08a8eba6006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomImpulseOnPlayer
+  rb: {fileID: 572256349}
 --- !u!1 &585302952
 GameObject:
   m_ObjectHideFlags: 0
@@ -7139,7 +7163,7 @@ MonoBehaviour:
     heightOffset: 1
   - name: RandomPickyup
     prefab: {fileID: 5642885311151309121, guid: 2d7569b723348b5488de1ef1a1ab87a4, type: 3}
-    spawnChance: 0.32
+    spawnChance: 0.01
     allowOnGrass: 1
     allowOnLava: 0
     allowOnStartPlatform: 0
@@ -8489,7 +8513,7 @@ GameObject:
   - component: {fileID: 1823777327}
   - component: {fileID: 1823777326}
   - component: {fileID: 1823777329}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8526,7 +8550,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: cef6928c2f8f1264a959c3640e0cb53c, type: 2}
@@ -9239,7 +9263,7 @@ Transform:
   m_GameObject: {fileID: 2128039209}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.2, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14110,8 +14134,8 @@ ParticleSystem:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1725238944}
   - {fileID: 572256351}
+  - {fileID: 1725238944}
   - {fileID: 1102387337}
   - {fileID: 1182232996}
   - {fileID: 380579452}

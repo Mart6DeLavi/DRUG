@@ -37,7 +37,6 @@ public class PlayerDeath : MonoBehaviour
                 // Jumping upward into lava from below -> ignore
                 return;
             }
-
             Die();
         }
     }

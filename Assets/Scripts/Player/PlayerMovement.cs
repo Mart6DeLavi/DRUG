@@ -5,6 +5,25 @@ public class PlayerMovement : MonoBehaviour
 {
     public event Action OnJump;
 
+    [Header("VFX (optional)")]
+    [Tooltip("Effect played when the player jumps.")]
+    public ParticleSystem jumpEffect;
+
+    [Tooltip("Effect played when the player lands on the ground.")]
+    public ParticleSystem landEffect;
+
+    [Tooltip("Effect played when the player dies.")]
+    public ParticleSystem deathEffect;
+
+    [Tooltip("Where to spawn jump/land dust (e.g. GroundCheck_Center). If null, uses player position.")]
+    public Transform vfxFeetPoint;
+
+    private bool pendingLandVfx = false;
+    private float lastJumpTime = -999f;
+
+    [Tooltip("Small delay so landing VFX won't trigger in the same frame as jump.")]
+    [SerializeField] private float landVfxMinDelay = 0.05f;
+
     [Header("Movement Settings")]
     public float speed = 5f;
 
@@ -226,6 +245,11 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = vel;
         OnJump?.Invoke();
 
+        // VFX
+        lastJumpTime = Time.time;
+        pendingLandVfx = true;
+        PlayBurst(jumpEffect, vfxFeetPoint ? (Vector2)vfxFeetPoint.position : (Vector2)transform.position);
+
         if (!isGrounded && GameManager.Instance?.doubleJumpActive == true)
             extraJumpAvailable = false;
     }
@@ -246,6 +270,11 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = vel;
         OnJump?.Invoke();
+
+        // VFX
+        lastJumpTime = Time.time;
+        pendingLandVfx = true;
+        PlayBurst(jumpEffect, vfxFeetPoint ? (Vector2)vfxFeetPoint.position : (Vector2)transform.position);
 
         if (!isGrounded && GameManager.Instance?.doubleJumpActive == true)
             extraJumpAvailable = false;
@@ -500,5 +529,37 @@ private void ClearLine(LineRenderer line)
     // Double jump flag from original code
     public bool extraJumpAvailable = true;
     public bool IsGroundedAnim => isGrounded;
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!pendingLandVfx || landEffect == null) return;
+        if (Time.time - lastJumpTime < landVfxMinDelay) return;
+
+        bool isGround = ((1 << collision.gameObject.layer) & groundLayer.value) != 0;
+        if (!isGround) return;
+
+        pendingLandVfx = false;
+
+        Vector2 contactPoint = collision.GetContact(0).point;
+        PlayBurst(landEffect, contactPoint);
+    }
+
+    private void PlayBurst(ParticleSystem ps, Vector2 pos)
+    {
+        if (ps == null) return;
+
+        ps.transform.position = new Vector3(pos.x, pos.y, ps.transform.position.z);
+
+        // Key for burst replays: always restart & clear
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        ps.Play(true);
+    }
+
+    // Call this from PlayerDeath (or anywhere) when the player dies
+    public void PlayDeathVfx()
+    {
+        PlayBurst(deathEffect, transform.position);
+    }
 
 }

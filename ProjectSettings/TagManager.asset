@@ -44,11 +44,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: FX
+    uniqueID: 3334822213
+    locked: 0
   - name: background
     uniqueID: 4263290985
     locked: 0
-  - name: New Layer 2
-    uniqueID: 3334822213
+  - name: New Layer 3
+    uniqueID: 1168865875
     locked: 0
   m_RenderingLayers:
   - Default
