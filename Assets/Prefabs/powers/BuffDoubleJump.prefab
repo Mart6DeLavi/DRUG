@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b948e0fd95afb684ca8a52cb990c0ab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BonusDoubleJump
-  duration: 5
+  duration: 10
 --- !u!50 &8522130836345038908
 Rigidbody2D:
   serializedVersion: 5

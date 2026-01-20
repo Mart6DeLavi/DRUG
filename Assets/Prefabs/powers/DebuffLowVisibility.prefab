@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25054fca96d68144f96765c605c8e553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebuffLimitedVisibility
-  duration: 2
+  duration: 7
 --- !u!50 &-5205010351289295501
 Rigidbody2D:
   serializedVersion: 5

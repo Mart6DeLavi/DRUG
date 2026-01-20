@@ -38,6 +38,27 @@ public class GameManager : MonoBehaviour
     public Sprite slowPlayerSprite;
     public Sprite lowVisibilitySprite;
 
+    // ================= Random Impulse Debuff Settings =================
+    [Header("Random Impulse Debuff Settings")]
+    [SerializeField] private float randomImpulseMinForce = 2f;
+    [SerializeField] private float randomImpulseMaxForce = 6f;
+
+    [Tooltip("Co ile sekund ma być dodany impuls (jeśli random interval = false).")]
+    [SerializeField] private float randomImpulseInterval = 0.35f;
+
+    [Tooltip("Jeśli true, interwał będzie losowany z zakresu poniżej.")]
+    [SerializeField] private bool randomImpulseUseRandomInterval = false;
+
+    [Tooltip("Zakres losowania interwału (min/max), jeśli random interval = true.")]
+    [SerializeField] private Vector2 randomImpulseIntervalRange = new Vector2(0.2f, 0.6f);
+
+    public float RandomImpulseMinForce => randomImpulseMinForce;
+    public float RandomImpulseMaxForce => randomImpulseMaxForce;
+    public float RandomImpulseInterval => randomImpulseInterval;
+    public bool RandomImpulseUseRandomInterval => randomImpulseUseRandomInterval;
+    public Vector2 RandomImpulseIntervalRange => randomImpulseIntervalRange;
+    // ================================================================
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -76,7 +97,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Slow player
-        if ( playerSpeedMultiplier < 1f)
+        if (playerSpeedMultiplier < 1f)
         {
             slowDuration -= Time.deltaTime;
             if (slowDuration <= 0)
@@ -94,7 +115,6 @@ public class GameManager : MonoBehaviour
         UpdateEffectFrameVisibility();
     }
 
-
     void UpdateEffectFrameVisibility()
     {
         bool anyBuff =
@@ -108,13 +128,14 @@ public class GameManager : MonoBehaviour
             randomImpulsActive ||
             playerSpeedMultiplier < 1f ||
             (lowVisibilityPanel != null && lowVisibilityPanel.activeSelf);
-            
+
         if (!anyBuff && !anyDebuff)
         {
             EffectFrameUI.Instance?.HideFrame();
         }
         else
-        {   if (anyBuff)
+        {
+            if (anyBuff)
                 EffectFrameUI.Instance?.ShowBuffFrame();
             else if (anyDebuff)
                 EffectFrameUI.Instance?.ShowDebuffFrame();
@@ -198,6 +219,21 @@ public class GameManager : MonoBehaviour
             BuffIconsManager.Instance.ShowEffectIcon(randomImpulseSprite, duration);
     }
 
+    // Opcjonalnie: wersja z ustawianiem parametrów debuffa z pickupa
+    public void ActivateRandomImpulse(float duration, float minForce, float maxForce, float interval)
+    {
+        randomImpulsActive = true;
+        impulsDuration = duration;
+
+        randomImpulseMinForce = minForce;
+        randomImpulseMaxForce = maxForce;
+        randomImpulseInterval = interval;
+
+        EffectFrameUI.Instance?.ShowDebuffFrame();
+
+        if (BuffIconsManager.Instance != null && randomImpulseSprite != null)
+            BuffIconsManager.Instance.ShowEffectIcon(randomImpulseSprite, duration);
+    }
 
     public void ActivateSlowPlayer(float duration, float slowMultiplier)
     {

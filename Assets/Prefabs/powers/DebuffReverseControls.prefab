@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff6e14f545556d4bbd865e8634b7240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebuffReverseControls
-  duration: 5
+  duration: 2
 --- !u!61 &5654930640727022085
 BoxCollider2D:
   m_ObjectHideFlags: 0

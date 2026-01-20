@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73a0296a011c7409d9e8de87a5bcaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebuffSlowPlayer
-  duration: 5
+  duration: 7
 --- !u!114 &-2059226421948708172
 MonoBehaviour:
   m_ObjectHideFlags: 0

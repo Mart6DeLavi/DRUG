@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd7c0c197596f5145810ed31dfecb8c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BonusPoints
-  duration: 5
+  duration: 10
 --- !u!50 &-2110515451783268139
 Rigidbody2D:
   serializedVersion: 5
