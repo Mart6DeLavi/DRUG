@@ -7,9 +7,41 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Range(0f, 1f)]
-    public float startVolume = 1f;
-    private float lastVolume = 1f;
+    // ===================== PLAYER PREF KEYS =====================
+    private const string PREF_MUSIC_VOL  = "music_volume_slider"; // float 0..1
+    private const string PREF_MUSIC_MUTE = "music_muted";         // int 0/1
+
+    [Header("Music Volume (Global)")]
+    [Tooltip("Default music slider value if player has no saved settings yet.")]
+    [Range(0f, 1f)] public float startMusicVolume = 1f;
+
+    [Tooltip("If true, music will start muted when no saved settings exist.")]
+    public bool startMuted = false;
+
+    [Tooltip("If false, mute will NOT be saved between game restarts (recommended for a simple OnClick button).")]
+    public bool persistMuteToPrefs = false;
+
+    [Tooltip("If true, slider uses a perceptual curve (more natural loudness response).")]
+    public bool usePerceptualCurve = true;
+
+    [Tooltip("Exponent used when usePerceptualCurve is enabled. 2 is a good default.")]
+    public float perceptualExponent = 2f;
+
+    [Tooltip("Minimum audible volume for the slider. Keeps the slider from instantly muting when UI briefly sends 0.")]
+    [Range(0f, 1f)] public float sliderMinAudible = 0.01f;
+
+    [Tooltip("If true, moving the slider above the minimum will automatically unmute music.")]
+    public bool sliderAutoUnmute = true;
+
+    // Runtime music settings (persisted)
+    private float _musicSlider = 1f;  // 0..1
+    private bool _musicMuted = false;
+
+    // Last non-zero slider value before mute (helps if UI sets slider to 0 when muting)
+    private float _musicBeforeMute = 1f;
+
+    // Current fade multiplier (0..1). Final volume = fade01 * (muted ? 0 : slider)
+    private float _fade01 = 1f;
 
     [Header("SFX")]
     [SerializeField] private AudioSource sfxSource;
@@ -90,7 +122,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        // simple singleton to avoid duplicates between scenes
+        // Simple singleton to avoid duplicates between scenes
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -100,7 +132,8 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        SetVolume(startVolume);
+        LoadMusicSettings();
+        ApplyMusicVolumeNow();
 
         if (musicSource != null)
             musicSource.playOnAwake = false;
@@ -123,7 +156,13 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        if (musicSource == null || !musicSource.isPlaying)
+        if (musicSource == null)
+            return;
+
+        // Always enforce volume each frame (fixes cases where other scripts/fades overwrite AudioSource.volume)
+        ApplyMusicVolumeNow();
+
+        if (!musicSource.isPlaying)
             return;
 
         float smooth = (_activeEntry != null) ? Mathf.Max(0.01f, _activeEntry.pitchSmooth) : 6f;
@@ -143,31 +182,131 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ===================== GLOBAL VOLUME =====================
+    // ===================== GLOBAL MUSIC VOLUME + MUTE =====================
 
-    public void SetVolume(float value)
+    public void SetMusicVolumeSlider(float value01)
     {
-        value = Mathf.Clamp01(value);
-        AudioListener.volume = value;
-        lastVolume = value;
+        // Some UI setups can momentarily send 0 when clicking the slider.
+        // We clamp to a small minimum so the music doesn't "hard mute" unless the Mute button is used.
+        float min = Mathf.Clamp01(sliderMinAudible);
+        value01 = Mathf.Clamp01(value01);
+        if (value01 <= 0.0001f)
+            value01 = min;
+        else if (value01 < min)
+            value01 = min;
+
+        _musicSlider = value01;
+        PlayerPrefs.SetFloat(PREF_MUSIC_VOL, _musicSlider);
+
+        // Track last meaningful volume so unmute can restore it if needed
+        if (_musicSlider > 0.0001f)
+            _musicBeforeMute = _musicSlider;
+
+        // Optional: if player moves slider up, auto-unmute
+        if (sliderAutoUnmute && _musicMuted && _musicSlider > min + 0.0001f)
+            _musicMuted = false;
+
+        ApplyMusicVolumeNow();
+        EnsureMusicPlayingIfNeeded();
     }
 
-    public void SetMute(bool isMuted)
+    public void SetMusicMute(bool isMuted)
     {
-        AudioListener.volume = isMuted ? 0f : lastVolume;
-    }
+        if (isMuted && _musicSlider > 0.0001f)
+            _musicBeforeMute = _musicSlider;
 
-    public void ToggleMute()
-    {
-        if (AudioListener.volume > 0f)
+        _musicMuted = isMuted;
+
+        // If UI moved slider to 0 while muting, restore last meaningful volume on unmute
+        if (!_musicMuted && _musicSlider <= 0.0001f)
         {
-            lastVolume = AudioListener.volume;
-            AudioListener.volume = 0f;
+            _musicSlider = Mathf.Clamp01(_musicBeforeMute <= 0.0001f ? startMusicVolume : _musicBeforeMute);
+            PlayerPrefs.SetFloat(PREF_MUSIC_VOL, _musicSlider);
+        }
+
+        if (persistMuteToPrefs)
+            PlayerPrefs.SetInt(PREF_MUSIC_MUTE, _musicMuted ? 1 : 0);
+
+        ApplyMusicVolumeNow();
+        EnsureMusicPlayingIfNeeded();
+    }
+
+    public void ToggleMusicMute()
+    {
+        SetMusicMute(!_musicMuted);
+    }
+
+    public void OnMusicMuteButtonClicked()
+    {
+        ToggleMusicMute();
+    }
+
+    public float GetMusicVolumeSlider() => _musicSlider;
+    public bool IsMusicMuted() => _musicMuted;
+
+    private float GetEffectiveMusicVolume01()
+    {
+        if (_musicMuted) return 0f;
+
+        float v = Mathf.Clamp01(_musicSlider);
+        if (!usePerceptualCurve) return v;
+
+        float exp = Mathf.Max(0.01f, perceptualExponent);
+        return Mathf.Pow(v, exp);
+    }
+
+    private void ApplyMusicVolumeNow()
+    {
+        if (musicSource == null) return;
+
+        float effective = GetEffectiveMusicVolume01();
+        musicSource.volume = Mathf.Clamp01(_fade01) * Mathf.Clamp01(effective);
+    }
+
+    private void EnsureMusicPlayingIfNeeded()
+    {
+        if (musicSource == null) return;
+        if (_musicMuted) return;
+        if (musicSource.clip == null) return;
+
+        if (!musicSource.isPlaying)
+            musicSource.Play();
+    }
+
+    private void LoadMusicSettings()
+    {
+        if (!PlayerPrefs.HasKey(PREF_MUSIC_VOL))
+            PlayerPrefs.SetFloat(PREF_MUSIC_VOL, startMusicVolume);
+
+        _musicSlider = Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MUSIC_VOL, startMusicVolume));
+
+        // Prevent loading a "stuck at 0" slider value that effectively mutes the game.
+        float min = Mathf.Clamp01(sliderMinAudible);
+        if (_musicSlider <= 0.0001f)
+            _musicSlider = min;
+        else if (_musicSlider < min)
+            _musicSlider = min;
+
+        PlayerPrefs.SetFloat(PREF_MUSIC_VOL, _musicSlider);
+
+        if (_musicSlider > 0.0001f)
+            _musicBeforeMute = _musicSlider;
+        else
+            _musicBeforeMute = Mathf.Clamp01(startMusicVolume);
+
+        if (persistMuteToPrefs)
+        {
+            if (!PlayerPrefs.HasKey(PREF_MUSIC_MUTE))
+                PlayerPrefs.SetInt(PREF_MUSIC_MUTE, startMuted ? 1 : 0);
+
+            _musicMuted = PlayerPrefs.GetInt(PREF_MUSIC_MUTE, startMuted ? 1 : 0) == 1;
         }
         else
         {
-            AudioListener.volume = lastVolume;
+            _musicMuted = startMuted;
         }
+
+        _fade01 = 1f;
     }
 
     // ============= SFX (clicks) =============
@@ -206,6 +345,8 @@ public class AudioManager : MonoBehaviour
         {
             ApplyActiveEntrySettings();
             RecomputeTargetPitch();
+            ApplyMusicVolumeNow();
+            EnsureMusicPlayingIfNeeded();
             return;
         }
 
@@ -237,18 +378,19 @@ public class AudioManager : MonoBehaviour
         if (musicSource == null) yield break;
 
         float t = 0f;
-        float startVol = musicSource.volume;
+        float startFade = _fade01;
 
         // Fade out
         while (t < fadeTime)
         {
             t += Time.unscaledDeltaTime;
             float a = fadeTime <= 0.0001f ? 1f : (t / fadeTime);
-            musicSource.volume = Mathf.Lerp(startVol, 0f, a);
+            float fade01 = Mathf.Lerp(startFade, 0f, a);
+            SetMusicFade01(fade01);
             yield return null;
         }
 
-        // Switch
+        // Switch clip
         musicSource.clip = newClip;
         ApplyActiveEntrySettings();
         musicSource.Play();
@@ -263,12 +405,22 @@ public class AudioManager : MonoBehaviour
         {
             t += Time.unscaledDeltaTime;
             float a = fadeTime <= 0.0001f ? 1f : (t / fadeTime);
-            musicSource.volume = Mathf.Lerp(0f, startVol, a);
+            float fade01 = Mathf.Lerp(0f, 1f, a);
+            SetMusicFade01(fade01);
             yield return null;
         }
 
-        musicSource.volume = startVol;
+        SetMusicFade01(1f);
+        ApplyMusicVolumeNow();
+        EnsureMusicPlayingIfNeeded();
         _fadeRoutine = null;
+    }
+
+    private void SetMusicFade01(float fade01)
+    {
+        if (musicSource == null) return;
+        _fade01 = Mathf.Clamp01(fade01);
+        ApplyMusicVolumeNow();
     }
 
     private void StopMusicImmediate()
@@ -276,16 +428,13 @@ public class AudioManager : MonoBehaviour
         if (musicSource == null) return;
         musicSource.Stop();
         musicSource.clip = null;
+
+        _fade01 = 1f;
+        ApplyMusicVolumeNow();
     }
 
-        // ============= GAME SPEED -> MUSIC TEMPO =============
+    // ============= GAME SPEED -> MUSIC TEMPO =============
 
-    /// <summary>
-    /// normalizedSpeed - value 0..1
-    /// 0  -> minMusicPitch
-    /// 1  -> maxMusicPitch
-    /// Call this where you update game speed.
-    /// </summary>
     public void SetGameSpeed01(float normalizedSpeed)
     {
         _gameSpeed01 = Mathf.Clamp01(normalizedSpeed);
@@ -324,7 +473,6 @@ public class AudioManager : MonoBehaviour
         switch (_activeEntry.pitchControl)
         {
             case PitchControlMode.None:
-                // In "None" mode we want the clip to play at normal speed regardless of min/max inspector values.
                 _targetPitch = 1f;
                 return;
 
@@ -343,26 +491,23 @@ public class AudioManager : MonoBehaviour
 
         normalized = Mathf.Clamp01(normalized);
 
-        // Safety: prevent accidental 0 pitch (silent) from inspector misconfiguration
         float minP = Mathf.Clamp(_activeEntry.minPitch, 0.1f, 3f);
         float maxP = Mathf.Clamp(_activeEntry.maxPitch, 0.1f, 3f);
         if (maxP < minP) maxP = minP;
 
         _targetPitch = Mathf.Lerp(minP, maxP, normalized);
     }
+
     // ===================== LEGACY API (compatibility) =====================
-    // Some older scripts may still call these. They now route into the Scene Music system.
 
     public void PlayMenuMusic()
     {
-        // Prefer legacy clip if provided
         if (menuMusic != null)
         {
             PlayClip(menuMusic, fallbackFadeTime);
             return;
         }
 
-        // Otherwise, try to play whatever is configured for the current scene
         PlaySceneMusic(SceneManager.GetActiveScene().name);
     }
 
@@ -377,10 +522,6 @@ public class AudioManager : MonoBehaviour
         PlaySceneMusic(SceneManager.GetActiveScene().name);
     }
 
-    /// <summary>
-    /// Manually trigger music for a specific scene name (must match Build Settings / Scene Music Table).
-    /// Useful if you want to play "Menu" music while staying in the same scene, etc.
-    /// </summary>
     public void PlaySceneMusic(string sceneName)
     {
         if (musicSource == null) return;
@@ -397,11 +538,12 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        // Avoid restarting same clip
         if (musicSource.isPlaying && musicSource.clip == clipToPlay)
         {
             ApplyActiveEntrySettings();
             RecomputeTargetPitch();
+            ApplyMusicVolumeNow();
+            EnsureMusicPlayingIfNeeded();
             return;
         }
 
@@ -411,14 +553,10 @@ public class AudioManager : MonoBehaviour
         _fadeRoutine = StartCoroutine(FadeToClip(clipToPlay, fade));
     }
 
-    /// <summary>
-    /// Manually play a specific music clip (bypasses Scene Music Table). Keeps current entry settings.
-    /// </summary>
     public void PlayClip(AudioClip clip, float fadeTime = 0.35f, bool loop = true)
     {
         if (musicSource == null || clip == null) return;
 
-        // When playing an explicit clip, do not change active entry; just play the clip
         if (musicSource.isPlaying && musicSource.clip == clip)
             return;
 
