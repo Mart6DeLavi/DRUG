@@ -1,17 +1,5 @@
 # DRUG - Instrukcja Użytkownika
 
-## Spis treści
-1. [O grze](#o-grze)
-2. [Wymagania systemowe](#wymagania-systemowe)
-3. [Instalacja i uruchomienie](#instalacja-i-uruchomienie)
-4. [Sterowanie](#sterowanie)
-5. [Rozgrywka](#rozgrywka)
-6. [Menu główne](#menu-główne)
-7. [Sklep](#sklep)
-8. [Power-upy i efekty](#power-upy-i-efekty)
-9. [Zakończenie gry](#zakończenie-gry)
-10. [Rozwiązywanie problemów](#rozwiązywanie-problemów)
-
 ---
 
 ## O grze
