@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -20,9 +21,19 @@ public class PlayerMovement : MonoBehaviour
 
     private bool pendingLandVfx = false;
     private float lastJumpTime = -999f;
+    private bool wasGrounded = false;
 
     [Tooltip("Small delay so landing VFX won't trigger in the same frame as jump.")]
     [SerializeField] private float landVfxMinDelay = 0.05f;
+
+    [Header("Death Flow")]
+    [Tooltip("How long to freeze the game (real seconds) to show death VFX before loading GameOverScene.")]
+    public float deathFreezeSeconds = 2f;
+
+    [Tooltip("Scene name to load after death.")]
+    public string gameOverSceneName = "GameOverScene";
+
+    private bool isDying = false;
 
     [Header("Movement Settings")]
     public float speed = 5f;
@@ -74,20 +85,30 @@ public class PlayerMovement : MonoBehaviour
     private bool chargeValid;
     private float chargeTimer;
 
-   void Start()
-{
-    rb = GetComponent<Rigidbody2D>();
+    // Double jump flag from original code
+    public bool extraJumpAvailable = true;
+    public bool IsGroundedAnim => isGrounded;
 
-    // Hierarchy note: keep both LineRenderers as children of the player
-    if (trajectoryLine != null && trajectoryLine.transform.parent != transform)
-        trajectoryLine.transform.SetParent(transform, true);
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
 
-    if (chargedTrajectoryLine != null && chargedTrajectoryLine.transform.parent != transform)
-        chargedTrajectoryLine.transform.SetParent(transform, true);
+        // IMPORTANT: do this in Awake so particles don't fire on scene start
+        SetupVfx();
+    }
 
-    ClearLine();
-    ClearLine(chargedTrajectoryLine);
-}
+    void Start()
+    {
+        // Hierarchy note: keep both LineRenderers as children of the player
+        if (trajectoryLine != null && trajectoryLine.transform.parent != transform)
+            trajectoryLine.transform.SetParent(transform, true);
+
+        if (chargedTrajectoryLine != null && chargedTrajectoryLine.transform.parent != transform)
+            chargedTrajectoryLine.transform.SetParent(transform, true);
+
+        ClearLine();
+        ClearLine(chargedTrajectoryLine);
+    }
 
     void Update()
     {
@@ -96,7 +117,6 @@ public class PlayerMovement : MonoBehaviour
             moveInput *= -1f;
 
         // Keep grounded state in sync for visuals (trajectory) and input logic.
-        // Debounce ground detection to prevent single-frame overlaps from toggling grounded/air and causing trajectory flicker.
         bool rawGrounded = IsGrounded();
         if (rawGrounded)
         {
@@ -117,6 +137,18 @@ public class PlayerMovement : MonoBehaviour
                        (GameManager.Instance != null &&
                         GameManager.Instance.doubleJumpActive &&
                         extraJumpAvailable);
+
+        // Landing VFX: trigger once when transitioning from air -> grounded after a jump
+        if (!wasGrounded && isGrounded)
+        {
+            if (pendingLandVfx && landEffect != null && (Time.time - lastJumpTime >= landVfxMinDelay))
+            {
+                pendingLandVfx = false;
+                Vector2 p = vfxFeetPoint ? (Vector2)vfxFeetPoint.position : (Vector2)transform.position;
+                PlayBurst(landEffect, p);
+            }
+        }
+        wasGrounded = isGrounded;
 
         // ------------------------
         //      JUMP LOGIC
@@ -245,7 +277,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = vel;
         OnJump?.Invoke();
 
-        // VFX
+        // VFX (jump)
         lastJumpTime = Time.time;
         pendingLandVfx = true;
         PlayBurst(jumpEffect, vfxFeetPoint ? (Vector2)vfxFeetPoint.position : (Vector2)transform.position);
@@ -271,7 +303,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = vel;
         OnJump?.Invoke();
 
-        // VFX
+        // VFX (jump)
         lastJumpTime = Time.time;
         pendingLandVfx = true;
         PlayBurst(jumpEffect, vfxFeetPoint ? (Vector2)vfxFeetPoint.position : (Vector2)transform.position);
@@ -312,53 +344,50 @@ public class PlayerMovement : MonoBehaviour
     // ----------------------------------------------------------
     //                     TRAJECTORY HANDLING
     // ----------------------------------------------------------
-   private void UpdateTrajectory()
-{
-    if (trajectoryLine == null)
-        return;
-
-    if (isGrounded)
+    private void UpdateTrajectory()
     {
-        // Na ziemi druga linia niepotrzebna
-        ClearLine(chargedTrajectoryLine);
-
-        if (!enableGroundTrajectory)
-        {
-            ClearLine();
+        if (trajectoryLine == null)
             return;
-        }
 
-        DrawGroundTrajectory();
-    }
-    else
-    {
-        if (!enableAirTrajectory)
+        if (isGrounded)
         {
-            ClearLine();
             ClearLine(chargedTrajectoryLine);
-            return;
-        }
 
-        // 1) Always show the current flight trajectory (without jump)
-        DrawAirTrajectory();
+            if (!enableGroundTrajectory)
+            {
+                ClearLine();
+                return;
+            }
 
-        // 2) Show the extra jump trajectory only while charging in the air
-        if (chargedTrajectoryLine != null && isCharging && chargeValid)
-        {
-            float t = Mathf.Clamp01(chargeTimer / maxChargeTime);
-            float force = Mathf.Lerp(minJumpForce, maxJumpForce, t);
-
-            Vector2 dir = mouseAimedJumpEnabled ? GetMouseDir() : Vector2.up;
-            Vector2 jumpVel = ClampHorizontal(dir * force);
-
-            SimulateTrajectory(chargedTrajectoryLine, rb.position, jumpVel);
+            DrawGroundTrajectory();
         }
         else
         {
-            ClearLine(chargedTrajectoryLine);
+            if (!enableAirTrajectory)
+            {
+                ClearLine();
+                ClearLine(chargedTrajectoryLine);
+                return;
+            }
+
+            DrawAirTrajectory();
+
+            if (chargedTrajectoryLine != null && isCharging && chargeValid)
+            {
+                float t = Mathf.Clamp01(chargeTimer / maxChargeTime);
+                float force = Mathf.Lerp(minJumpForce, maxJumpForce, t);
+
+                Vector2 dir = mouseAimedJumpEnabled ? GetMouseDir() : Vector2.up;
+                Vector2 jumpVel = ClampHorizontal(dir * force);
+
+                SimulateTrajectory(chargedTrajectoryLine, rb.position, jumpVel);
+            }
+            else
+            {
+                ClearLine(chargedTrajectoryLine);
+            }
         }
     }
-}
 
     private void DrawGroundTrajectory()
     {
@@ -411,15 +440,13 @@ public class PlayerMovement : MonoBehaviour
         trajectoryLine.positionCount = maxSeg;
 
         float dt = trajectorySimulationTime / (maxSeg - 1);
-
         int used = 0;
 
         for (int i = 0; i < maxSeg; i++)
         {
-            float t = dt * i;
-            Vector2 pos = startPos + initialVel * t + 0.5f * gravity * t * t;
+            float tt = dt * i;
+            Vector2 pos = startPos + initialVel * tt + 0.5f * gravity * tt * tt;
 
-            // Continuous ground detection to avoid "missing" the floor between segments (which causes flicker)
             if (i > 0)
             {
                 Vector2 prev = (Vector2)trajectoryLine.GetPosition(i - 1);
@@ -445,61 +472,64 @@ public class PlayerMovement : MonoBehaviour
         trajectoryLine.positionCount = used;
         trajectoryLine.enabled = true;
     }
-private void SimulateTrajectory(LineRenderer line, Vector2 startPos, Vector2 initialVel)
-{
-    if (line == null) return;
 
-    Vector2 gravity = Physics2D.gravity * rb.gravityScale;
-    int maxSeg = Mathf.Max(2, trajectorySegments);
-
-    line.positionCount = maxSeg;
-
-    float dt = trajectorySimulationTime / (maxSeg - 1);
-    int used = 0;
-
-    for (int i = 0; i < maxSeg; i++)
+    private void SimulateTrajectory(LineRenderer line, Vector2 startPos, Vector2 initialVel)
     {
-        float t = dt * i;
-        Vector2 pos = startPos + initialVel * t + 0.5f * gravity * t * t;
+        if (line == null) return;
 
-        // Continuous ground detection to avoid "missing" the floor between segments (which causes flicker)
-        if (i > 0)
+        Vector2 gravity = Physics2D.gravity * rb.gravityScale;
+        int maxSeg = Mathf.Max(2, trajectorySegments);
+
+        line.positionCount = maxSeg;
+
+        float dt = trajectorySimulationTime / (maxSeg - 1);
+        int used = 0;
+
+        for (int i = 0; i < maxSeg; i++)
         {
-            Vector2 prev = (Vector2)line.GetPosition(i - 1);
-            Vector2 delta = pos - prev;
-            float dist = delta.magnitude;
+            float tt = dt * i;
+            Vector2 pos = startPos + initialVel * tt + 0.5f * gravity * tt * tt;
 
-            if (dist > 0.0001f)
+            if (i > 0)
             {
-                RaycastHit2D hit = Physics2D.CircleCast(prev, groundCheckRadius, delta / dist, dist, groundLayer);
-                if (hit.collider != null)
+                Vector2 prev = (Vector2)line.GetPosition(i - 1);
+                Vector2 delta = pos - prev;
+                float dist = delta.magnitude;
+
+                if (dist > 0.0001f)
                 {
-                    line.SetPosition(i, hit.point);
-                    used++;
-                    break;
+                    RaycastHit2D hit = Physics2D.CircleCast(prev, groundCheckRadius, delta / dist, dist, groundLayer);
+                    if (hit.collider != null)
+                    {
+                        line.SetPosition(i, hit.point);
+                        used++;
+                        break;
+                    }
                 }
             }
+
+            line.SetPosition(i, pos);
+            used++;
         }
 
-        line.SetPosition(i, pos);
-        used++;
+        line.positionCount = used;
+        line.enabled = true;
     }
 
-    line.positionCount = used;
-    line.enabled = true;
-}
     private void ClearLine()
     {
         if (trajectoryLine == null) return;
         trajectoryLine.positionCount = 0;
         trajectoryLine.enabled = false;
     }
-private void ClearLine(LineRenderer line)
-{
-    if (line == null) return;
-    line.positionCount = 0;
-    line.enabled = false;
-}
+
+    private void ClearLine(LineRenderer line)
+    {
+        if (line == null) return;
+        line.positionCount = 0;
+        line.enabled = false;
+    }
+
     // ----------------------------------------------------------
     //                     GROUND CHECK
     // ----------------------------------------------------------
@@ -526,40 +556,81 @@ private void ClearLine(LineRenderer line)
         }
     }
 
-    // Double jump flag from original code
-    public bool extraJumpAvailable = true;
-    public bool IsGroundedAnim => isGrounded;
-
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    // ---------------- VFX setup & playback ----------------
+    private void SetupVfx()
     {
-        if (!pendingLandVfx || landEffect == null) return;
-        if (Time.time - lastJumpTime < landVfxMinDelay) return;
+        SetupOne(jumpEffect, useUnscaledTime: false);
+        SetupOne(landEffect, useUnscaledTime: false);
+        SetupOne(deathEffect, useUnscaledTime: true); // so it runs during timeScale=0
+    }
 
-        bool isGround = ((1 << collision.gameObject.layer) & groundLayer.value) != 0;
-        if (!isGround) return;
+    private void SetupOne(ParticleSystem ps, bool useUnscaledTime)
+    {
+        if (ps == null) return;
 
-        pendingLandVfx = false;
+        // Make sure the object is active (StopAction Disable can break future plays)
+        if (!ps.gameObject.activeSelf)
+            ps.gameObject.SetActive(true);
 
-        Vector2 contactPoint = collision.GetContact(0).point;
-        PlayBurst(landEffect, contactPoint);
+        var main = ps.main;
+        main.playOnAwake = false;
+        main.loop = false;
+        main.useUnscaledTime = useUnscaledTime;
+
+        // CRITICAL: prevent the system from disabling itself after playing once
+        main.stopAction = ParticleSystemStopAction.None;
+
+        // Clear any particles that spawned on scene load
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        ps.Clear(true);
     }
 
     private void PlayBurst(ParticleSystem ps, Vector2 pos)
     {
         if (ps == null) return;
 
+        if (!ps.gameObject.activeSelf)
+            ps.gameObject.SetActive(true);
+
         ps.transform.position = new Vector3(pos.x, pos.y, ps.transform.position.z);
 
-        // Key for burst replays: always restart & clear
         ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        ps.Clear(true);
         ps.Play(true);
     }
 
-    // Call this from PlayerDeath (or anywhere) when the player dies
-    public void PlayDeathVfx()
+    // Called from PlayerDeath
+    public void TriggerDeath()
     {
-        PlayBurst(deathEffect, transform.position);
+        if (isDying) return;
+        isDying = true;
+        StartCoroutine(DeathRoutine());
     }
 
+    private System.Collections.IEnumerator DeathRoutine()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.simulated = false;
+        }
+
+        PlayBurst(deathEffect, transform.position);
+
+        float prevTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(deathFreezeSeconds);
+        Time.timeScale = prevTimeScale;
+
+        if (SurvivalScore.Instance != null)
+            SurvivalScore.Instance.SealFinalScore();
+
+        SceneManager.LoadScene(gameOverSceneName);
+    }
+
+    // Backward-compatible
+    public void PlayDeathVfx()
+    {
+        TriggerDeath();
+    }
 }
